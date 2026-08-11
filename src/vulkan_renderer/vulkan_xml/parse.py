@@ -2,234 +2,16 @@
 # and create the {output_c_filename} c file
 from io import TextIOWrapper
 import xml.etree.ElementTree as ET
-from collections.abc import Callable
-from functools import partial
 from dataclasses import dataclass
 from enum import Enum
 
-VULKAN_VERSION_MAJOR = 1
-VULKAN_VERSION_MINOR = 4
-VULKAN_VERSION = (VULKAN_VERSION_MAJOR << 4) + VULKAN_VERSION_MINOR
+from debug import *
+from depends import *
+from vk_version import *
+from structures import *
 
 xml_filename = "vk.xml"
 output_c_file_prepend = "bluesky_vulkan_xml"
-
-def debug_print_tree(element: ET.Element[str], last: list[bool] = [], level: int = 0) -> None:
-    # │ ├ └ ─
-    last_len = len(last)
-    for index,boolean in enumerate(last):
-        if(index == last_len-1):
-            if boolean == True:
-                print("└───", end="")
-            else:
-                print("├───", end="")
-        else:
-            if boolean == True:
-                print("    ", end="")
-            else:
-                print("│   ", end="")
-
-    tag = element.tag or ""
-    text = element.text or ""
-    tail = element.tail or ""
-    attrib = element.attrib
-    if not tag.isspace():
-        print(f"{tag}:", end="")
-    else:
-        print(f"None:", end="")
-    if not text.isspace():
-        print(f" {text}", end="")
-    if not tail.isspace():
-        print(f" | {tail}", end="")
-    if not len(attrib) <= 0:
-        print(f" | {attrib}", end="")
-    print("")
-
-
-    sub_element_len = len(element)
-    for index,sub_element in enumerate(element):
-        if sub_element_len-1 == index:
-            debug_print_tree(sub_element, last + [True], level + 1)
-        else:
-            debug_print_tree(sub_element, last + [False], level + 1)
-
-class DependsOperation(Enum):
-    OR = 1
-    AND = 2
-
-@dataclass
-class DependsStruct:
-    operation: DependsOperation
-    left: DependsStruct | str
-    right: DependsStruct | str
-
-def parse_depends(string: str) -> DependsStruct | None:
-    return parse_depends_recurse([string])
-
-def parse_depends_recurse(string: list[str]) -> DependsStruct | None:
-    # , is or
-    OR_CHAR = ","
-    # + is and
-    AND_CHAR = "+"
-    # ( and ) define order
-    OPEN_PAREN = "("
-    CLOSE_PAREN = ")"
-        
-    depends_operation = None
-    left = None
-    right = None
-    name = ""
-
-    while True:
-        if len(string[0]) <= 0:
-            break
-        char = string[0][0]
-        string[0] = string[0][1:] # remove first character (pop it)
-        
-        if char == OR_CHAR:
-            depends_operation = DependsOperation.OR
-            name = ""
-        elif char == AND_CHAR:
-            depends_operation = DependsOperation.AND
-            name = ""
-        elif char == OPEN_PAREN:
-            paresed = parse_depends_recurse(string)
-            if left == None:
-                left = paresed
-            else:
-                right = paresed
-        elif char == CLOSE_PAREN:
-            break
-        else:
-            index = 0
-            while True:
-                if index >= len(string[0]) or string[0][index] == OR_CHAR or string[0][index] == AND_CHAR or string[0][index] == CLOSE_PAREN:
-                    break
-                index += 1    
-            name = char + string[0][0:index] # consume name of extension
-            string[0] = string[0][index:]
-
-            if left == None:
-                left = name
-            else:
-                right = name
-
-    if depends_operation == None or left == None or right == None:
-        return None
-    # print(f"parsed, got {left} {depends_operation} {right}")
-    # print(f"remaining string: {string[0]}")
-    return DependsStruct(depends_operation, left, right)
-
-def calc_depends_struct(depends_struct: DependsStruct) -> int | list[str]:
-    left = None
-    right = None
-
-    if isinstance(depends_struct.left, DependsStruct):
-        left = calc_depends_struct(depends_struct.left)
-    else:
-        if depends_struct.left.startswith("VK_VERSION_"):
-            if parse_VK_VERSION(depends_struct.left) <= VULKAN_VERSION:
-                left = 1
-            else:
-                left = 0
-        elif "::" in depends_struct.left:
-            names = depends_struct.left.split("::")
-            struct_name = names[0]
-            member_name = names[1]
-            struct = structures.get(struct_name, None)
-            if struct is None:
-                left = 0
-            else:
-                left = 0
-                for member in struct.members:
-                    if member.name == member_name:
-                        left = 1
-                        break
-        else:
-            left = extension_name_valid[depends_struct.left]
-            if left == -1:
-                left = [depends_struct.left]
-
-    if isinstance(depends_struct.right, DependsStruct):
-        right = calc_depends_struct(depends_struct.right)
-    else:
-        if depends_struct.right.startswith("VK_VERSION_"):
-            if parse_VK_VERSION(depends_struct.right) <= VULKAN_VERSION:
-                right = 1
-            else:
-                right = 0
-        elif "::" in depends_struct.right:
-            names = depends_struct.right.split("::")
-            struct_name = names[0]
-            member_name = names[1]
-            struct = structures.get(struct_name, None)
-            if struct is None:
-                left = 0
-            else:
-                left = 0
-                for member in struct.members:
-                    if member.name == member_name:
-                        left = 1
-                        break
-        else:
-            right = extension_name_valid[depends_struct.right]
-            if right == -1:
-                right = [depends_struct.right]
-
-    if isinstance(left, int) and isinstance(right, int):
-        if depends_struct.operation == DependsOperation.OR:
-            return left or right
-        elif depends_struct.operation == DependsOperation.AND:
-            return left and right
-        else:
-            raise RuntimeError(f"DependsOperation is not OR or AND: {depends_struct.operation}")
-    else:
-        return_array = []
-        if isinstance(left, list):
-            return_array = return_array + left
-        if isinstance(right, list):
-            return_array = return_array + right
-        return return_array
-
-
-def print_depends_struct(depends_struct: DependsStruct, level = 0):
-    left = depends_struct.left
-    right = depends_struct.right
-    operation = depends_struct.operation
-    if isinstance(left, str):
-        print(level * "  " + left)
-    else:
-        print_depends_struct(left, level + 1)
-
-    if operation == DependsOperation.OR:
-        print(level * "  " + "or")
-    else:
-        print(level * "  " + "and")
-
-    if isinstance(right, str):
-        print(level * "  " + right)
-    else: 
-        print_depends_struct(right, level + 1)
-
-def parse_VK_VERSION(version: str) -> int:
-    version = version.removeprefix("VK_VERSION_")
-    major = int(version[0])
-    minor = int(version[2])
-
-    return (major << 4) + minor
-
-def eval_depends(element: ET.Element[str]) -> bool:
-    depends = element.get("depends")
-    if depends is None:
-        return True
-    
-    depends = parse_depends(depends)
-    if depends is not None:
-        return_val = calc_depends_struct(depends)
-        if isinstance(return_val, int):
-            if return_val == 1:
-                return True
-    return False
 
 extension_name_valid: dict[str, int] = dict()
 structures: dict[str, structure] = dict()
@@ -264,7 +46,7 @@ def collect_valid_extensions(element: ET.Element[str]) -> list[ET.Element[str]]:
         if depends is not None:
             depends = parse_depends(depends)
             if depends is not None:
-                return_val = calc_depends_struct(depends)
+                return_val = calc_depends_struct(depends, extension_name_valid, structures)
                 if isinstance(return_val, list):
                     for index, dependincy_name in enumerate(return_val):
                         first_index = i + index
@@ -290,78 +72,6 @@ def collect_valid_extensions(element: ET.Element[str]) -> list[ET.Element[str]]:
         i += 1
 
     return return_array
-
-@dataclass
-class struct_member:
-    name: str
-    base_type: str
-    pointer_depth: int   # -1 = not a pointer
-    array_len: list # -1 = not an array
-
-@dataclass
-class structure:
-    name: str
-    members: list[struct_member]
-
-def parse_struct_member(member: ET.Element[str]) -> struct_member | None:
-    # <member api="list of api-s" noautovalidity="bool" optional="bool">
-    #   <type>type</type>****...
-    #   <name>name</name>[array_len]
-    #   <comment>comment</comment>
-    # </member>
-    member_api = member.get("api")
-    if member_api is not None and "vulkan" not in member_api.split(","):
-        return None
-    
-    member_type = member.find("type")
-    member_name = member.find("name")
-    member_enum = member.findall("enum")
-    pointer_str = ""
-    if member_type is not None:
-        pointer_str = member_type.tail or ""
-
-    array_str = ""
-    if member_name is not None:
-        array_str = member_name.tail or ""    
-    
-    pointer_depth = -1
-    if not pointer_str.isspace():
-        pointer_depth = pointer_str.count("*")
-
-    array_len = []
-    if array_str.startswith("["):
-        array_len_start = array_str.find("[")
-        while array_len_start != -1:
-            array_len_end = array_str.find("]", array_len_start)
-            if array_len_end == -1:
-                break
-
-            array_len.append( int(array_str[array_len_start+1:array_len_end]) )
-
-            array_len_start = array_str.find("[", array_len_start + 1)
-        
-        for enum in member_enum:
-            array_len.append(enum.text)
-            
-            tail = enum.tail
-
-            if tail is not None:
-                array_len_start = tail.find("[")
-                while array_len_start != -1:
-                    array_len_end = tail.find("]", array_len_start)
-                    array_len.append( int(tail[array_len_start:array_len_end]) )
-
-                    array_len_start = tail.find("[", array_len_start + 1)
-
-        
-    if len(array_len) == 0:
-        array_len = [-1]
-    
-
-    if member_type is not None and member_name is not None and member_type.text is not None and member_name.text is not None:
-        return struct_member(member_name.text, member_type.text, pointer_depth, array_len)
-    return None
-
 
 # [3][4]
 # [<enum>ARRAY_LEN</enum>][3]
@@ -390,6 +100,27 @@ def collect_structures(root: ET.Element[str]) -> list[structure]:
 
     return return_array
 
+@dataclass
+class platform:
+    name: str
+    protect: str
+
+platforms: dict[str, platform] = dict()
+
+def collect_platforms(root: ET.Element[str]) -> list[ET.Element[str]]:
+    all_platforms = list(root.iter("platform"))
+
+    for a_platform in all_platforms:
+        name = a_platform.get("name")
+        protect = a_platform.get("protect")
+
+        if name is None or protect is None:
+            continue
+
+        platforms[name] = platform(name, protect)
+
+    return all_platforms
+
 def collect_vaild_enums(element: ET.Element[str]) -> list[ET.Element[str]]:
     extensions = list(element.iter("extension"))
     return_array = []
@@ -398,7 +129,7 @@ def collect_vaild_enums(element: ET.Element[str]) -> list[ET.Element[str]]:
         if not "vulkan" in extension.get("supported", "").split(","):
             continue
         for require in extension:
-            if eval_depends(require) == False:
+            if eval_depends(require, extension_name_valid, structures) == False:
                 continue
             for element in require:
                 if element.tag == "enum":
@@ -435,18 +166,85 @@ comparator_dict = {
     "char" : "IGNORE",
 }
 
-def copy_extend_from(file_to_write_to: TextIOWrapper, enums: list[ET.Element[str]], extends_from: str):
+def get_enums_that_extend_from(enums: list[ET.Element[str]], extends_from: str) -> list[ET.Element[str]]:
+    return_array = []
     for enum in enums:
-        pass
+        extends = enum.get("extends")
+
+        if extends is None or extends != extends_from:
+            continue
+        return_array.append(enum)
+
+    return return_array
+
+def convert_enum_name_to_struct_name(name: str) -> str:
+    # VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_NALU_SLICE_SEGMENT_INFO_KHR
+    # to
+    # VIDEO_ENCODE_H265_NALU_SLICE_SEGMENT_INFO_KHR
+    name = name.removeprefix("VK_STRUCTURE_TYPE_")
+    struct_name = ""
+    capitalize_next = True
+    for char in name:
+        if char == "_":
+            capitalize_next = True
+            continue
+
+        if capitalize_next: 
+            struct_name += char
+            capitalize_next = False
+        else:
+            struct_name += char.lower()
+
+    struct_name = "Vk" + struct_name
+
+    if struct_name.endswith("Khr") or struct_name.endswith("Ext"):
+        struct_name_len = len(struct_name)
+        struct_name = struct_name[:struct_name_len - 3] + struct_name[struct_name_len - 3:].upper()
+
+    return struct_name
+        
+
+def write_copy_extends_from_vk_struct_type(file_to_write_to: TextIOWrapper, enums: list[ET.Element[str]]) -> None:
+    enums_that_extend_vk_struct_type = get_enums_that_extend_from(enums, "VkStructureType")
+
+    file_to_write_to.writelines([
+        "#include <stdlib.h>\n"
+        "\n"
+        "#include <vulkan/vulkan.h>\n"
+        "\n"
+        "void* copy_struct_extends_from_vk_struct(void* structure) {\n",
+        "    switch (*(VkStructureType*) structure) {\n"
+    ])
+    for enum in enums_that_extend_vk_struct_type:
+        enum_name = enum.get("name")
+
+        if enum_name is None:
+            continue
+
+        struct_name = convert_enum_name_to_struct_name(enum_name)
+
+        file_to_write_to.writelines([
+            f"        case {enum_name}:\n",
+            f"            return malloc(sizeof({convert_enum_name_to_struct_name(enum_name)}));\n"
+        ])
     
+    file_to_write_to.writelines([
+        "        default:\n",
+        "            return NULL;\n",
+        "    }\n",
+        "}\n"
+    ]) 
 
 if __name__ == "__main__":
     with (
         open(xml_filename, "r") as xml_file,
-        open(f"{output_c_file_prepend}_struct_copy", "w") as output_copy_file,
-        open(f"{output_c_file_prepend}_struct_comparision", "w") as output_comparision_file
+        open(f"{output_c_file_prepend}_struct_copy.c", "w") as output_copy_file,
+        open(f"{output_c_file_prepend}_struct_comparision.c", "w") as output_comparision_file
     ):
         tree_root = ET.parse(xml_file).getroot()
+
+        collected_platforms = collect_platforms(tree_root)
+        print(f"got {len(collected_platforms)} plaforms")
 
         valid_extensions = collect_valid_extensions(tree_root)        
         print(f"got {len(valid_extensions)} valid extensions")
@@ -457,6 +255,6 @@ if __name__ == "__main__":
         valid_enums = collect_vaild_enums(tree_root)
         print(f"got {len(valid_enums)} valid enums")
 
-        
+        write_copy_extends_from_vk_struct_type(output_copy_file, valid_enums)
 
         

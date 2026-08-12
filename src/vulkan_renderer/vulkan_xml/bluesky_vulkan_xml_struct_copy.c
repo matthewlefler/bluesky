@@ -14,22 +14,28 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkDisplaySurfaceCreateInfoKHR));
         case VK_STRUCTURE_TYPE_DISPLAY_PRESENT_INFO_KHR:
             return malloc(sizeof(VkDisplayPresentInfoKHR));
+#ifdef VK_USE_PLATFORM_XLIB_KHR
         case VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR:
             return malloc(sizeof(VkXlibSurfaceCreateInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_XCB_KHR
         case VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR:
             return malloc(sizeof(VkXcbSurfaceCreateInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
         case VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR:
             return malloc(sizeof(VkWaylandSurfaceCreateInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR:
             return malloc(sizeof(VkAndroidSurfaceCreateInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR:
             return malloc(sizeof(VkWin32SurfaceCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT:
-            return malloc(sizeof(VkDebugReportCallbackCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT:
-            return malloc(sizeof(VkDebugReportCreateInfoEXT));
+#endif
         case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD:
-            return malloc(sizeof(VkPipelineRasterizationStateRasterizationOrderAmd));
+            return malloc(sizeof(VkPipelineRasterizationStateRasterizationOrderAMD));
         case VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT:
             return malloc(sizeof(VkDebugMarkerObjectNameInfoEXT));
         case VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT:
@@ -76,12 +82,6 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkVideoDecodeCapabilitiesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_USAGE_INFO_KHR:
             return malloc(sizeof(VkVideoDecodeUsageInfoKHR));
-        case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV:
-            return malloc(sizeof(VkDedicatedAllocationImageCreateInfoNv));
-        case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV:
-            return malloc(sizeof(VkDedicatedAllocationBufferCreateInfoNv));
-        case VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV:
-            return malloc(sizeof(VkDedicatedAllocationMemoryAllocateInfoNv));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceTransformFeedbackFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT:
@@ -89,17 +89,17 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_STREAM_CREATE_INFO_EXT:
             return malloc(sizeof(VkPipelineRasterizationStateStreamCreateInfoEXT));
         case VK_STRUCTURE_TYPE_CU_MODULE_CREATE_INFO_NVX:
-            return malloc(sizeof(VkCuModuleCreateInfoNvx));
+            return malloc(sizeof(VkCuModuleCreateInfoNVX));
         case VK_STRUCTURE_TYPE_CU_FUNCTION_CREATE_INFO_NVX:
-            return malloc(sizeof(VkCuFunctionCreateInfoNvx));
+            return malloc(sizeof(VkCuFunctionCreateInfoNVX));
         case VK_STRUCTURE_TYPE_CU_LAUNCH_INFO_NVX:
-            return malloc(sizeof(VkCuLaunchInfoNvx));
+            return malloc(sizeof(VkCuLaunchInfoNVX));
         case VK_STRUCTURE_TYPE_CU_MODULE_TEXTURING_MODE_CREATE_INFO_NVX:
-            return malloc(sizeof(VkCuModuleTexturingModeCreateInfoNvx));
+            return malloc(sizeof(VkCuModuleTexturingModeCreateInfoNVX));
         case VK_STRUCTURE_TYPE_IMAGE_VIEW_HANDLE_INFO_NVX:
-            return malloc(sizeof(VkImageViewHandleInfoNvx));
+            return malloc(sizeof(VkImageViewHandleInfoNVX));
         case VK_STRUCTURE_TYPE_IMAGE_VIEW_ADDRESS_PROPERTIES_NVX:
-            return malloc(sizeof(VkImageViewAddressPropertiesNvx));
+            return malloc(sizeof(VkImageViewAddressPropertiesNVX));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_CAPABILITIES_KHR:
             return malloc(sizeof(VkVideoEncodeH264CapabilitiesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_CREATE_INFO_KHR:
@@ -169,160 +169,82 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_DPB_SLOT_INFO_KHR:
             return malloc(sizeof(VkVideoDecodeH264DpbSlotInfoKHR));
         case VK_STRUCTURE_TYPE_TEXTURE_LOD_GATHER_FORMAT_PROPERTIES_AMD:
-            return malloc(sizeof(VkTextureLodGatherFormatPropertiesAmd));
-        case VK_STRUCTURE_TYPE_RENDERING_INFO_KHR:
-            return malloc(sizeof(VkRenderingInfoKHR));
-        case VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR:
-            return malloc(sizeof(VkRenderingAttachmentInfoKHR));
-        case VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR:
-            return malloc(sizeof(VkPipelineRenderingCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceDynamicRenderingFeaturesKHR));
-        case VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDERING_INFO_KHR:
-            return malloc(sizeof(VkCommandBufferInheritanceRenderingInfoKHR));
+            return malloc(sizeof(VkTextureLODGatherFormatPropertiesAMD));
+#ifdef VK_USE_PLATFORM_GGP
         case VK_STRUCTURE_TYPE_STREAM_DESCRIPTOR_SURFACE_CREATE_INFO_GGP:
-            return malloc(sizeof(VkStreamDescriptorSurfaceCreateInfoGgp));
+            return malloc(sizeof(VkStreamDescriptorSurfaceCreateInfoGGP));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CORNER_SAMPLED_IMAGE_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCornerSampledImageFeaturesNv));
-        case VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO_KHR:
-            return malloc(sizeof(VkRenderPassMultiviewCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceMultiviewFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceMultiviewPropertiesKHR));
-        case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_NV:
-            return malloc(sizeof(VkExternalMemoryImageCreateInfoNv));
-        case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_NV:
-            return malloc(sizeof(VkExportMemoryAllocateInfoNv));
-        case VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_NV:
-            return malloc(sizeof(VkImportMemoryWin32HandleInfoNv));
-        case VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_NV:
-            return malloc(sizeof(VkExportMemoryWin32HandleInfoNv));
+            return malloc(sizeof(VkPhysicalDeviceCornerSampledImageFeaturesNV));
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_NV:
-            return malloc(sizeof(VkWin32KeyedMutexAcquireReleaseInfoNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR:
-            return malloc(sizeof(VkPhysicalDeviceFeatures2KHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR:
-            return malloc(sizeof(VkPhysicalDeviceProperties2KHR));
-        case VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2_KHR:
-            return malloc(sizeof(VkFormatProperties2KHR));
-        case VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2_KHR:
-            return malloc(sizeof(VkImageFormatProperties2KHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2_KHR:
-            return malloc(sizeof(VkPhysicalDeviceImageFormatInfo2KHR));
-        case VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2_KHR:
-            return malloc(sizeof(VkQueueFamilyProperties2KHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2_KHR:
-            return malloc(sizeof(VkPhysicalDeviceMemoryProperties2KHR));
-        case VK_STRUCTURE_TYPE_SPARSE_IMAGE_FORMAT_PROPERTIES_2_KHR:
-            return malloc(sizeof(VkSparseImageFormatProperties2KHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SPARSE_IMAGE_FORMAT_INFO_2_KHR:
-            return malloc(sizeof(VkPhysicalDeviceSparseImageFormatInfo2KHR));
-        case VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO_KHR:
-            return malloc(sizeof(VkMemoryAllocateFlagsInfoKHR));
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_RENDER_PASS_BEGIN_INFO_KHR:
-            return malloc(sizeof(VkDeviceGroupRenderPassBeginInfoKHR));
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_COMMAND_BUFFER_BEGIN_INFO_KHR:
-            return malloc(sizeof(VkDeviceGroupCommandBufferBeginInfoKHR));
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_SUBMIT_INFO_KHR:
-            return malloc(sizeof(VkDeviceGroupSubmitInfoKHR));
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_BIND_SPARSE_INFO_KHR:
-            return malloc(sizeof(VkDeviceGroupBindSparseInfoKHR));
-        case VK_STRUCTURE_TYPE_VALIDATION_FLAGS_EXT:
-            return malloc(sizeof(VkValidationFlagsEXT));
+            return malloc(sizeof(VkWin32KeyedMutexAcquireReleaseInfoNV));
+#endif
+#ifdef VK_USE_PLATFORM_VI_NN
         case VK_STRUCTURE_TYPE_VI_SURFACE_CREATE_INFO_NN:
-            return malloc(sizeof(VkViSurfaceCreateInfoNn));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXTURE_COMPRESSION_ASTC_HDR_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceTextureCompressionAstcHdrFeaturesEXT));
+            return malloc(sizeof(VkViSurfaceCreateInfoNN));
+#endif
         case VK_STRUCTURE_TYPE_IMAGE_VIEW_ASTC_DECODE_MODE_EXT:
-            return malloc(sizeof(VkImageViewAstcDecodeModeEXT));
+            return malloc(sizeof(VkImageViewASTCDecodeModeEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ASTC_DECODE_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceAstcDecodeFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PIPELINE_ROBUSTNESS_CREATE_INFO_EXT:
-            return malloc(sizeof(VkPipelineRobustnessCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_ROBUSTNESS_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDevicePipelineRobustnessFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_ROBUSTNESS_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDevicePipelineRobustnessPropertiesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GROUP_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceGroupPropertiesKHR));
-        case VK_STRUCTURE_TYPE_DEVICE_GROUP_DEVICE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkDeviceGroupDeviceCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO_KHR:
-            return malloc(sizeof(VkPhysicalDeviceExternalImageFormatInfoKHR));
-        case VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES_KHR:
-            return malloc(sizeof(VkExternalImageFormatPropertiesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_BUFFER_INFO_KHR:
-            return malloc(sizeof(VkPhysicalDeviceExternalBufferInfoKHR));
-        case VK_STRUCTURE_TYPE_EXTERNAL_BUFFER_PROPERTIES_KHR:
-            return malloc(sizeof(VkExternalBufferPropertiesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceIdPropertiesKHR));
-        case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_BUFFER_CREATE_INFO_KHR:
-            return malloc(sizeof(VkExternalMemoryBufferCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkExternalMemoryImageCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_KHR:
-            return malloc(sizeof(VkExportMemoryAllocateInfoKHR));
+            return malloc(sizeof(VkPhysicalDeviceASTCDecodeFeaturesEXT));
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_KHR:
             return malloc(sizeof(VkImportMemoryWin32HandleInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_KHR:
             return malloc(sizeof(VkExportMemoryWin32HandleInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_MEMORY_WIN32_HANDLE_PROPERTIES_KHR:
             return malloc(sizeof(VkMemoryWin32HandlePropertiesKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_MEMORY_GET_WIN32_HANDLE_INFO_KHR:
             return malloc(sizeof(VkMemoryGetWin32HandleInfoKHR));
+#endif
         case VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR:
             return malloc(sizeof(VkImportMemoryFdInfoKHR));
         case VK_STRUCTURE_TYPE_MEMORY_FD_PROPERTIES_KHR:
             return malloc(sizeof(VkMemoryFdPropertiesKHR));
         case VK_STRUCTURE_TYPE_MEMORY_GET_FD_INFO_KHR:
             return malloc(sizeof(VkMemoryGetFdInfoKHR));
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_KHR:
             return malloc(sizeof(VkWin32KeyedMutexAcquireReleaseInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_SEMAPHORE_INFO_KHR:
-            return malloc(sizeof(VkPhysicalDeviceExternalSemaphoreInfoKHR));
-        case VK_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_PROPERTIES_KHR:
-            return malloc(sizeof(VkExternalSemaphorePropertiesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceIdPropertiesKHR));
-        case VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkExportSemaphoreCreateInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR:
             return malloc(sizeof(VkImportSemaphoreWin32HandleInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_WIN32_HANDLE_INFO_KHR:
             return malloc(sizeof(VkExportSemaphoreWin32HandleInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_D3D12_FENCE_SUBMIT_INFO_KHR:
-            return malloc(sizeof(VkD3d12FenceSubmitInfoKHR));
+            return malloc(sizeof(VkD3D12FenceSubmitInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_SEMAPHORE_GET_WIN32_HANDLE_INFO_KHR:
             return malloc(sizeof(VkSemaphoreGetWin32HandleInfoKHR));
+#endif
         case VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_FD_INFO_KHR:
             return malloc(sizeof(VkImportSemaphoreFdInfoKHR));
         case VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR:
             return malloc(sizeof(VkSemaphoreGetFdInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDevicePushDescriptorPropertiesKHR));
         case VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_CONDITIONAL_RENDERING_INFO_EXT:
             return malloc(sizeof(VkCommandBufferInheritanceConditionalRenderingInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONDITIONAL_RENDERING_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceConditionalRenderingFeaturesEXT));
         case VK_STRUCTURE_TYPE_CONDITIONAL_RENDERING_BEGIN_INFO_EXT:
             return malloc(sizeof(VkConditionalRenderingBeginInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FLOAT16_INT8_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceShaderFloat16Int8FeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceFloat16Int8FeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDevice16bitStorageFeaturesKHR));
         case VK_STRUCTURE_TYPE_PRESENT_REGIONS_KHR:
             return malloc(sizeof(VkPresentRegionsKHR));
-        case VK_STRUCTURE_TYPE_DESCRIPTOR_UPDATE_TEMPLATE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkDescriptorUpdateTemplateCreateInfoKHR));
         case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_W_SCALING_STATE_CREATE_INFO_NV:
-            return malloc(sizeof(VkPipelineViewportWScalingStateCreateInfoNv));
+            return malloc(sizeof(VkPipelineViewportWScalingStateCreateInfoNV));
         case VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_EXT:
-            return malloc(sizeof(VkSurfaceCapabilities2EXT));
-        case VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES2_EXT:
             return malloc(sizeof(VkSurfaceCapabilities2EXT));
         case VK_STRUCTURE_TYPE_DISPLAY_POWER_INFO_EXT:
             return malloc(sizeof(VkDisplayPowerInfoEXT));
@@ -333,13 +255,11 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_SWAPCHAIN_COUNTER_CREATE_INFO_EXT:
             return malloc(sizeof(VkSwapchainCounterCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PRESENT_TIMES_INFO_GOOGLE:
-            return malloc(sizeof(VkPresentTimesInfoGoogle));
+            return malloc(sizeof(VkPresentTimesInfoGOOGLE));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX:
-            return malloc(sizeof(VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNvx));
-        case VK_STRUCTURE_TYPE_MULTIVIEW_PER_VIEW_ATTRIBUTES_INFO_NVX:
-            return malloc(sizeof(VkMultiviewPerViewAttributesInfoNvx));
+            return malloc(sizeof(VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX));
         case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SWIZZLE_STATE_CREATE_INFO_NV:
-            return malloc(sizeof(VkPipelineViewportSwizzleStateCreateInfoNv));
+            return malloc(sizeof(VkPipelineViewportSwizzleStateCreateInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT:
             return malloc(sizeof(VkPhysicalDeviceDiscardRectanglePropertiesEXT));
         case VK_STRUCTURE_TYPE_PIPELINE_DISCARD_RECTANGLE_STATE_CREATE_INFO_EXT:
@@ -354,46 +274,22 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPipelineRasterizationDepthClipStateCreateInfoEXT));
         case VK_STRUCTURE_TYPE_HDR_METADATA_EXT:
             return malloc(sizeof(VkHdrMetadataEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGELESS_FRAMEBUFFER_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceImagelessFramebufferFeaturesKHR));
-        case VK_STRUCTURE_TYPE_FRAMEBUFFER_ATTACHMENTS_CREATE_INFO_KHR:
-            return malloc(sizeof(VkFramebufferAttachmentsCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_FRAMEBUFFER_ATTACHMENT_IMAGE_INFO_KHR:
-            return malloc(sizeof(VkFramebufferAttachmentImageInfoKHR));
-        case VK_STRUCTURE_TYPE_RENDER_PASS_ATTACHMENT_BEGIN_INFO_KHR:
-            return malloc(sizeof(VkRenderPassAttachmentBeginInfoKHR));
-        case VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2_KHR:
-            return malloc(sizeof(VkAttachmentDescription2KHR));
-        case VK_STRUCTURE_TYPE_ATTACHMENT_REFERENCE_2_KHR:
-            return malloc(sizeof(VkAttachmentReference2KHR));
-        case VK_STRUCTURE_TYPE_SUBPASS_DESCRIPTION_2_KHR:
-            return malloc(sizeof(VkSubpassDescription2KHR));
-        case VK_STRUCTURE_TYPE_SUBPASS_DEPENDENCY_2_KHR:
-            return malloc(sizeof(VkSubpassDependency2KHR));
-        case VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO_2_KHR:
-            return malloc(sizeof(VkRenderPassCreateInfo2KHR));
-        case VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO_KHR:
-            return malloc(sizeof(VkSubpassBeginInfoKHR));
-        case VK_STRUCTURE_TYPE_SUBPASS_END_INFO_KHR:
-            return malloc(sizeof(VkSubpassEndInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RELAXED_LINE_RASTERIZATION_FEATURES_IMG:
-            return malloc(sizeof(VkPhysicalDeviceRelaxedLineRasterizationFeaturesImg));
+            return malloc(sizeof(VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG));
         case VK_STRUCTURE_TYPE_SHARED_PRESENT_SURFACE_CAPABILITIES_KHR:
             return malloc(sizeof(VkSharedPresentSurfaceCapabilitiesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FENCE_INFO_KHR:
-            return malloc(sizeof(VkPhysicalDeviceExternalFenceInfoKHR));
-        case VK_STRUCTURE_TYPE_EXTERNAL_FENCE_PROPERTIES_KHR:
-            return malloc(sizeof(VkExternalFencePropertiesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceIdPropertiesKHR));
-        case VK_STRUCTURE_TYPE_EXPORT_FENCE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkExportFenceCreateInfoKHR));
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_IMPORT_FENCE_WIN32_HANDLE_INFO_KHR:
             return malloc(sizeof(VkImportFenceWin32HandleInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_EXPORT_FENCE_WIN32_HANDLE_INFO_KHR:
             return malloc(sizeof(VkExportFenceWin32HandleInfoKHR));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_FENCE_GET_WIN32_HANDLE_INFO_KHR:
             return malloc(sizeof(VkFenceGetWin32HandleInfoKHR));
+#endif
         case VK_STRUCTURE_TYPE_IMPORT_FENCE_FD_INFO_KHR:
             return malloc(sizeof(VkImportFenceFdInfoKHR));
         case VK_STRUCTURE_TYPE_FENCE_GET_FD_INFO_KHR:
@@ -412,24 +308,12 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPerformanceCounterKHR));
         case VK_STRUCTURE_TYPE_PERFORMANCE_COUNTER_DESCRIPTION_KHR:
             return malloc(sizeof(VkPerformanceCounterDescriptionKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDevicePointClippingPropertiesKHR));
-        case VK_STRUCTURE_TYPE_RENDER_PASS_INPUT_ATTACHMENT_ASPECT_CREATE_INFO_KHR:
-            return malloc(sizeof(VkRenderPassInputAttachmentAspectCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_IMAGE_VIEW_USAGE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkImageViewUsageCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_DOMAIN_ORIGIN_STATE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkPipelineTessellationDomainOriginStateCreateInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SURFACE_INFO_2_KHR:
             return malloc(sizeof(VkPhysicalDeviceSurfaceInfo2KHR));
         case VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_2_KHR:
             return malloc(sizeof(VkSurfaceCapabilities2KHR));
         case VK_STRUCTURE_TYPE_SURFACE_FORMAT_2_KHR:
             return malloc(sizeof(VkSurfaceFormat2KHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceVariablePointersFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceVariablePointerFeaturesKHR));
         case VK_STRUCTURE_TYPE_DISPLAY_PROPERTIES_2_KHR:
             return malloc(sizeof(VkDisplayProperties2KHR));
         case VK_STRUCTURE_TYPE_DISPLAY_PLANE_PROPERTIES_2_KHR:
@@ -440,14 +324,6 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkDisplayPlaneInfo2KHR));
         case VK_STRUCTURE_TYPE_DISPLAY_PLANE_CAPABILITIES_2_KHR:
             return malloc(sizeof(VkDisplayPlaneCapabilities2KHR));
-        case VK_STRUCTURE_TYPE_IOS_SURFACE_CREATE_INFO_MVK:
-            return malloc(sizeof(VkIosSurfaceCreateInfoMvk));
-        case VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK:
-            return malloc(sizeof(VkMacosSurfaceCreateInfoMvk));
-        case VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS_KHR:
-            return malloc(sizeof(VkMemoryDedicatedRequirementsKHR));
-        case VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO_KHR:
-            return malloc(sizeof(VkMemoryDedicatedAllocateInfoKHR));
         case VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT:
             return malloc(sizeof(VkDebugUtilsObjectNameInfoEXT));
         case VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT:
@@ -458,34 +334,54 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkDebugUtilsMessengerCallbackDataEXT));
         case VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT:
             return malloc(sizeof(VkDebugUtilsMessengerCreateInfoEXT));
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_USAGE_ANDROID:
-            return malloc(sizeof(VkAndroidHardwareBufferUsageAndroid));
+            return malloc(sizeof(VkAndroidHardwareBufferUsageANDROID));
+#endif
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_PROPERTIES_ANDROID:
-            return malloc(sizeof(VkAndroidHardwareBufferPropertiesAndroid));
+            return malloc(sizeof(VkAndroidHardwareBufferPropertiesANDROID));
+#endif
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_ANDROID:
-            return malloc(sizeof(VkAndroidHardwareBufferFormatPropertiesAndroid));
+            return malloc(sizeof(VkAndroidHardwareBufferFormatPropertiesANDROID));
+#endif
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_IMPORT_ANDROID_HARDWARE_BUFFER_INFO_ANDROID:
-            return malloc(sizeof(VkImportAndroidHardwareBufferInfoAndroid));
+            return malloc(sizeof(VkImportAndroidHardwareBufferInfoANDROID));
+#endif
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_MEMORY_GET_ANDROID_HARDWARE_BUFFER_INFO_ANDROID:
-            return malloc(sizeof(VkMemoryGetAndroidHardwareBufferInfoAndroid));
+            return malloc(sizeof(VkMemoryGetAndroidHardwareBufferInfoANDROID));
+#endif
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_ANDROID:
-            return malloc(sizeof(VkExternalFormatAndroid));
+            return malloc(sizeof(VkExternalFormatANDROID));
+#endif
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_PROPERTIES_2_ANDROID:
-            return malloc(sizeof(VkAndroidHardwareBufferFormatProperties2Android));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT));
-        case VK_STRUCTURE_TYPE_SAMPLER_REDUCTION_MODE_CREATE_INFO_EXT:
-            return malloc(sizeof(VkSamplerReductionModeCreateInfoEXT));
+            return malloc(sizeof(VkAndroidHardwareBufferFormatProperties2ANDROID));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ENQUEUE_FEATURES_AMDX:
-            return malloc(sizeof(VkPhysicalDeviceShaderEnqueueFeaturesAmdx));
+            return malloc(sizeof(VkPhysicalDeviceShaderEnqueueFeaturesAMDX));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ENQUEUE_PROPERTIES_AMDX:
-            return malloc(sizeof(VkPhysicalDeviceShaderEnqueuePropertiesAmdx));
+            return malloc(sizeof(VkPhysicalDeviceShaderEnqueuePropertiesAMDX));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_EXECUTION_GRAPH_PIPELINE_SCRATCH_SIZE_AMDX:
-            return malloc(sizeof(VkExecutionGraphPipelineScratchSizeAmdx));
+            return malloc(sizeof(VkExecutionGraphPipelineScratchSizeAMDX));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_EXECUTION_GRAPH_PIPELINE_CREATE_INFO_AMDX:
-            return malloc(sizeof(VkExecutionGraphPipelineCreateInfoAmdx));
+            return malloc(sizeof(VkExecutionGraphPipelineCreateInfoAMDX));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_NODE_CREATE_INFO_AMDX:
-            return malloc(sizeof(VkPipelineShaderStageNodeCreateInfoAmdx));
+            return malloc(sizeof(VkPipelineShaderStageNodeCreateInfoAMDX));
+#endif
         case VK_STRUCTURE_TYPE_TEXEL_BUFFER_DESCRIPTOR_INFO_EXT:
             return malloc(sizeof(VkTexelBufferDescriptorInfoEXT));
         case VK_STRUCTURE_TYPE_IMAGE_DESCRIPTOR_INFO_EXT:
@@ -508,16 +404,6 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPhysicalDeviceDescriptorHeapFeaturesEXT));
         case VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_DESCRIPTOR_HEAP_INFO_EXT:
             return malloc(sizeof(VkCommandBufferInheritanceDescriptorHeapInfoEXT));
-        case VK_STRUCTURE_TYPE_ATTACHMENT_SAMPLE_COUNT_INFO_AMD:
-            return malloc(sizeof(VkAttachmentSampleCountInfoAmd));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceInlineUniformBlockFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceInlineUniformBlockPropertiesEXT));
-        case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK_EXT:
-            return malloc(sizeof(VkWriteDescriptorSetInlineUniformBlockEXT));
-        case VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_INLINE_UNIFORM_BLOCK_CREATE_INFO_EXT:
-            return malloc(sizeof(VkDescriptorPoolInlineUniformBlockCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_BFLOAT16_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceShaderBfloat16FeaturesKHR));
         case VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT:
@@ -530,18 +416,6 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPhysicalDeviceSampleLocationsPropertiesEXT));
         case VK_STRUCTURE_TYPE_MULTISAMPLE_PROPERTIES_EXT:
             return malloc(sizeof(VkMultisamplePropertiesEXT));
-        case VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2_KHR:
-            return malloc(sizeof(VkBufferMemoryRequirementsInfo2KHR));
-        case VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2_KHR:
-            return malloc(sizeof(VkImageMemoryRequirementsInfo2KHR));
-        case VK_STRUCTURE_TYPE_IMAGE_SPARSE_MEMORY_REQUIREMENTS_INFO_2_KHR:
-            return malloc(sizeof(VkImageSparseMemoryRequirementsInfo2KHR));
-        case VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2_KHR:
-            return malloc(sizeof(VkMemoryRequirements2KHR));
-        case VK_STRUCTURE_TYPE_SPARSE_IMAGE_MEMORY_REQUIREMENTS_2_KHR:
-            return malloc(sizeof(VkSparseImageMemoryRequirements2KHR));
-        case VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO_KHR:
-            return malloc(sizeof(VkImageFormatListCreateInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT:
@@ -549,7 +423,7 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_ADVANCED_STATE_CREATE_INFO_EXT:
             return malloc(sizeof(VkPipelineColorBlendAdvancedStateCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_TO_COLOR_STATE_CREATE_INFO_NV:
-            return malloc(sizeof(VkPipelineCoverageToColorStateCreateInfoNv));
+            return malloc(sizeof(VkPipelineCoverageToColorStateCreateInfoNV));
         case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR:
             return malloc(sizeof(VkWriteDescriptorSetAccelerationStructureKHR));
         case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR:
@@ -584,38 +458,14 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPhysicalDeviceRayTracingPipelineFeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR:
             return malloc(sizeof(VkPhysicalDeviceRayTracingPipelinePropertiesKHR));
-        case VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkRayTracingPipelineCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR:
-            return malloc(sizeof(VkRayTracingShaderGroupCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_INTERFACE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkRayTracingPipelineInterfaceCreateInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceRayQueryFeaturesKHR));
         case VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_MODULATION_STATE_CREATE_INFO_NV:
-            return malloc(sizeof(VkPipelineCoverageModulationStateCreateInfoNv));
-        case VK_STRUCTURE_TYPE_ATTACHMENT_SAMPLE_COUNT_INFO_NV:
-            return malloc(sizeof(VkAttachmentSampleCountInfoNv));
+            return malloc(sizeof(VkPipelineCoverageModulationStateCreateInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SM_BUILTINS_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceShaderSmBuiltinsFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceShaderSMBuiltinsFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SM_BUILTINS_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceShaderSmBuiltinsPropertiesNv));
-        case VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_CREATE_INFO_KHR:
-            return malloc(sizeof(VkSamplerYcbcrConversionCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_INFO_KHR:
-            return malloc(sizeof(VkSamplerYcbcrConversionInfoKHR));
-        case VK_STRUCTURE_TYPE_BIND_IMAGE_PLANE_MEMORY_INFO_KHR:
-            return malloc(sizeof(VkBindImagePlaneMemoryInfoKHR));
-        case VK_STRUCTURE_TYPE_IMAGE_PLANE_MEMORY_REQUIREMENTS_INFO_KHR:
-            return malloc(sizeof(VkImagePlaneMemoryRequirementsInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR));
-        case VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_IMAGE_FORMAT_PROPERTIES_KHR:
-            return malloc(sizeof(VkSamplerYcbcrConversionImageFormatPropertiesKHR));
-        case VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO_KHR:
-            return malloc(sizeof(VkBindBufferMemoryInfoKHR));
-        case VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO_KHR:
-            return malloc(sizeof(VkBindImageMemoryInfoKHR));
+            return malloc(sizeof(VkPhysicalDeviceShaderSMBuiltinsPropertiesNV));
         case VK_STRUCTURE_TYPE_DRM_FORMAT_MODIFIER_PROPERTIES_LIST_EXT:
             return malloc(sizeof(VkDrmFormatModifierPropertiesListEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_DRM_FORMAT_MODIFIER_INFO_EXT:
@@ -632,86 +482,44 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkValidationCacheCreateInfoEXT));
         case VK_STRUCTURE_TYPE_SHADER_MODULE_VALIDATION_CACHE_CREATE_INFO_EXT:
             return malloc(sizeof(VkShaderModuleValidationCacheCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT:
-            return malloc(sizeof(VkDescriptorSetLayoutBindingFlagsCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceDescriptorIndexingFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceDescriptorIndexingPropertiesEXT));
-        case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO_EXT:
-            return malloc(sizeof(VkDescriptorSetVariableDescriptorCountAllocateInfoEXT));
-        case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_LAYOUT_SUPPORT_EXT:
-            return malloc(sizeof(VkDescriptorSetVariableDescriptorCountLayoutSupportEXT));
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDevicePortabilitySubsetFeaturesKHR));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_PROPERTIES_KHR:
             return malloc(sizeof(VkPhysicalDevicePortabilitySubsetPropertiesKHR));
+#endif
         case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_SHADING_RATE_IMAGE_STATE_CREATE_INFO_NV:
-            return malloc(sizeof(VkPipelineViewportShadingRateImageStateCreateInfoNv));
+            return malloc(sizeof(VkPipelineViewportShadingRateImageStateCreateInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceShadingRateImageFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceShadingRateImageFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceShadingRateImagePropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceShadingRateImagePropertiesNV));
         case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_COARSE_SAMPLE_ORDER_STATE_CREATE_INFO_NV:
-            return malloc(sizeof(VkPipelineViewportCoarseSampleOrderStateCreateInfoNv));
-        case VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_NV:
-            return malloc(sizeof(VkRayTracingPipelineCreateInfoNv));
-        case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_NV:
-            return malloc(sizeof(VkAccelerationStructureCreateInfoNv));
-        case VK_STRUCTURE_TYPE_GEOMETRY_NV:
-            return malloc(sizeof(VkGeometryNv));
-        case VK_STRUCTURE_TYPE_GEOMETRY_TRIANGLES_NV:
-            return malloc(sizeof(VkGeometryTrianglesNv));
-        case VK_STRUCTURE_TYPE_GEOMETRY_AABB_NV:
-            return malloc(sizeof(VkGeometryAabbNv));
-        case VK_STRUCTURE_TYPE_BIND_ACCELERATION_STRUCTURE_MEMORY_INFO_NV:
-            return malloc(sizeof(VkBindAccelerationStructureMemoryInfoNv));
-        case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_NV:
-            return malloc(sizeof(VkWriteDescriptorSetAccelerationStructureNv));
-        case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MEMORY_REQUIREMENTS_INFO_NV:
-            return malloc(sizeof(VkAccelerationStructureMemoryRequirementsInfoNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceRayTracingPropertiesNv));
-        case VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_NV:
-            return malloc(sizeof(VkRayTracingShaderGroupCreateInfoNv));
-        case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_INFO_NV:
-            return malloc(sizeof(VkAccelerationStructureInfoNv));
+            return malloc(sizeof(VkPipelineViewportCoarseSampleOrderStateCreateInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_REPRESENTATIVE_FRAGMENT_TEST_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceRepresentativeFragmentTestFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceRepresentativeFragmentTestFeaturesNV));
         case VK_STRUCTURE_TYPE_PIPELINE_REPRESENTATIVE_FRAGMENT_TEST_STATE_CREATE_INFO_NV:
-            return malloc(sizeof(VkPipelineRepresentativeFragmentTestStateCreateInfoNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceMaintenance3PropertiesKHR));
-        case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT_KHR:
-            return malloc(sizeof(VkDescriptorSetLayoutSupportKHR));
+            return malloc(sizeof(VkPipelineRepresentativeFragmentTestStateCreateInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_VIEW_IMAGE_FORMAT_INFO_EXT:
             return malloc(sizeof(VkPhysicalDeviceImageViewImageFormatInfoEXT));
         case VK_STRUCTURE_TYPE_FILTER_CUBIC_IMAGE_VIEW_IMAGE_FORMAT_PROPERTIES_EXT:
             return malloc(sizeof(VkFilterCubicImageViewImageFormatPropertiesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_CONVERSION_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceCooperativeMatrixConversionFeaturesQcom));
-        case VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_EXT:
-            return malloc(sizeof(VkDeviceQueueGlobalPriorityCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_EXTENDED_TYPES_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceShaderSubgroupExtendedTypesFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDevice8bitStorageFeaturesKHR));
+            return malloc(sizeof(VkPhysicalDeviceCooperativeMatrixConversionFeaturesQCOM));
         case VK_STRUCTURE_TYPE_IMPORT_MEMORY_HOST_POINTER_INFO_EXT:
             return malloc(sizeof(VkImportMemoryHostPointerInfoEXT));
         case VK_STRUCTURE_TYPE_MEMORY_HOST_POINTER_PROPERTIES_EXT:
             return malloc(sizeof(VkMemoryHostPointerPropertiesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT:
             return malloc(sizeof(VkPhysicalDeviceExternalMemoryHostPropertiesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceShaderAtomicInt64FeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CLOCK_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceShaderClockFeaturesKHR));
         case VK_STRUCTURE_TYPE_PIPELINE_COMPILER_CONTROL_CREATE_INFO_AMD:
-            return malloc(sizeof(VkPipelineCompilerControlCreateInfoAmd));
-        case VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT:
-            return malloc(sizeof(VkCalibratedTimestampInfoEXT));
+            return malloc(sizeof(VkPipelineCompilerControlCreateInfoAMD));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD:
-            return malloc(sizeof(VkPhysicalDeviceShaderCorePropertiesAmd));
+            return malloc(sizeof(VkPhysicalDeviceShaderCorePropertiesAMD));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_CAPABILITIES_KHR:
             return malloc(sizeof(VkVideoDecodeH265CapabilitiesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_SESSION_PARAMETERS_CREATE_INFO_KHR:
@@ -724,62 +532,28 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkVideoDecodeH265PictureInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_DPB_SLOT_INFO_KHR:
             return malloc(sizeof(VkVideoDecodeH265DpbSlotInfoKHR));
-        case VK_STRUCTURE_TYPE_DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_KHR:
-            return malloc(sizeof(VkDeviceQueueGlobalPriorityCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GLOBAL_PRIORITY_QUERY_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceGlobalPriorityQueryFeaturesKHR));
-        case VK_STRUCTURE_TYPE_QUEUE_FAMILY_GLOBAL_PRIORITY_PROPERTIES_KHR:
-            return malloc(sizeof(VkQueueFamilyGlobalPriorityPropertiesKHR));
         case VK_STRUCTURE_TYPE_DEVICE_MEMORY_OVERALLOCATION_CREATE_INFO_AMD:
-            return malloc(sizeof(VkDeviceMemoryOverallocationCreateInfoAmd));
+            return malloc(sizeof(VkDeviceMemoryOverallocationCreateInfoAMD));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT:
             return malloc(sizeof(VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT));
-        case VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT:
-            return malloc(sizeof(VkPipelineVertexInputDivisorStateCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT));
+#ifdef VK_USE_PLATFORM_GGP
         case VK_STRUCTURE_TYPE_PRESENT_FRAME_TOKEN_GGP:
-            return malloc(sizeof(VkPresentFrameTokenGgp));
-        case VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO_EXT:
-            return malloc(sizeof(VkPipelineCreationFeedbackCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceDriverPropertiesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceFloatControlsPropertiesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_STENCIL_RESOLVE_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceDepthStencilResolvePropertiesKHR));
-        case VK_STRUCTURE_TYPE_SUBPASS_DESCRIPTION_DEPTH_STENCIL_RESOLVE_KHR:
-            return malloc(sizeof(VkSubpassDescriptionDepthStencilResolveKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceComputeShaderDerivativesFeaturesNv));
+            return malloc(sizeof(VkPresentFrameTokenGGP));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceMeshShaderFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceMeshShaderFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceMeshShaderPropertiesNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceFragmentShaderBarycentricFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceMeshShaderPropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceShaderImageFootprintFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceShaderImageFootprintFeaturesNV));
         case VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV:
-            return malloc(sizeof(VkPipelineViewportExclusiveScissorStateCreateInfoNv));
+            return malloc(sizeof(VkPipelineViewportExclusiveScissorStateCreateInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXCLUSIVE_SCISSOR_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceExclusiveScissorFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceExclusiveScissorFeaturesNV));
         case VK_STRUCTURE_TYPE_CHECKPOINT_DATA_NV:
-            return malloc(sizeof(VkCheckpointDataNv));
+            return malloc(sizeof(VkCheckpointDataNV));
         case VK_STRUCTURE_TYPE_QUEUE_FAMILY_CHECKPOINT_PROPERTIES_NV:
-            return malloc(sizeof(VkQueueFamilyCheckpointPropertiesNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceTimelineSemaphoreFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceTimelineSemaphorePropertiesKHR));
-        case VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkSemaphoreTypeCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO_KHR:
-            return malloc(sizeof(VkTimelineSemaphoreSubmitInfoKHR));
-        case VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO_KHR:
-            return malloc(sizeof(VkSemaphoreWaitInfoKHR));
-        case VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO_KHR:
-            return malloc(sizeof(VkSemaphoreSignalInfoKHR));
+            return malloc(sizeof(VkQueueFamilyCheckpointPropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_TIMING_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDevicePresentTimingFeaturesEXT));
         case VK_STRUCTURE_TYPE_SWAPCHAIN_TIMING_PROPERTIES_EXT:
@@ -801,51 +575,39 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_SWAPCHAIN_CALIBRATED_TIMESTAMP_INFO_EXT:
             return malloc(sizeof(VkSwapchainCalibratedTimestampInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_FUNCTIONS_2_FEATURES_INTEL:
-            return malloc(sizeof(VkPhysicalDeviceShaderIntegerFunctions2FeaturesIntel));
+            return malloc(sizeof(VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL));
         case VK_STRUCTURE_TYPE_QUERY_POOL_PERFORMANCE_QUERY_CREATE_INFO_INTEL:
-            return malloc(sizeof(VkQueryPoolPerformanceQueryCreateInfoIntel));
-        case VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO_INTEL:
-            return malloc(sizeof(VkQueryPoolCreateInfoIntel));
+            return malloc(sizeof(VkQueryPoolPerformanceQueryCreateInfoINTEL));
         case VK_STRUCTURE_TYPE_INITIALIZE_PERFORMANCE_API_INFO_INTEL:
-            return malloc(sizeof(VkInitializePerformanceApiInfoIntel));
+            return malloc(sizeof(VkInitializePerformanceApiInfoINTEL));
         case VK_STRUCTURE_TYPE_PERFORMANCE_MARKER_INFO_INTEL:
-            return malloc(sizeof(VkPerformanceMarkerInfoIntel));
+            return malloc(sizeof(VkPerformanceMarkerInfoINTEL));
         case VK_STRUCTURE_TYPE_PERFORMANCE_STREAM_MARKER_INFO_INTEL:
-            return malloc(sizeof(VkPerformanceStreamMarkerInfoIntel));
+            return malloc(sizeof(VkPerformanceStreamMarkerInfoINTEL));
         case VK_STRUCTURE_TYPE_PERFORMANCE_OVERRIDE_INFO_INTEL:
-            return malloc(sizeof(VkPerformanceOverrideInfoIntel));
+            return malloc(sizeof(VkPerformanceOverrideInfoINTEL));
         case VK_STRUCTURE_TYPE_PERFORMANCE_CONFIGURATION_ACQUIRE_INFO_INTEL:
-            return malloc(sizeof(VkPerformanceConfigurationAcquireInfoIntel));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceVulkanMemoryModelFeaturesKHR));
+            return malloc(sizeof(VkPerformanceConfigurationAcquireInfoINTEL));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDevicePciBusInfoPropertiesEXT));
+            return malloc(sizeof(VkPhysicalDevicePCIBusInfoPropertiesEXT));
         case VK_STRUCTURE_TYPE_DISPLAY_NATIVE_HDR_SURFACE_CAPABILITIES_AMD:
-            return malloc(sizeof(VkDisplayNativeHdrSurfaceCapabilitiesAmd));
+            return malloc(sizeof(VkDisplayNativeHdrSurfaceCapabilitiesAMD));
         case VK_STRUCTURE_TYPE_SWAPCHAIN_DISPLAY_NATIVE_HDR_CREATE_INFO_AMD:
-            return malloc(sizeof(VkSwapchainDisplayNativeHdrCreateInfoAmd));
+            return malloc(sizeof(VkSwapchainDisplayNativeHdrCreateInfoAMD));
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_IMAGEPIPE_SURFACE_CREATE_INFO_FUCHSIA:
-            return malloc(sizeof(VkImagepipeSurfaceCreateInfoFuchsia));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TERMINATE_INVOCATION_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceShaderTerminateInvocationFeaturesKHR));
+            return malloc(sizeof(VkImagePipeSurfaceCreateInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT:
             return malloc(sizeof(VkMetalSurfaceCreateInfoEXT));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceFragmentDensityMapFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT:
             return malloc(sizeof(VkPhysicalDeviceFragmentDensityMapPropertiesEXT));
         case VK_STRUCTURE_TYPE_RENDER_PASS_FRAGMENT_DENSITY_MAP_CREATE_INFO_EXT:
             return malloc(sizeof(VkRenderPassFragmentDensityMapCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_RENDERING_FRAGMENT_DENSITY_MAP_ATTACHMENT_INFO_EXT:
-            return malloc(sizeof(VkRenderingFragmentDensityMapAttachmentInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceScalarBlockLayoutFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceSubgroupSizeControlPropertiesEXT));
-        case VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO_EXT:
-            return malloc(sizeof(VkPipelineShaderStageRequiredSubgroupSizeCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceSubgroupSizeControlFeaturesEXT));
         case VK_STRUCTURE_TYPE_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR:
             return malloc(sizeof(VkFragmentShadingRateAttachmentInfoKHR));
         case VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_STATE_CREATE_INFO_KHR:
@@ -856,20 +618,12 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPhysicalDeviceFragmentShadingRateFeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_KHR:
             return malloc(sizeof(VkPhysicalDeviceFragmentShadingRateKHR));
-        case VK_STRUCTURE_TYPE_RENDERING_FRAGMENT_SHADING_RATE_ATTACHMENT_INFO_KHR:
-            return malloc(sizeof(VkRenderingFragmentShadingRateAttachmentInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_2_AMD:
-            return malloc(sizeof(VkPhysicalDeviceShaderCoreProperties2Amd));
+            return malloc(sizeof(VkPhysicalDeviceShaderCoreProperties2AMD));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COHERENT_MEMORY_FEATURES_AMD:
-            return malloc(sizeof(VkPhysicalDeviceCoherentMemoryFeaturesAmd));
+            return malloc(sizeof(VkPhysicalDeviceCoherentMemoryFeaturesAMD));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CONSTANT_DATA_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceShaderConstantDataFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_LOCAL_READ_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR));
-        case VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_LOCATION_INFO_KHR:
-            return malloc(sizeof(VkRenderingAttachmentLocationInfoKHR));
-        case VK_STRUCTURE_TYPE_RENDERING_INPUT_ATTACHMENT_INDEX_INFO_KHR:
-            return malloc(sizeof(VkRenderingInputAttachmentIndexInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ABORT_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceShaderAbortFeaturesKHR));
         case VK_STRUCTURE_TYPE_DEVICE_FAULT_SHADER_ABORT_MESSAGE_INFO_KHR:
@@ -889,81 +643,43 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_SURFACE_PROTECTED_CAPABILITIES_KHR:
             return malloc(sizeof(VkSurfaceProtectedCapabilitiesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEDICATED_ALLOCATION_IMAGE_ALIASING_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SEPARATE_DEPTH_STENCIL_LAYOUTS_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR));
-        case VK_STRUCTURE_TYPE_ATTACHMENT_REFERENCE_STENCIL_LAYOUT_KHR:
-            return malloc(sizeof(VkAttachmentReferenceStencilLayoutKHR));
-        case VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_STENCIL_LAYOUT_KHR:
-            return malloc(sizeof(VkAttachmentDescriptionStencilLayoutKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceBufferDeviceAddressFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_ADDRESS_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceBufferAddressFeaturesEXT));
-        case VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO_EXT:
-            return malloc(sizeof(VkBufferDeviceAddressInfoEXT));
-        case VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_CREATE_INFO_EXT:
-            return malloc(sizeof(VkBufferDeviceAddressCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TOOL_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceToolPropertiesEXT));
-        case VK_STRUCTURE_TYPE_IMAGE_STENCIL_USAGE_CREATE_INFO_EXT:
-            return malloc(sizeof(VkImageStencilUsageCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT:
-            return malloc(sizeof(VkValidationFeaturesEXT));
+            return malloc(sizeof(VkPhysicalDeviceDedicatedAllocationImageAliasingFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_WAIT_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDevicePresentWaitFeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCooperativeMatrixFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceCooperativeMatrixFeaturesNV));
         case VK_STRUCTURE_TYPE_COOPERATIVE_MATRIX_PROPERTIES_NV:
-            return malloc(sizeof(VkCooperativeMatrixPropertiesNv));
+            return malloc(sizeof(VkCooperativeMatrixPropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCooperativeMatrixPropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceCooperativeMatrixPropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COVERAGE_REDUCTION_MODE_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCoverageReductionModeFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceCoverageReductionModeFeaturesNV));
         case VK_STRUCTURE_TYPE_PIPELINE_COVERAGE_REDUCTION_STATE_CREATE_INFO_NV:
-            return malloc(sizeof(VkPipelineCoverageReductionStateCreateInfoNv));
+            return malloc(sizeof(VkPipelineCoverageReductionStateCreateInfoNV));
         case VK_STRUCTURE_TYPE_FRAMEBUFFER_MIXED_SAMPLES_COMBINATION_NV:
-            return malloc(sizeof(VkFramebufferMixedSamplesCombinationNv));
+            return malloc(sizeof(VkFramebufferMixedSamplesCombinationNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_INTERLOCK_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_YCBCR_IMAGE_ARRAYS_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceYcbcrImageArraysFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_UNIFORM_BUFFER_STANDARD_LAYOUT_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceUniformBufferStandardLayoutFeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROVOKING_VERTEX_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceProvokingVertexFeaturesEXT));
         case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_PROVOKING_VERTEX_STATE_CREATE_INFO_EXT:
             return malloc(sizeof(VkPipelineRasterizationProvokingVertexStateCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROVOKING_VERTEX_PROPERTIES_EXT:
             return malloc(sizeof(VkPhysicalDeviceProvokingVertexPropertiesEXT));
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_SURFACE_FULL_SCREEN_EXCLUSIVE_INFO_EXT:
             return malloc(sizeof(VkSurfaceFullScreenExclusiveInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_WIN32_KHR
         case VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_FULL_SCREEN_EXCLUSIVE_EXT:
             return malloc(sizeof(VkSurfaceCapabilitiesFullScreenExclusiveEXT));
+#endif
         case VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT:
             return malloc(sizeof(VkHeadlessSurfaceCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceBufferDeviceAddressFeaturesKHR));
-        case VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO_KHR:
-            return malloc(sizeof(VkBufferDeviceAddressInfoKHR));
-        case VK_STRUCTURE_TYPE_BUFFER_OPAQUE_CAPTURE_ADDRESS_CREATE_INFO_KHR:
-            return malloc(sizeof(VkBufferOpaqueCaptureAddressCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_MEMORY_OPAQUE_CAPTURE_ADDRESS_ALLOCATE_INFO_KHR:
-            return malloc(sizeof(VkMemoryOpaqueCaptureAddressAllocateInfoKHR));
-        case VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO_KHR:
-            return malloc(sizeof(VkDeviceMemoryOpaqueCaptureAddressInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINE_RASTERIZATION_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceLineRasterizationFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_LINE_STATE_CREATE_INFO_EXT:
-            return malloc(sizeof(VkPipelineRasterizationLineStateCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINE_RASTERIZATION_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceLineRasterizationPropertiesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShaderAtomicFloatFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_QUERY_RESET_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceHostQueryResetFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceIndexTypeUint8FeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceExtendedDynamicStateFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_EXECUTABLE_PROPERTIES_FEATURES_KHR:
@@ -978,30 +694,6 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPipelineExecutableStatisticKHR));
         case VK_STRUCTURE_TYPE_PIPELINE_EXECUTABLE_INTERNAL_REPRESENTATION_KHR:
             return malloc(sizeof(VkPipelineExecutableInternalRepresentationKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_IMAGE_COPY_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceHostImageCopyFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_IMAGE_COPY_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceHostImageCopyPropertiesEXT));
-        case VK_STRUCTURE_TYPE_MEMORY_TO_IMAGE_COPY_EXT:
-            return malloc(sizeof(VkMemoryToImageCopyEXT));
-        case VK_STRUCTURE_TYPE_IMAGE_TO_MEMORY_COPY_EXT:
-            return malloc(sizeof(VkImageToMemoryCopyEXT));
-        case VK_STRUCTURE_TYPE_COPY_IMAGE_TO_MEMORY_INFO_EXT:
-            return malloc(sizeof(VkCopyImageToMemoryInfoEXT));
-        case VK_STRUCTURE_TYPE_COPY_MEMORY_TO_IMAGE_INFO_EXT:
-            return malloc(sizeof(VkCopyMemoryToImageInfoEXT));
-        case VK_STRUCTURE_TYPE_HOST_IMAGE_LAYOUT_TRANSITION_INFO_EXT:
-            return malloc(sizeof(VkHostImageLayoutTransitionInfoEXT));
-        case VK_STRUCTURE_TYPE_COPY_IMAGE_TO_IMAGE_INFO_EXT:
-            return malloc(sizeof(VkCopyImageToImageInfoEXT));
-        case VK_STRUCTURE_TYPE_SUBRESOURCE_HOST_MEMCPY_SIZE_EXT:
-            return malloc(sizeof(VkSubresourceHostMemcpySizeEXT));
-        case VK_STRUCTURE_TYPE_HOST_IMAGE_COPY_DEVICE_PERFORMANCE_QUERY_EXT:
-            return malloc(sizeof(VkHostImageCopyDevicePerformanceQueryEXT));
-        case VK_STRUCTURE_TYPE_MEMORY_MAP_INFO_KHR:
-            return malloc(sizeof(VkMemoryMapInfoKHR));
-        case VK_STRUCTURE_TYPE_MEMORY_UNMAP_INFO_KHR:
-            return malloc(sizeof(VkMemoryUnmapInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAP_MEMORY_PLACED_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceMapMemoryPlacedFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAP_MEMORY_PLACED_PROPERTIES_EXT:
@@ -1010,58 +702,32 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkMemoryMapPlacedInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT_2_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT));
-        case VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_EXT:
-            return malloc(sizeof(VkSurfacePresentModeEXT));
-        case VK_STRUCTURE_TYPE_SURFACE_PRESENT_SCALING_CAPABILITIES_EXT:
-            return malloc(sizeof(VkSurfacePresentScalingCapabilitiesEXT));
-        case VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_COMPATIBILITY_EXT:
-            return malloc(sizeof(VkSurfacePresentModeCompatibilityEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT));
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_EXT:
-            return malloc(sizeof(VkSwapchainPresentFenceInfoEXT));
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_EXT:
-            return malloc(sizeof(VkSwapchainPresentModesCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_EXT:
-            return malloc(sizeof(VkSwapchainPresentModeInfoEXT));
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_EXT:
-            return malloc(sizeof(VkSwapchainPresentScalingCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_RELEASE_SWAPCHAIN_IMAGES_INFO_EXT:
-            return malloc(sizeof(VkReleaseSwapchainImagesInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DEMOTE_TO_HELPER_INVOCATION_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV));
         case VK_STRUCTURE_TYPE_GRAPHICS_SHADER_GROUP_CREATE_INFO_NV:
-            return malloc(sizeof(VkGraphicsShaderGroupCreateInfoNv));
+            return malloc(sizeof(VkGraphicsShaderGroupCreateInfoNV));
         case VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_SHADER_GROUPS_CREATE_INFO_NV:
-            return malloc(sizeof(VkGraphicsPipelineShaderGroupsCreateInfoNv));
+            return malloc(sizeof(VkGraphicsPipelineShaderGroupsCreateInfoNV));
         case VK_STRUCTURE_TYPE_INDIRECT_COMMANDS_LAYOUT_TOKEN_NV:
-            return malloc(sizeof(VkIndirectCommandsLayoutTokenNv));
+            return malloc(sizeof(VkIndirectCommandsLayoutTokenNV));
         case VK_STRUCTURE_TYPE_INDIRECT_COMMANDS_LAYOUT_CREATE_INFO_NV:
-            return malloc(sizeof(VkIndirectCommandsLayoutCreateInfoNv));
+            return malloc(sizeof(VkIndirectCommandsLayoutCreateInfoNV));
         case VK_STRUCTURE_TYPE_GENERATED_COMMANDS_INFO_NV:
-            return malloc(sizeof(VkGeneratedCommandsInfoNv));
+            return malloc(sizeof(VkGeneratedCommandsInfoNV));
         case VK_STRUCTURE_TYPE_GENERATED_COMMANDS_MEMORY_REQUIREMENTS_INFO_NV:
-            return malloc(sizeof(VkGeneratedCommandsMemoryRequirementsInfoNv));
+            return malloc(sizeof(VkGeneratedCommandsMemoryRequirementsInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INHERITED_VIEWPORT_SCISSOR_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceInheritedViewportScissorFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceInheritedViewportScissorFeaturesNV));
         case VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_VIEWPORT_SCISSOR_INFO_NV:
-            return malloc(sizeof(VkCommandBufferInheritanceViewportScissorInfoNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceShaderIntegerDotProductFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceShaderIntegerDotProductPropertiesKHR));
+            return malloc(sizeof(VkCommandBufferInheritanceViewportScissorInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceTexelBufferAlignmentFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT));
         case VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDER_PASS_TRANSFORM_INFO_QCOM:
-            return malloc(sizeof(VkCommandBufferInheritanceRenderPassTransformInfoQcom));
+            return malloc(sizeof(VkCommandBufferInheritanceRenderPassTransformInfoQCOM));
         case VK_STRUCTURE_TYPE_RENDER_PASS_TRANSFORM_BEGIN_INFO_QCOM:
-            return malloc(sizeof(VkRenderPassTransformBeginInfoQcom));
+            return malloc(sizeof(VkRenderPassTransformBeginInfoQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_BIAS_CONTROL_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceDepthBiasControlFeaturesEXT));
         case VK_STRUCTURE_TYPE_DEPTH_BIAS_INFO_EXT:
@@ -1074,10 +740,6 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkDeviceDeviceMemoryReportCreateInfoEXT));
         case VK_STRUCTURE_TYPE_DEVICE_MEMORY_REPORT_CALLBACK_DATA_EXT:
             return malloc(sizeof(VkDeviceMemoryReportCallbackDataEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceRobustness2FeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceRobustness2PropertiesEXT));
         case VK_STRUCTURE_TYPE_SAMPLER_CUSTOM_BORDER_COLOR_CREATE_INFO_EXT:
             return malloc(sizeof(VkSamplerCustomBorderColorCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUSTOM_BORDER_COLOR_PROPERTIES_EXT:
@@ -1085,27 +747,19 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUSTOM_BORDER_COLOR_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceCustomBorderColorFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXTURE_COMPRESSION_ASTC_3D_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceTextureCompressionAstc3dFeaturesEXT));
+            return malloc(sizeof(VkPhysicalDeviceTextureCompressionASTC3DFeaturesEXT));
         case VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR:
             return malloc(sizeof(VkPipelineLibraryCreateInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_BARRIER_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDevicePresentBarrierFeaturesNv));
+            return malloc(sizeof(VkPhysicalDevicePresentBarrierFeaturesNV));
         case VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_PRESENT_BARRIER_NV:
-            return malloc(sizeof(VkSurfaceCapabilitiesPresentBarrierNv));
+            return malloc(sizeof(VkSurfaceCapabilitiesPresentBarrierNV));
         case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_BARRIER_CREATE_INFO_NV:
-            return malloc(sizeof(VkSwapchainPresentBarrierCreateInfoNv));
+            return malloc(sizeof(VkSwapchainPresentBarrierCreateInfoNV));
         case VK_STRUCTURE_TYPE_PRESENT_ID_KHR:
             return malloc(sizeof(VkPresentIdKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_ID_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDevicePresentIdFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIVATE_DATA_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDevicePrivateDataFeaturesEXT));
-        case VK_STRUCTURE_TYPE_DEVICE_PRIVATE_DATA_CREATE_INFO_EXT:
-            return malloc(sizeof(VkDevicePrivateDataCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PRIVATE_DATA_SLOT_CREATE_INFO_EXT:
-            return malloc(sizeof(VkPrivateDataSlotCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_CREATION_CACHE_CONTROL_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDevicePipelineCreationCacheControlFeaturesEXT));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_INFO_KHR:
             return malloc(sizeof(VkVideoEncodeInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_RATE_CONTROL_INFO_KHR:
@@ -1129,105 +783,97 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_SESSION_PARAMETERS_FEEDBACK_INFO_KHR:
             return malloc(sizeof(VkVideoEncodeSessionParametersFeedbackInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DIAGNOSTICS_CONFIG_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceDiagnosticsConfigFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceDiagnosticsConfigFeaturesNV));
         case VK_STRUCTURE_TYPE_DEVICE_DIAGNOSTICS_CONFIG_CREATE_INFO_NV:
-            return malloc(sizeof(VkDeviceDiagnosticsConfigCreateInfoNv));
+            return malloc(sizeof(VkDeviceDiagnosticsConfigCreateInfoNV));
         case VK_STRUCTURE_TYPE_PERF_HINT_INFO_QCOM:
-            return malloc(sizeof(VkPerfHintInfoQcom));
+            return malloc(sizeof(VkPerfHintInfoQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_QUEUE_PERF_HINT_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceQueuePerfHintFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceQueuePerfHintFeaturesQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_QUEUE_PERF_HINT_PROPERTIES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceQueuePerfHintPropertiesQcom));
+            return malloc(sizeof(VkPhysicalDeviceQueuePerfHintPropertiesQCOM));
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_CUDA_MODULE_CREATE_INFO_NV:
-            return malloc(sizeof(VkCudaModuleCreateInfoNv));
+            return malloc(sizeof(VkCudaModuleCreateInfoNV));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_CUDA_FUNCTION_CREATE_INFO_NV:
-            return malloc(sizeof(VkCudaFunctionCreateInfoNv));
+            return malloc(sizeof(VkCudaFunctionCreateInfoNV));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_CUDA_LAUNCH_INFO_NV:
-            return malloc(sizeof(VkCudaLaunchInfoNv));
+            return malloc(sizeof(VkCudaLaunchInfoNV));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUDA_KERNEL_LAUNCH_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCudaKernelLaunchFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceCudaKernelLaunchFeaturesNV));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUDA_KERNEL_LAUNCH_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCudaKernelLaunchPropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceCudaKernelLaunchPropertiesNV));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TILE_SHADING_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceTileShadingFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceTileShadingFeaturesQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TILE_SHADING_PROPERTIES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceTileShadingPropertiesQcom));
+            return malloc(sizeof(VkPhysicalDeviceTileShadingPropertiesQCOM));
         case VK_STRUCTURE_TYPE_RENDER_PASS_TILE_SHADING_CREATE_INFO_QCOM:
-            return malloc(sizeof(VkRenderPassTileShadingCreateInfoQcom));
+            return malloc(sizeof(VkRenderPassTileShadingCreateInfoQCOM));
         case VK_STRUCTURE_TYPE_PER_TILE_BEGIN_INFO_QCOM:
-            return malloc(sizeof(VkPerTileBeginInfoQcom));
+            return malloc(sizeof(VkPerTileBeginInfoQCOM));
         case VK_STRUCTURE_TYPE_PER_TILE_END_INFO_QCOM:
-            return malloc(sizeof(VkPerTileEndInfoQcom));
+            return malloc(sizeof(VkPerTileEndInfoQCOM));
         case VK_STRUCTURE_TYPE_DISPATCH_TILE_INFO_QCOM:
-            return malloc(sizeof(VkDispatchTileInfoQcom));
+            return malloc(sizeof(VkDispatchTileInfoQCOM));
         case VK_STRUCTURE_TYPE_QUERY_LOW_LATENCY_SUPPORT_NV:
-            return malloc(sizeof(VkQueryLowLatencySupportNv));
+            return malloc(sizeof(VkQueryLowLatencySupportNV));
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT:
             return malloc(sizeof(VkExportMetalObjectCreateInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECTS_INFO_EXT:
             return malloc(sizeof(VkExportMetalObjectsInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_EXPORT_METAL_DEVICE_INFO_EXT:
             return malloc(sizeof(VkExportMetalDeviceInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_EXPORT_METAL_COMMAND_QUEUE_INFO_EXT:
             return malloc(sizeof(VkExportMetalCommandQueueInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_EXPORT_METAL_BUFFER_INFO_EXT:
             return malloc(sizeof(VkExportMetalBufferInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_IMPORT_METAL_BUFFER_INFO_EXT:
             return malloc(sizeof(VkImportMetalBufferInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_EXPORT_METAL_TEXTURE_INFO_EXT:
             return malloc(sizeof(VkExportMetalTextureInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_IMPORT_METAL_TEXTURE_INFO_EXT:
             return malloc(sizeof(VkImportMetalTextureInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_EXPORT_METAL_IO_SURFACE_INFO_EXT:
-            return malloc(sizeof(VkExportMetalIoSurfaceInfoEXT));
+            return malloc(sizeof(VkExportMetalIOSurfaceInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_IMPORT_METAL_IO_SURFACE_INFO_EXT:
-            return malloc(sizeof(VkImportMetalIoSurfaceInfoEXT));
+            return malloc(sizeof(VkImportMetalIOSurfaceInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_EXPORT_METAL_SHARED_EVENT_INFO_EXT:
             return malloc(sizeof(VkExportMetalSharedEventInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_IMPORT_METAL_SHARED_EVENT_INFO_EXT:
             return malloc(sizeof(VkImportMetalSharedEventInfoEXT));
-        case VK_STRUCTURE_TYPE_MEMORY_BARRIER_2_KHR:
-            return malloc(sizeof(VkMemoryBarrier2KHR));
-        case VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2_KHR:
-            return malloc(sizeof(VkBufferMemoryBarrier2KHR));
-        case VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2_KHR:
-            return malloc(sizeof(VkImageMemoryBarrier2KHR));
-        case VK_STRUCTURE_TYPE_DEPENDENCY_INFO_KHR:
-            return malloc(sizeof(VkDependencyInfoKHR));
-        case VK_STRUCTURE_TYPE_SUBMIT_INFO_2_KHR:
-            return malloc(sizeof(VkSubmitInfo2KHR));
-        case VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO_KHR:
-            return malloc(sizeof(VkSemaphoreSubmitInfoKHR));
-        case VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO_KHR:
-            return malloc(sizeof(VkCommandBufferSubmitInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceSynchronization2FeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceDescriptorBufferPropertiesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_DENSITY_MAP_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceDescriptorBufferDensityMapPropertiesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceDescriptorBufferFeaturesEXT));
-        case VK_STRUCTURE_TYPE_DESCRIPTOR_ADDRESS_INFO_EXT:
-            return malloc(sizeof(VkDescriptorAddressInfoEXT));
-        case VK_STRUCTURE_TYPE_DESCRIPTOR_GET_INFO_EXT:
-            return malloc(sizeof(VkDescriptorGetInfoEXT));
-        case VK_STRUCTURE_TYPE_BUFFER_CAPTURE_DESCRIPTOR_DATA_INFO_EXT:
-            return malloc(sizeof(VkBufferCaptureDescriptorDataInfoEXT));
-        case VK_STRUCTURE_TYPE_IMAGE_CAPTURE_DESCRIPTOR_DATA_INFO_EXT:
-            return malloc(sizeof(VkImageCaptureDescriptorDataInfoEXT));
-        case VK_STRUCTURE_TYPE_IMAGE_VIEW_CAPTURE_DESCRIPTOR_DATA_INFO_EXT:
-            return malloc(sizeof(VkImageViewCaptureDescriptorDataInfoEXT));
-        case VK_STRUCTURE_TYPE_SAMPLER_CAPTURE_DESCRIPTOR_DATA_INFO_EXT:
-            return malloc(sizeof(VkSamplerCaptureDescriptorDataInfoEXT));
-        case VK_STRUCTURE_TYPE_OPAQUE_CAPTURE_DESCRIPTOR_DATA_CREATE_INFO_EXT:
-            return malloc(sizeof(VkOpaqueCaptureDescriptorDataCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT:
-            return malloc(sizeof(VkDescriptorBufferBindingInfoEXT));
-        case VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_PUSH_DESCRIPTOR_BUFFER_HANDLE_EXT:
-            return malloc(sizeof(VkDescriptorBufferBindingPushDescriptorBufferHandleEXT));
-        case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CAPTURE_DESCRIPTOR_DATA_INFO_EXT:
-            return malloc(sizeof(VkAccelerationStructureCaptureDescriptorDataInfoEXT));
+#endif
         case VK_STRUCTURE_TYPE_DEVICE_MEMORY_COPY_KHR:
             return malloc(sizeof(VkDeviceMemoryCopyKHR));
         case VK_STRUCTURE_TYPE_COPY_DEVICE_MEMORY_INFO_KHR:
@@ -1259,27 +905,23 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_LIBRARY_CREATE_INFO_EXT:
             return malloc(sizeof(VkGraphicsPipelineLibraryCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_EARLY_AND_LATE_FRAGMENT_TESTS_FEATURES_AMD:
-            return malloc(sizeof(VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAmd));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR));
+            return malloc(sizeof(VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_PROPERTIES_KHR:
             return malloc(sizeof(VkPhysicalDeviceFragmentShaderBarycentricPropertiesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_UNIFORM_CONTROL_FLOW_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceShaderSubgroupUniformControlFlowFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ZERO_INITIALIZE_WORKGROUP_MEMORY_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceZeroInitializeWorkgroupMemoryFeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_ENUMS_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_ENUMS_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV));
         case VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_ENUM_STATE_CREATE_INFO_NV:
-            return malloc(sizeof(VkPipelineFragmentShadingRateEnumStateCreateInfoNv));
+            return malloc(sizeof(VkPipelineFragmentShadingRateEnumStateCreateInfoNV));
         case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_MOTION_TRIANGLES_DATA_NV:
-            return malloc(sizeof(VkAccelerationStructureGeometryMotionTrianglesDataNv));
+            return malloc(sizeof(VkAccelerationStructureGeometryMotionTrianglesDataNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MOTION_BLUR_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceRayTracingMotionBlurFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceRayTracingMotionBlurFeaturesNV));
         case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_MOTION_INFO_NV:
-            return malloc(sizeof(VkAccelerationStructureMotionInfoNv));
+            return malloc(sizeof(VkAccelerationStructureMotionInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceMeshShaderFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT:
@@ -1291,41 +933,13 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_2_PROPERTIES_EXT:
             return malloc(sizeof(VkPhysicalDeviceFragmentDensityMap2PropertiesEXT));
         case VK_STRUCTURE_TYPE_COPY_COMMAND_TRANSFORM_INFO_QCOM:
-            return malloc(sizeof(VkCopyCommandTransformInfoQcom));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ROBUSTNESS_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceImageRobustnessFeaturesEXT));
+            return malloc(sizeof(VkCopyCommandTransformInfoQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_WORKGROUP_MEMORY_EXPLICIT_LAYOUT_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceWorkgroupMemoryExplicitLayoutFeaturesKHR));
-        case VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2_KHR:
-            return malloc(sizeof(VkCopyBufferInfo2KHR));
-        case VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2_KHR:
-            return malloc(sizeof(VkCopyImageInfo2KHR));
-        case VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2_KHR:
-            return malloc(sizeof(VkCopyBufferToImageInfo2KHR));
-        case VK_STRUCTURE_TYPE_COPY_IMAGE_TO_BUFFER_INFO_2_KHR:
-            return malloc(sizeof(VkCopyImageToBufferInfo2KHR));
-        case VK_STRUCTURE_TYPE_BLIT_IMAGE_INFO_2_KHR:
-            return malloc(sizeof(VkBlitImageInfo2KHR));
-        case VK_STRUCTURE_TYPE_RESOLVE_IMAGE_INFO_2_KHR:
-            return malloc(sizeof(VkResolveImageInfo2KHR));
-        case VK_STRUCTURE_TYPE_BUFFER_COPY_2_KHR:
-            return malloc(sizeof(VkBufferCopy2KHR));
-        case VK_STRUCTURE_TYPE_IMAGE_COPY_2_KHR:
-            return malloc(sizeof(VkImageCopy2KHR));
-        case VK_STRUCTURE_TYPE_IMAGE_BLIT_2_KHR:
-            return malloc(sizeof(VkImageBlit2KHR));
-        case VK_STRUCTURE_TYPE_BUFFER_IMAGE_COPY_2_KHR:
-            return malloc(sizeof(VkBufferImageCopy2KHR));
-        case VK_STRUCTURE_TYPE_IMAGE_RESOLVE_2_KHR:
-            return malloc(sizeof(VkImageResolve2KHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_COMPRESSION_CONTROL_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceImageCompressionControlFeaturesEXT));
         case VK_STRUCTURE_TYPE_IMAGE_COMPRESSION_CONTROL_EXT:
             return malloc(sizeof(VkImageCompressionControlEXT));
-        case VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2_EXT:
-            return malloc(sizeof(VkSubresourceLayout2EXT));
-        case VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2_EXT:
-            return malloc(sizeof(VkImageSubresource2EXT));
         case VK_STRUCTURE_TYPE_IMAGE_COMPRESSION_PROPERTIES_EXT:
             return malloc(sizeof(VkImageCompressionPropertiesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ATTACHMENT_FEEDBACK_LOOP_LAYOUT_FEATURES_EXT:
@@ -1338,16 +952,12 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkDeviceFaultCountsEXT));
         case VK_STRUCTURE_TYPE_DEVICE_FAULT_INFO_EXT:
             return malloc(sizeof(VkDeviceFaultInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesArm));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RGBA10X6_FORMATS_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceRgba10x6FormatsFeaturesEXT));
+            return malloc(sizeof(VkPhysicalDeviceRGBA10X6FormatsFeaturesEXT));
+#ifdef VK_USE_PLATFORM_DIRECTFB_EXT
         case VK_STRUCTURE_TYPE_DIRECTFB_SURFACE_CREATE_INFO_EXT:
-            return malloc(sizeof(VkDirectfbSurfaceCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_VALVE:
-            return malloc(sizeof(VkPhysicalDeviceMutableDescriptorTypeFeaturesValve));
-        case VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_VALVE:
-            return malloc(sizeof(VkMutableDescriptorTypeCreateInfoValve));
+            return malloc(sizeof(VkDirectFBSurfaceCreateInfoEXT));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_INPUT_DYNAMIC_STATE_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceVertexInputDynamicStateFeaturesEXT));
         case VK_STRUCTURE_TYPE_VERTEX_INPUT_BINDING_DESCRIPTION_2_EXT:
@@ -1366,58 +976,82 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPipelineViewportDepthClipControlCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVE_TOPOLOGY_LIST_RESTART_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT));
-        case VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3_KHR:
-            return malloc(sizeof(VkFormatProperties3KHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_MODE_FIFO_LATEST_READY_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT));
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_IMPORT_MEMORY_ZIRCON_HANDLE_INFO_FUCHSIA:
-            return malloc(sizeof(VkImportMemoryZirconHandleInfoFuchsia));
+            return malloc(sizeof(VkImportMemoryZirconHandleInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_MEMORY_ZIRCON_HANDLE_PROPERTIES_FUCHSIA:
-            return malloc(sizeof(VkMemoryZirconHandlePropertiesFuchsia));
+            return malloc(sizeof(VkMemoryZirconHandlePropertiesFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_MEMORY_GET_ZIRCON_HANDLE_INFO_FUCHSIA:
-            return malloc(sizeof(VkMemoryGetZirconHandleInfoFuchsia));
+            return malloc(sizeof(VkMemoryGetZirconHandleInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_IMPORT_SEMAPHORE_ZIRCON_HANDLE_INFO_FUCHSIA:
-            return malloc(sizeof(VkImportSemaphoreZirconHandleInfoFuchsia));
+            return malloc(sizeof(VkImportSemaphoreZirconHandleInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_SEMAPHORE_GET_ZIRCON_HANDLE_INFO_FUCHSIA:
-            return malloc(sizeof(VkSemaphoreGetZirconHandleInfoFuchsia));
+            return malloc(sizeof(VkSemaphoreGetZirconHandleInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CREATE_INFO_FUCHSIA:
-            return malloc(sizeof(VkBufferCollectionCreateInfoFuchsia));
+            return malloc(sizeof(VkBufferCollectionCreateInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_IMPORT_MEMORY_BUFFER_COLLECTION_FUCHSIA:
-            return malloc(sizeof(VkImportMemoryBufferCollectionFuchsia));
+            return malloc(sizeof(VkImportMemoryBufferCollectionFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_BUFFER_COLLECTION_IMAGE_CREATE_INFO_FUCHSIA:
-            return malloc(sizeof(VkBufferCollectionImageCreateInfoFuchsia));
+            return malloc(sizeof(VkBufferCollectionImageCreateInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_BUFFER_COLLECTION_PROPERTIES_FUCHSIA:
-            return malloc(sizeof(VkBufferCollectionPropertiesFuchsia));
+            return malloc(sizeof(VkBufferCollectionPropertiesFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_BUFFER_CONSTRAINTS_INFO_FUCHSIA:
-            return malloc(sizeof(VkBufferConstraintsInfoFuchsia));
+            return malloc(sizeof(VkBufferConstraintsInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_BUFFER_COLLECTION_BUFFER_CREATE_INFO_FUCHSIA:
-            return malloc(sizeof(VkBufferCollectionBufferCreateInfoFuchsia));
+            return malloc(sizeof(VkBufferCollectionBufferCreateInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_IMAGE_CONSTRAINTS_INFO_FUCHSIA:
-            return malloc(sizeof(VkImageConstraintsInfoFuchsia));
+            return malloc(sizeof(VkImageConstraintsInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_IMAGE_FORMAT_CONSTRAINTS_INFO_FUCHSIA:
-            return malloc(sizeof(VkImageFormatConstraintsInfoFuchsia));
+            return malloc(sizeof(VkImageFormatConstraintsInfoFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_SYSMEM_COLOR_SPACE_FUCHSIA:
-            return malloc(sizeof(VkSysmemColorSpaceFuchsia));
+            return malloc(sizeof(VkSysmemColorSpaceFUCHSIA));
+#endif
+#ifdef VK_USE_PLATFORM_FUCHSIA
         case VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CONSTRAINTS_INFO_FUCHSIA:
-            return malloc(sizeof(VkBufferCollectionConstraintsInfoFuchsia));
+            return malloc(sizeof(VkBufferCollectionConstraintsInfoFUCHSIA));
+#endif
         case VK_STRUCTURE_TYPE_SUBPASS_SHADING_PIPELINE_CREATE_INFO_HUAWEI:
-            return malloc(sizeof(VkSubpassShadingPipelineCreateInfoHuawei));
+            return malloc(sizeof(VkSubpassShadingPipelineCreateInfoHUAWEI));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBPASS_SHADING_FEATURES_HUAWEI:
-            return malloc(sizeof(VkPhysicalDeviceSubpassShadingFeaturesHuawei));
+            return malloc(sizeof(VkPhysicalDeviceSubpassShadingFeaturesHUAWEI));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBPASS_SHADING_PROPERTIES_HUAWEI:
-            return malloc(sizeof(VkPhysicalDeviceSubpassShadingPropertiesHuawei));
+            return malloc(sizeof(VkPhysicalDeviceSubpassShadingPropertiesHUAWEI));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INVOCATION_MASK_FEATURES_HUAWEI:
-            return malloc(sizeof(VkPhysicalDeviceInvocationMaskFeaturesHuawei));
+            return malloc(sizeof(VkPhysicalDeviceInvocationMaskFeaturesHUAWEI));
         case VK_STRUCTURE_TYPE_MEMORY_GET_REMOTE_ADDRESS_INFO_NV:
-            return malloc(sizeof(VkMemoryGetRemoteAddressInfoNv));
+            return malloc(sizeof(VkMemoryGetRemoteAddressInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_RDMA_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceExternalMemoryRdmaFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceExternalMemoryRDMAFeaturesNV));
         case VK_STRUCTURE_TYPE_PIPELINE_PROPERTIES_IDENTIFIER_EXT:
             return malloc(sizeof(VkPipelinePropertiesIdentifierEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROPERTIES_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDevicePipelinePropertiesFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PIPELINE_INFO_EXT:
-            return malloc(sizeof(VkPipelineInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAME_BOUNDARY_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceFrameBoundaryFeaturesEXT));
         case VK_STRUCTURE_TYPE_FRAME_BOUNDARY_EXT:
@@ -1430,8 +1064,10 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkMultisampledRenderToSingleSampledInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_2_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceExtendedDynamicState2FeaturesEXT));
+#ifdef VK_USE_PLATFORM_SCREEN_QNX
         case VK_STRUCTURE_TYPE_SCREEN_SURFACE_CREATE_INFO_QNX:
-            return malloc(sizeof(VkScreenSurfaceCreateInfoQnx));
+            return malloc(sizeof(VkScreenSurfaceCreateInfoQNX));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COLOR_WRITE_ENABLE_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceColorWriteEnableFeaturesEXT));
         case VK_STRUCTURE_TYPE_PIPELINE_COLOR_WRITE_CREATE_INFO_EXT:
@@ -1442,18 +1078,14 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_UNTYPED_POINTERS_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceShaderUntypedPointersFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GLOBAL_PRIORITY_QUERY_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceGlobalPriorityQueryFeaturesEXT));
-        case VK_STRUCTURE_TYPE_QUEUE_FAMILY_GLOBAL_PRIORITY_PROPERTIES_EXT:
-            return malloc(sizeof(VkQueueFamilyGlobalPriorityPropertiesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_RGB_CONVERSION_FEATURES_VALVE:
-            return malloc(sizeof(VkPhysicalDeviceVideoEncodeRgbConversionFeaturesValve));
+            return malloc(sizeof(VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_RGB_CONVERSION_CAPABILITIES_VALVE:
-            return malloc(sizeof(VkVideoEncodeRgbConversionCapabilitiesValve));
+            return malloc(sizeof(VkVideoEncodeRgbConversionCapabilitiesVALVE));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_PROFILE_RGB_CONVERSION_INFO_VALVE:
-            return malloc(sizeof(VkVideoEncodeProfileRgbConversionInfoValve));
+            return malloc(sizeof(VkVideoEncodeProfileRgbConversionInfoVALVE));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_SESSION_RGB_CONVERSION_CREATE_INFO_VALVE:
-            return malloc(sizeof(VkVideoEncodeSessionRgbConversionCreateInfoValve));
+            return malloc(sizeof(VkVideoEncodeSessionRgbConversionCreateInfoVALVE));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_VIEW_MIN_LOD_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceImageViewMinLodFeaturesEXT));
         case VK_STRUCTURE_TYPE_IMAGE_VIEW_MIN_LOD_CREATE_INFO_EXT:
@@ -1463,7 +1095,7 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTI_DRAW_PROPERTIES_EXT:
             return malloc(sizeof(VkPhysicalDeviceMultiDrawPropertiesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_2D_VIEW_OF_3D_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceImage2dViewOf3dFeaturesEXT));
+            return malloc(sizeof(VkPhysicalDeviceImage2DViewOf3DFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TILE_IMAGE_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShaderTileImageFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TILE_IMAGE_PROPERTIES_EXT:
@@ -1488,124 +1120,106 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkMicromapBuildSizesInfoEXT));
         case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_TRIANGLES_OPACITY_MICROMAP_EXT:
             return malloc(sizeof(VkAccelerationStructureTrianglesOpacityMicromapEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISPLACEMENT_MICROMAP_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceDisplacementMicromapFeaturesNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISPLACEMENT_MICROMAP_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceDisplacementMicromapPropertiesNv));
-        case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_TRIANGLES_DISPLACEMENT_MICROMAP_NV:
-            return malloc(sizeof(VkAccelerationStructureTrianglesDisplacementMicromapNv));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_FEATURES_HUAWEI:
-            return malloc(sizeof(VkPhysicalDeviceClusterCullingShaderFeaturesHuawei));
+            return malloc(sizeof(VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_PROPERTIES_HUAWEI:
-            return malloc(sizeof(VkPhysicalDeviceClusterCullingShaderPropertiesHuawei));
+            return malloc(sizeof(VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_VRS_FEATURES_HUAWEI:
-            return malloc(sizeof(VkPhysicalDeviceClusterCullingShaderVrsFeaturesHuawei));
+            return malloc(sizeof(VkPhysicalDeviceClusterCullingShaderVrsFeaturesHUAWEI));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BORDER_COLOR_SWIZZLE_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceBorderColorSwizzleFeaturesEXT));
         case VK_STRUCTURE_TYPE_SAMPLER_BORDER_COLOR_COMPONENT_MAPPING_CREATE_INFO_EXT:
             return malloc(sizeof(VkSamplerBorderColorComponentMappingCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PAGEABLE_DEVICE_LOCAL_MEMORY_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceMaintenance4FeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceMaintenance4PropertiesKHR));
-        case VK_STRUCTURE_TYPE_DEVICE_BUFFER_MEMORY_REQUIREMENTS_KHR:
-            return malloc(sizeof(VkDeviceBufferMemoryRequirementsKHR));
-        case VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS_KHR:
-            return malloc(sizeof(VkDeviceImageMemoryRequirementsKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceShaderCorePropertiesArm));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_ROTATE_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceShaderSubgroupRotateFeaturesKHR));
+            return malloc(sizeof(VkPhysicalDeviceShaderCorePropertiesARM));
         case VK_STRUCTURE_TYPE_DEVICE_QUEUE_SHADER_CORE_CONTROL_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDeviceQueueShaderCoreControlCreateInfoArm));
+            return malloc(sizeof(VkDeviceQueueShaderCoreControlCreateInfoARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceSchedulingControlsFeaturesArm));
+            return malloc(sizeof(VkPhysicalDeviceSchedulingControlsFeaturesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_PROPERTIES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceSchedulingControlsPropertiesArm));
+            return malloc(sizeof(VkPhysicalDeviceSchedulingControlsPropertiesARM));
         case VK_STRUCTURE_TYPE_DISPATCH_PARAMETERS_ARM:
-            return malloc(sizeof(VkDispatchParametersArm));
+            return malloc(sizeof(VkDispatchParametersARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_DISPATCH_PARAMETERS_PROPERTIES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceSchedulingControlsDispatchParametersPropertiesArm));
+            return malloc(sizeof(VkPhysicalDeviceSchedulingControlsDispatchParametersPropertiesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_SLICED_VIEW_OF_3D_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceImageSlicedViewOf3dFeaturesEXT));
+            return malloc(sizeof(VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT));
         case VK_STRUCTURE_TYPE_IMAGE_VIEW_SLICED_CREATE_INFO_EXT:
             return malloc(sizeof(VkImageViewSlicedCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_SET_HOST_MAPPING_FEATURES_VALVE:
-            return malloc(sizeof(VkPhysicalDeviceDescriptorSetHostMappingFeaturesValve));
+            return malloc(sizeof(VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE));
         case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_BINDING_REFERENCE_VALVE:
-            return malloc(sizeof(VkDescriptorSetBindingReferenceValve));
+            return malloc(sizeof(VkDescriptorSetBindingReferenceVALVE));
         case VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_HOST_MAPPING_INFO_VALVE:
-            return malloc(sizeof(VkDescriptorSetLayoutHostMappingInfoValve));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceDepthClampZeroOneFeaturesEXT));
+            return malloc(sizeof(VkDescriptorSetLayoutHostMappingInfoVALVE));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_NON_SEAMLESS_CUBE_MAP_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RENDER_PASS_STRIPED_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceRenderPassStripedFeaturesArm));
+            return malloc(sizeof(VkPhysicalDeviceRenderPassStripedFeaturesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RENDER_PASS_STRIPED_PROPERTIES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceRenderPassStripedPropertiesArm));
+            return malloc(sizeof(VkPhysicalDeviceRenderPassStripedPropertiesARM));
         case VK_STRUCTURE_TYPE_RENDER_PASS_STRIPE_BEGIN_INFO_ARM:
-            return malloc(sizeof(VkRenderPassStripeBeginInfoArm));
+            return malloc(sizeof(VkRenderPassStripeBeginInfoARM));
         case VK_STRUCTURE_TYPE_RENDER_PASS_STRIPE_INFO_ARM:
-            return malloc(sizeof(VkRenderPassStripeInfoArm));
+            return malloc(sizeof(VkRenderPassStripeInfoARM));
         case VK_STRUCTURE_TYPE_RENDER_PASS_STRIPE_SUBMIT_INFO_ARM:
-            return malloc(sizeof(VkRenderPassStripeSubmitInfoArm));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceFragmentDensityMapOffsetFeaturesQcom));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_PROPERTIES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceFragmentDensityMapOffsetPropertiesQcom));
-        case VK_STRUCTURE_TYPE_SUBPASS_FRAGMENT_DENSITY_MAP_OFFSET_END_INFO_QCOM:
-            return malloc(sizeof(VkSubpassFragmentDensityMapOffsetEndInfoQcom));
+            return malloc(sizeof(VkRenderPassStripeSubmitInfoARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCopyMemoryIndirectFeaturesNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCopyMemoryIndirectPropertiesNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceMemoryDecompressionFeaturesNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceMemoryDecompressionPropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceCopyMemoryIndirectFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_COMPUTE_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV));
         case VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_INDIRECT_BUFFER_INFO_NV:
-            return malloc(sizeof(VkComputePipelineIndirectBufferInfoNv));
+            return malloc(sizeof(VkComputePipelineIndirectBufferInfoNV));
         case VK_STRUCTURE_TYPE_PIPELINE_INDIRECT_DEVICE_ADDRESS_INFO_NV:
-            return malloc(sizeof(VkPipelineIndirectDeviceAddressInfoNv));
+            return malloc(sizeof(VkPipelineIndirectDeviceAddressInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_LINEAR_SWEPT_SPHERES_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV));
         case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_LINEAR_SWEPT_SPHERES_DATA_NV:
-            return malloc(sizeof(VkAccelerationStructureGeometryLinearSweptSpheresDataNv));
+            return malloc(sizeof(VkAccelerationStructureGeometryLinearSweptSpheresDataNV));
         case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_SPHERES_DATA_NV:
-            return malloc(sizeof(VkAccelerationStructureGeometrySpheresDataNv));
+            return malloc(sizeof(VkAccelerationStructureGeometrySpheresDataNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINEAR_COLOR_ATTACHMENT_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceLinearColorAttachmentFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceLinearColorAttachmentFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MAXIMAL_RECONVERGENCE_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_COMPRESSION_CONTROL_SWAPCHAIN_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_PROCESSING_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceImageProcessingFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceImageProcessingFeaturesQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_PROCESSING_PROPERTIES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceImageProcessingPropertiesQcom));
+            return malloc(sizeof(VkPhysicalDeviceImageProcessingPropertiesQCOM));
         case VK_STRUCTURE_TYPE_IMAGE_VIEW_SAMPLE_WEIGHT_CREATE_INFO_QCOM:
-            return malloc(sizeof(VkImageViewSampleWeightCreateInfoQcom));
+            return malloc(sizeof(VkImageViewSampleWeightCreateInfoQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_NESTED_COMMAND_BUFFER_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceNestedCommandBufferFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_NESTED_COMMAND_BUFFER_PROPERTIES_EXT:
             return malloc(sizeof(VkPhysicalDeviceNestedCommandBufferPropertiesEXT));
+#ifdef VK_USE_PLATFORM_OHOS
         case VK_STRUCTURE_TYPE_NATIVE_BUFFER_USAGE_OHOS:
-            return malloc(sizeof(VkNativeBufferUsageOhos));
+            return malloc(sizeof(VkNativeBufferUsageOHOS));
+#endif
+#ifdef VK_USE_PLATFORM_OHOS
         case VK_STRUCTURE_TYPE_NATIVE_BUFFER_PROPERTIES_OHOS:
-            return malloc(sizeof(VkNativeBufferPropertiesOhos));
+            return malloc(sizeof(VkNativeBufferPropertiesOHOS));
+#endif
+#ifdef VK_USE_PLATFORM_OHOS
         case VK_STRUCTURE_TYPE_NATIVE_BUFFER_FORMAT_PROPERTIES_OHOS:
-            return malloc(sizeof(VkNativeBufferFormatPropertiesOhos));
+            return malloc(sizeof(VkNativeBufferFormatPropertiesOHOS));
+#endif
+#ifdef VK_USE_PLATFORM_OHOS
         case VK_STRUCTURE_TYPE_IMPORT_NATIVE_BUFFER_INFO_OHOS:
-            return malloc(sizeof(VkImportNativeBufferInfoOhos));
+            return malloc(sizeof(VkImportNativeBufferInfoOHOS));
+#endif
+#ifdef VK_USE_PLATFORM_OHOS
         case VK_STRUCTURE_TYPE_MEMORY_GET_NATIVE_BUFFER_INFO_OHOS:
-            return malloc(sizeof(VkMemoryGetNativeBufferInfoOhos));
+            return malloc(sizeof(VkMemoryGetNativeBufferInfoOHOS));
+#endif
+#ifdef VK_USE_PLATFORM_OHOS
         case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_OHOS:
-            return malloc(sizeof(VkExternalFormatOhos));
+            return malloc(sizeof(VkExternalFormatOHOS));
+#endif
         case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_ACQUIRE_UNMODIFIED_EXT:
             return malloc(sizeof(VkExternalMemoryAcquireUnmodifiedEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_3_FEATURES_EXT:
@@ -1621,45 +1235,45 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_RENDER_PASS_SUBPASS_FEEDBACK_CREATE_INFO_EXT:
             return malloc(sizeof(VkRenderPassSubpassFeedbackCreateInfoEXT));
         case VK_STRUCTURE_TYPE_DIRECT_DRIVER_LOADING_INFO_LUNARG:
-            return malloc(sizeof(VkDirectDriverLoadingInfoLunarg));
+            return malloc(sizeof(VkDirectDriverLoadingInfoLUNARG));
         case VK_STRUCTURE_TYPE_DIRECT_DRIVER_LOADING_LIST_LUNARG:
-            return malloc(sizeof(VkDirectDriverLoadingListLunarg));
+            return malloc(sizeof(VkDirectDriverLoadingListLUNARG));
         case VK_STRUCTURE_TYPE_TENSOR_CREATE_INFO_ARM:
-            return malloc(sizeof(VkTensorCreateInfoArm));
+            return malloc(sizeof(VkTensorCreateInfoARM));
         case VK_STRUCTURE_TYPE_TENSOR_VIEW_CREATE_INFO_ARM:
-            return malloc(sizeof(VkTensorViewCreateInfoArm));
+            return malloc(sizeof(VkTensorViewCreateInfoARM));
         case VK_STRUCTURE_TYPE_BIND_TENSOR_MEMORY_INFO_ARM:
-            return malloc(sizeof(VkBindTensorMemoryInfoArm));
+            return malloc(sizeof(VkBindTensorMemoryInfoARM));
         case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_TENSOR_ARM:
-            return malloc(sizeof(VkWriteDescriptorSetTensorArm));
+            return malloc(sizeof(VkWriteDescriptorSetTensorARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TENSOR_PROPERTIES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceTensorPropertiesArm));
+            return malloc(sizeof(VkPhysicalDeviceTensorPropertiesARM));
         case VK_STRUCTURE_TYPE_TENSOR_FORMAT_PROPERTIES_ARM:
-            return malloc(sizeof(VkTensorFormatPropertiesArm));
+            return malloc(sizeof(VkTensorFormatPropertiesARM));
         case VK_STRUCTURE_TYPE_TENSOR_DESCRIPTION_ARM:
-            return malloc(sizeof(VkTensorDescriptionArm));
+            return malloc(sizeof(VkTensorDescriptionARM));
         case VK_STRUCTURE_TYPE_TENSOR_MEMORY_REQUIREMENTS_INFO_ARM:
-            return malloc(sizeof(VkTensorMemoryRequirementsInfoArm));
+            return malloc(sizeof(VkTensorMemoryRequirementsInfoARM));
         case VK_STRUCTURE_TYPE_TENSOR_MEMORY_BARRIER_ARM:
-            return malloc(sizeof(VkTensorMemoryBarrierArm));
+            return malloc(sizeof(VkTensorMemoryBarrierARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TENSOR_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceTensorFeaturesArm));
+            return malloc(sizeof(VkPhysicalDeviceTensorFeaturesARM));
         case VK_STRUCTURE_TYPE_DEVICE_TENSOR_MEMORY_REQUIREMENTS_ARM:
-            return malloc(sizeof(VkDeviceTensorMemoryRequirementsArm));
+            return malloc(sizeof(VkDeviceTensorMemoryRequirementsARM));
         case VK_STRUCTURE_TYPE_COPY_TENSOR_INFO_ARM:
-            return malloc(sizeof(VkCopyTensorInfoArm));
+            return malloc(sizeof(VkCopyTensorInfoARM));
         case VK_STRUCTURE_TYPE_TENSOR_COPY_ARM:
-            return malloc(sizeof(VkTensorCopyArm));
+            return malloc(sizeof(VkTensorCopyARM));
         case VK_STRUCTURE_TYPE_TENSOR_DEPENDENCY_INFO_ARM:
-            return malloc(sizeof(VkTensorDependencyInfoArm));
+            return malloc(sizeof(VkTensorDependencyInfoARM));
         case VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO_TENSOR_ARM:
-            return malloc(sizeof(VkMemoryDedicatedAllocateInfoTensorArm));
+            return malloc(sizeof(VkMemoryDedicatedAllocateInfoTensorARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_TENSOR_INFO_ARM:
-            return malloc(sizeof(VkPhysicalDeviceExternalTensorInfoArm));
+            return malloc(sizeof(VkPhysicalDeviceExternalTensorInfoARM));
         case VK_STRUCTURE_TYPE_EXTERNAL_TENSOR_PROPERTIES_ARM:
-            return malloc(sizeof(VkExternalTensorPropertiesArm));
+            return malloc(sizeof(VkExternalTensorPropertiesARM));
         case VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_TENSOR_CREATE_INFO_ARM:
-            return malloc(sizeof(VkExternalMemoryTensorCreateInfoArm));
+            return malloc(sizeof(VkExternalMemoryTensorCreateInfoARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MODULE_IDENTIFIER_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShaderModuleIdentifierFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MODULE_IDENTIFIER_PROPERTIES_EXT:
@@ -1668,58 +1282,48 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPipelineShaderStageModuleIdentifierCreateInfoEXT));
         case VK_STRUCTURE_TYPE_SHADER_MODULE_IDENTIFIER_EXT:
             return malloc(sizeof(VkShaderModuleIdentifierEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPTICAL_FLOW_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceOpticalFlowFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceOpticalFlowFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPTICAL_FLOW_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceOpticalFlowPropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceOpticalFlowPropertiesNV));
         case VK_STRUCTURE_TYPE_OPTICAL_FLOW_IMAGE_FORMAT_INFO_NV:
-            return malloc(sizeof(VkOpticalFlowImageFormatInfoNv));
+            return malloc(sizeof(VkOpticalFlowImageFormatInfoNV));
         case VK_STRUCTURE_TYPE_OPTICAL_FLOW_IMAGE_FORMAT_PROPERTIES_NV:
-            return malloc(sizeof(VkOpticalFlowImageFormatPropertiesNv));
+            return malloc(sizeof(VkOpticalFlowImageFormatPropertiesNV));
         case VK_STRUCTURE_TYPE_OPTICAL_FLOW_SESSION_CREATE_INFO_NV:
-            return malloc(sizeof(VkOpticalFlowSessionCreateInfoNv));
+            return malloc(sizeof(VkOpticalFlowSessionCreateInfoNV));
         case VK_STRUCTURE_TYPE_OPTICAL_FLOW_EXECUTE_INFO_NV:
-            return malloc(sizeof(VkOpticalFlowExecuteInfoNv));
+            return malloc(sizeof(VkOpticalFlowExecuteInfoNV));
         case VK_STRUCTURE_TYPE_OPTICAL_FLOW_SESSION_CREATE_PRIVATE_DATA_INFO_NV:
-            return malloc(sizeof(VkOpticalFlowSessionCreatePrivateDataInfoNv));
+            return malloc(sizeof(VkOpticalFlowSessionCreatePrivateDataInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LEGACY_DITHERING_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceLegacyDitheringFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROTECTED_ACCESS_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDevicePipelineProtectedAccessFeaturesEXT));
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FORMAT_RESOLVE_FEATURES_ANDROID:
-            return malloc(sizeof(VkPhysicalDeviceExternalFormatResolveFeaturesAndroid));
+            return malloc(sizeof(VkPhysicalDeviceExternalFormatResolveFeaturesANDROID));
+#endif
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FORMAT_RESOLVE_PROPERTIES_ANDROID:
-            return malloc(sizeof(VkPhysicalDeviceExternalFormatResolvePropertiesAndroid));
+            return malloc(sizeof(VkPhysicalDeviceExternalFormatResolvePropertiesANDROID));
+#endif
+#ifdef VK_USE_PLATFORM_ANDROID_KHR
         case VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_RESOLVE_PROPERTIES_ANDROID:
-            return malloc(sizeof(VkAndroidHardwareBufferFormatResolvePropertiesAndroid));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_5_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceMaintenance5FeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_5_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceMaintenance5PropertiesKHR));
-        case VK_STRUCTURE_TYPE_RENDERING_AREA_INFO_KHR:
-            return malloc(sizeof(VkRenderingAreaInfoKHR));
-        case VK_STRUCTURE_TYPE_DEVICE_IMAGE_SUBRESOURCE_INFO_KHR:
-            return malloc(sizeof(VkDeviceImageSubresourceInfoKHR));
-        case VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2_KHR:
-            return malloc(sizeof(VkSubresourceLayout2KHR));
-        case VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2_KHR:
-            return malloc(sizeof(VkImageSubresource2KHR));
-        case VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO_KHR:
-            return malloc(sizeof(VkPipelineCreateFlags2CreateInfoKHR));
-        case VK_STRUCTURE_TYPE_BUFFER_USAGE_FLAGS_2_CREATE_INFO_KHR:
-            return malloc(sizeof(VkBufferUsageFlags2CreateInfoKHR));
+            return malloc(sizeof(VkAndroidHardwareBufferFormatResolvePropertiesANDROID));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ANTI_LAG_FEATURES_AMD:
-            return malloc(sizeof(VkPhysicalDeviceAntiLagFeaturesAmd));
+            return malloc(sizeof(VkPhysicalDeviceAntiLagFeaturesAMD));
         case VK_STRUCTURE_TYPE_ANTI_LAG_DATA_AMD:
-            return malloc(sizeof(VkAntiLagDataAmd));
+            return malloc(sizeof(VkAntiLagDataAMD));
         case VK_STRUCTURE_TYPE_ANTI_LAG_PRESENTATION_INFO_AMD:
-            return malloc(sizeof(VkAntiLagPresentationInfoAmd));
+            return malloc(sizeof(VkAntiLagPresentationInfoAMD));
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DENSE_GEOMETRY_FORMAT_FEATURES_AMDX:
-            return malloc(sizeof(VkPhysicalDeviceDenseGeometryFormatFeaturesAmdx));
+            return malloc(sizeof(VkPhysicalDeviceDenseGeometryFormatFeaturesAMDX));
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
         case VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DENSE_GEOMETRY_FORMAT_TRIANGLES_DATA_AMDX:
-            return malloc(sizeof(VkAccelerationStructureDenseGeometryFormatTrianglesDataAmdx));
+            return malloc(sizeof(VkAccelerationStructureDenseGeometryFormatTrianglesDataAMDX));
+#endif
         case VK_STRUCTURE_TYPE_SURFACE_CAPABILITIES_PRESENT_ID_2_KHR:
             return malloc(sizeof(VkSurfaceCapabilitiesPresentId2KHR));
         case VK_STRUCTURE_TYPE_PRESENT_ID_2_KHR:
@@ -1740,12 +1344,6 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkPhysicalDeviceShaderObjectPropertiesEXT));
         case VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT:
             return malloc(sizeof(VkShaderCreateInfoEXT));
-        case VK_STRUCTURE_TYPE_VERTEX_INPUT_BINDING_DESCRIPTION_2_EXT:
-            return malloc(sizeof(VkVertexInputBindingDescription2EXT));
-        case VK_STRUCTURE_TYPE_VERTEX_INPUT_ATTRIBUTE_DESCRIPTION_2_EXT:
-            return malloc(sizeof(VkVertexInputAttributeDescription2EXT));
-        case VK_STRUCTURE_TYPE_SHADER_REQUIRED_SUBGROUP_SIZE_CREATE_INFO_EXT:
-            return malloc(sizeof(VkShaderRequiredSubgroupSizeCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_BINARY_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDevicePipelineBinaryFeaturesKHR));
         case VK_STRUCTURE_TYPE_PIPELINE_BINARY_CREATE_INFO_KHR:
@@ -1767,53 +1365,31 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_PIPELINE_BINARY_HANDLES_INFO_KHR:
             return malloc(sizeof(VkPipelineBinaryHandlesInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TILE_PROPERTIES_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceTilePropertiesFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceTilePropertiesFeaturesQCOM));
         case VK_STRUCTURE_TYPE_TILE_PROPERTIES_QCOM:
-            return malloc(sizeof(VkTilePropertiesQcom));
+            return malloc(sizeof(VkTilePropertiesQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_AMIGO_PROFILING_FEATURES_SEC:
-            return malloc(sizeof(VkPhysicalDeviceAmigoProfilingFeaturesSec));
+            return malloc(sizeof(VkPhysicalDeviceAmigoProfilingFeaturesSEC));
         case VK_STRUCTURE_TYPE_AMIGO_PROFILING_SUBMIT_INFO_SEC:
-            return malloc(sizeof(VkAmigoProfilingSubmitInfoSec));
-        case VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_KHR:
-            return malloc(sizeof(VkSurfacePresentModeKHR));
-        case VK_STRUCTURE_TYPE_SURFACE_PRESENT_SCALING_CAPABILITIES_KHR:
-            return malloc(sizeof(VkSurfacePresentScalingCapabilitiesKHR));
-        case VK_STRUCTURE_TYPE_SURFACE_PRESENT_MODE_COMPATIBILITY_KHR:
-            return malloc(sizeof(VkSurfacePresentModeCompatibilityKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR));
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_FENCE_INFO_KHR:
-            return malloc(sizeof(VkSwapchainPresentFenceInfoKHR));
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODES_CREATE_INFO_KHR:
-            return malloc(sizeof(VkSwapchainPresentModesCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_MODE_INFO_KHR:
-            return malloc(sizeof(VkSwapchainPresentModeInfoKHR));
-        case VK_STRUCTURE_TYPE_SWAPCHAIN_PRESENT_SCALING_CREATE_INFO_KHR:
-            return malloc(sizeof(VkSwapchainPresentScalingCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_RELEASE_SWAPCHAIN_IMAGES_INFO_KHR:
-            return malloc(sizeof(VkReleaseSwapchainImagesInfoKHR));
+            return malloc(sizeof(VkAmigoProfilingSubmitInfoSEC));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_VIEWPORTS_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceRayTracingInvocationReorderFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceRayTracingInvocationReorderPropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceRayTracingInvocationReorderPropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_VECTOR_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCooperativeVectorFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceCooperativeVectorFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_VECTOR_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCooperativeVectorPropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceCooperativeVectorPropertiesNV));
         case VK_STRUCTURE_TYPE_COOPERATIVE_VECTOR_PROPERTIES_NV:
-            return malloc(sizeof(VkCooperativeVectorPropertiesNv));
+            return malloc(sizeof(VkCooperativeVectorPropertiesNV));
         case VK_STRUCTURE_TYPE_CONVERT_COOPERATIVE_VECTOR_MATRIX_INFO_NV:
-            return malloc(sizeof(VkConvertCooperativeVectorMatrixInfoNv));
+            return malloc(sizeof(VkConvertCooperativeVectorMatrixInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_SPARSE_ADDRESS_SPACE_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_SPARSE_ADDRESS_SPACE_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceMutableDescriptorTypeFeaturesEXT));
-        case VK_STRUCTURE_TYPE_MUTABLE_DESCRIPTOR_TYPE_CREATE_INFO_EXT:
-            return malloc(sizeof(VkMutableDescriptorTypeCreateInfoEXT));
+            return malloc(sizeof(VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LEGACY_VERTEX_ATTRIBUTES_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LEGACY_VERTEX_ATTRIBUTES_PROPERTIES_EXT:
@@ -1821,9 +1397,9 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT:
             return malloc(sizeof(VkLayerSettingsCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceShaderCoreBuiltinsFeaturesArm));
+            return malloc(sizeof(VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_PROPERTIES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceShaderCoreBuiltinsPropertiesArm));
+            return malloc(sizeof(VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_LIBRARY_GROUP_HANDLES_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_FEATURES_EXT:
@@ -1831,23 +1407,23 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INTERNALLY_SYNCHRONIZED_QUEUES_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceInternallySynchronizedQueuesFeaturesKHR));
         case VK_STRUCTURE_TYPE_LATENCY_SLEEP_MODE_INFO_NV:
-            return malloc(sizeof(VkLatencySleepModeInfoNv));
+            return malloc(sizeof(VkLatencySleepModeInfoNV));
         case VK_STRUCTURE_TYPE_LATENCY_SLEEP_INFO_NV:
-            return malloc(sizeof(VkLatencySleepInfoNv));
+            return malloc(sizeof(VkLatencySleepInfoNV));
         case VK_STRUCTURE_TYPE_SET_LATENCY_MARKER_INFO_NV:
-            return malloc(sizeof(VkSetLatencyMarkerInfoNv));
+            return malloc(sizeof(VkSetLatencyMarkerInfoNV));
         case VK_STRUCTURE_TYPE_GET_LATENCY_MARKER_INFO_NV:
-            return malloc(sizeof(VkGetLatencyMarkerInfoNv));
+            return malloc(sizeof(VkGetLatencyMarkerInfoNV));
         case VK_STRUCTURE_TYPE_LATENCY_TIMINGS_FRAME_REPORT_NV:
-            return malloc(sizeof(VkLatencyTimingsFrameReportNv));
+            return malloc(sizeof(VkLatencyTimingsFrameReportNV));
         case VK_STRUCTURE_TYPE_LATENCY_SUBMISSION_PRESENT_ID_NV:
-            return malloc(sizeof(VkLatencySubmissionPresentIdNv));
+            return malloc(sizeof(VkLatencySubmissionPresentIdNV));
         case VK_STRUCTURE_TYPE_OUT_OF_BAND_QUEUE_TYPE_INFO_NV:
-            return malloc(sizeof(VkOutOfBandQueueTypeInfoNv));
+            return malloc(sizeof(VkOutOfBandQueueTypeInfoNV));
         case VK_STRUCTURE_TYPE_SWAPCHAIN_LATENCY_CREATE_INFO_NV:
-            return malloc(sizeof(VkSwapchainLatencyCreateInfoNv));
+            return malloc(sizeof(VkSwapchainLatencyCreateInfoNV));
         case VK_STRUCTURE_TYPE_LATENCY_SURFACE_CAPABILITIES_NV:
-            return malloc(sizeof(VkLatencySurfaceCapabilitiesNv));
+            return malloc(sizeof(VkLatencySurfaceCapabilitiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceCooperativeMatrixFeaturesKHR));
         case VK_STRUCTURE_TYPE_COOPERATIVE_MATRIX_PROPERTIES_KHR:
@@ -1855,193 +1431,163 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_PROPERTIES_KHR:
             return malloc(sizeof(VkPhysicalDeviceCooperativeMatrixPropertiesKHR));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineCreateInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineCreateInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_SESSION_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineSessionCreateInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineSessionCreateInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_RESOURCE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineResourceInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineResourceInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_CONSTANT_ARM:
-            return malloc(sizeof(VkDataGraphPipelineConstantArm));
+            return malloc(sizeof(VkDataGraphPipelineConstantARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_SESSION_MEMORY_REQUIREMENTS_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineSessionMemoryRequirementsInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineSessionMemoryRequirementsInfoARM));
         case VK_STRUCTURE_TYPE_BIND_DATA_GRAPH_PIPELINE_SESSION_MEMORY_INFO_ARM:
-            return malloc(sizeof(VkBindDataGraphPipelineSessionMemoryInfoArm));
+            return malloc(sizeof(VkBindDataGraphPipelineSessionMemoryInfoARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DATA_GRAPH_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceDataGraphFeaturesArm));
+            return malloc(sizeof(VkPhysicalDeviceDataGraphFeaturesARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_SHADER_MODULE_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineShaderModuleCreateInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineShaderModuleCreateInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_PROPERTY_QUERY_RESULT_ARM:
-            return malloc(sizeof(VkDataGraphPipelinePropertyQueryResultArm));
+            return malloc(sizeof(VkDataGraphPipelinePropertyQueryResultARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_COMPILER_CONTROL_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineCompilerControlCreateInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineCompilerControlCreateInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_REQUIREMENTS_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineSessionBindPointRequirementsInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineSessionBindPointRequirementsInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_SESSION_BIND_POINT_REQUIREMENT_ARM:
-            return malloc(sizeof(VkDataGraphPipelineSessionBindPointRequirementArm));
+            return malloc(sizeof(VkDataGraphPipelineSessionBindPointRequirementARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_IDENTIFIER_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineIdentifierCreateInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineIdentifierCreateInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_DISPATCH_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineDispatchInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineDispatchInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PROCESSING_ENGINE_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphProcessingEngineCreateInfoArm));
+            return malloc(sizeof(VkDataGraphProcessingEngineCreateInfoARM));
         case VK_STRUCTURE_TYPE_QUEUE_FAMILY_DATA_GRAPH_PROCESSING_ENGINE_PROPERTIES_ARM:
-            return malloc(sizeof(VkQueueFamilyDataGraphProcessingEnginePropertiesArm));
+            return malloc(sizeof(VkQueueFamilyDataGraphProcessingEnginePropertiesARM));
         case VK_STRUCTURE_TYPE_QUEUE_FAMILY_DATA_GRAPH_PROPERTIES_ARM:
-            return malloc(sizeof(VkQueueFamilyDataGraphPropertiesArm));
+            return malloc(sizeof(VkQueueFamilyDataGraphPropertiesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_QUEUE_FAMILY_DATA_GRAPH_PROCESSING_ENGINE_INFO_ARM:
-            return malloc(sizeof(VkPhysicalDeviceQueueFamilyDataGraphProcessingEngineInfoArm));
+            return malloc(sizeof(VkPhysicalDeviceQueueFamilyDataGraphProcessingEngineInfoARM));
         case VK_STRUCTURE_TYPE_QUEUE_FAMILY_DATA_GRAPH_TOSA_PROPERTIES_ARM:
-            return malloc(sizeof(VkQueueFamilyDataGraphTosaPropertiesArm));
+            return malloc(sizeof(VkQueueFamilyDataGraphTOSAPropertiesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_RENDER_AREAS_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM));
         case VK_STRUCTURE_TYPE_MULTIVIEW_PER_VIEW_RENDER_AREAS_RENDER_PASS_BEGIN_INFO_QCOM:
-            return malloc(sizeof(VkMultiviewPerViewRenderAreasRenderPassBeginInfoQcom));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR));
+            return malloc(sizeof(VkMultiviewPerViewRenderAreasRenderPassBeginInfoQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_PROPERTIES_KHR:
             return malloc(sizeof(VkPhysicalDeviceComputeShaderDerivativesPropertiesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_AV1_CAPABILITIES_KHR:
-            return malloc(sizeof(VkVideoDecodeAv1CapabilitiesKHR));
+            return malloc(sizeof(VkVideoDecodeAV1CapabilitiesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_AV1_PICTURE_INFO_KHR:
-            return malloc(sizeof(VkVideoDecodeAv1PictureInfoKHR));
+            return malloc(sizeof(VkVideoDecodeAV1PictureInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_AV1_PROFILE_INFO_KHR:
-            return malloc(sizeof(VkVideoDecodeAv1ProfileInfoKHR));
+            return malloc(sizeof(VkVideoDecodeAV1ProfileInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_AV1_SESSION_PARAMETERS_CREATE_INFO_KHR:
-            return malloc(sizeof(VkVideoDecodeAv1SessionParametersCreateInfoKHR));
+            return malloc(sizeof(VkVideoDecodeAV1SessionParametersCreateInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_AV1_DPB_SLOT_INFO_KHR:
-            return malloc(sizeof(VkVideoDecodeAv1DpbSlotInfoKHR));
+            return malloc(sizeof(VkVideoDecodeAV1DpbSlotInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_AV1_CAPABILITIES_KHR:
-            return malloc(sizeof(VkVideoEncodeAv1CapabilitiesKHR));
+            return malloc(sizeof(VkVideoEncodeAV1CapabilitiesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_AV1_SESSION_PARAMETERS_CREATE_INFO_KHR:
-            return malloc(sizeof(VkVideoEncodeAv1SessionParametersCreateInfoKHR));
+            return malloc(sizeof(VkVideoEncodeAV1SessionParametersCreateInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_AV1_PICTURE_INFO_KHR:
-            return malloc(sizeof(VkVideoEncodeAv1PictureInfoKHR));
+            return malloc(sizeof(VkVideoEncodeAV1PictureInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_AV1_DPB_SLOT_INFO_KHR:
-            return malloc(sizeof(VkVideoEncodeAv1DpbSlotInfoKHR));
+            return malloc(sizeof(VkVideoEncodeAV1DpbSlotInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_AV1_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceVideoEncodeAv1FeaturesKHR));
+            return malloc(sizeof(VkPhysicalDeviceVideoEncodeAV1FeaturesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_AV1_PROFILE_INFO_KHR:
-            return malloc(sizeof(VkVideoEncodeAv1ProfileInfoKHR));
+            return malloc(sizeof(VkVideoEncodeAV1ProfileInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_AV1_RATE_CONTROL_INFO_KHR:
-            return malloc(sizeof(VkVideoEncodeAv1RateControlInfoKHR));
+            return malloc(sizeof(VkVideoEncodeAV1RateControlInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_AV1_RATE_CONTROL_LAYER_INFO_KHR:
-            return malloc(sizeof(VkVideoEncodeAv1RateControlLayerInfoKHR));
+            return malloc(sizeof(VkVideoEncodeAV1RateControlLayerInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_AV1_QUALITY_LEVEL_PROPERTIES_KHR:
-            return malloc(sizeof(VkVideoEncodeAv1QualityLevelPropertiesKHR));
+            return malloc(sizeof(VkVideoEncodeAV1QualityLevelPropertiesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_AV1_SESSION_CREATE_INFO_KHR:
-            return malloc(sizeof(VkVideoEncodeAv1SessionCreateInfoKHR));
+            return malloc(sizeof(VkVideoEncodeAV1SessionCreateInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_AV1_GOP_REMAINING_FRAME_INFO_KHR:
-            return malloc(sizeof(VkVideoEncodeAv1GopRemainingFrameInfoKHR));
+            return malloc(sizeof(VkVideoEncodeAV1GopRemainingFrameInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_DECODE_VP9_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceVideoDecodeVp9FeaturesKHR));
+            return malloc(sizeof(VkPhysicalDeviceVideoDecodeVP9FeaturesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_VP9_CAPABILITIES_KHR:
-            return malloc(sizeof(VkVideoDecodeVp9CapabilitiesKHR));
+            return malloc(sizeof(VkVideoDecodeVP9CapabilitiesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_VP9_PICTURE_INFO_KHR:
-            return malloc(sizeof(VkVideoDecodeVp9PictureInfoKHR));
+            return malloc(sizeof(VkVideoDecodeVP9PictureInfoKHR));
         case VK_STRUCTURE_TYPE_VIDEO_DECODE_VP9_PROFILE_INFO_KHR:
-            return malloc(sizeof(VkVideoDecodeVp9ProfileInfoKHR));
+            return malloc(sizeof(VkVideoDecodeVP9ProfileInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_1_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceVideoMaintenance1FeaturesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_INLINE_QUERY_INFO_KHR:
             return malloc(sizeof(VkVideoInlineQueryInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PER_STAGE_DESCRIPTOR_SET_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDevicePerStageDescriptorSetFeaturesNv));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_PROCESSING_2_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceImageProcessing2FeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceImageProcessing2FeaturesQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_PROCESSING_2_PROPERTIES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceImageProcessing2PropertiesQcom));
+            return malloc(sizeof(VkPhysicalDeviceImageProcessing2PropertiesQCOM));
         case VK_STRUCTURE_TYPE_SAMPLER_BLOCK_MATCH_WINDOW_CREATE_INFO_QCOM:
-            return malloc(sizeof(VkSamplerBlockMatchWindowCreateInfoQcom));
+            return malloc(sizeof(VkSamplerBlockMatchWindowCreateInfoQCOM));
         case VK_STRUCTURE_TYPE_SAMPLER_CUBIC_WEIGHTS_CREATE_INFO_QCOM:
-            return malloc(sizeof(VkSamplerCubicWeightsCreateInfoQcom));
+            return malloc(sizeof(VkSamplerCubicWeightsCreateInfoQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUBIC_WEIGHTS_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceCubicWeightsFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceCubicWeightsFeaturesQCOM));
         case VK_STRUCTURE_TYPE_BLIT_IMAGE_CUBIC_WEIGHTS_INFO_QCOM:
-            return malloc(sizeof(VkBlitImageCubicWeightsInfoQcom));
+            return malloc(sizeof(VkBlitImageCubicWeightsInfoQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_YCBCR_DEGAMMA_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceYcbcrDegammaFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceYcbcrDegammaFeaturesQCOM));
         case VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_YCBCR_DEGAMMA_CREATE_INFO_QCOM:
-            return malloc(sizeof(VkSamplerYcbcrConversionYcbcrDegammaCreateInfoQcom));
+            return malloc(sizeof(VkSamplerYcbcrConversionYcbcrDegammaCreateInfoQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUBIC_CLAMP_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceCubicClampFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceCubicClampFeaturesQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ATTACHMENT_FEEDBACK_LOOP_DYNAMIC_STATE_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR));
-        case VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkPipelineVertexInputDivisorStateCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_UNIFIED_IMAGE_LAYOUTS_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceUnifiedImageLayoutsFeaturesKHR));
         case VK_STRUCTURE_TYPE_ATTACHMENT_FEEDBACK_LOOP_INFO_EXT:
             return malloc(sizeof(VkAttachmentFeedbackLoopInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FLOAT_CONTROLS_2_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceShaderFloatControls2FeaturesKHR));
+#ifdef VK_USE_PLATFORM_SCREEN_QNX
         case VK_STRUCTURE_TYPE_SCREEN_BUFFER_PROPERTIES_QNX:
-            return malloc(sizeof(VkScreenBufferPropertiesQnx));
+            return malloc(sizeof(VkScreenBufferPropertiesQNX));
+#endif
+#ifdef VK_USE_PLATFORM_SCREEN_QNX
         case VK_STRUCTURE_TYPE_SCREEN_BUFFER_FORMAT_PROPERTIES_QNX:
-            return malloc(sizeof(VkScreenBufferFormatPropertiesQnx));
+            return malloc(sizeof(VkScreenBufferFormatPropertiesQNX));
+#endif
+#ifdef VK_USE_PLATFORM_SCREEN_QNX
         case VK_STRUCTURE_TYPE_IMPORT_SCREEN_BUFFER_INFO_QNX:
-            return malloc(sizeof(VkImportScreenBufferInfoQnx));
+            return malloc(sizeof(VkImportScreenBufferInfoQNX));
+#endif
+#ifdef VK_USE_PLATFORM_SCREEN_QNX
         case VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_QNX:
-            return malloc(sizeof(VkExternalFormatQnx));
+            return malloc(sizeof(VkExternalFormatQNX));
+#endif
+#ifdef VK_USE_PLATFORM_SCREEN_QNX
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_SCREEN_BUFFER_FEATURES_QNX:
-            return malloc(sizeof(VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQnx));
+            return malloc(sizeof(VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LAYERED_DRIVER_PROPERTIES_MSFT:
-            return malloc(sizeof(VkPhysicalDeviceLayeredDriverPropertiesMsft));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceIndexTypeUint8FeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINE_RASTERIZATION_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceLineRasterizationFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_LINE_STATE_CREATE_INFO_KHR:
-            return malloc(sizeof(VkPipelineRasterizationLineStateCreateInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINE_RASTERIZATION_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceLineRasterizationPropertiesKHR));
-        case VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_KHR:
-            return malloc(sizeof(VkCalibratedTimestampInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_EXPECT_ASSUME_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceShaderExpectAssumeFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_6_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceMaintenance6FeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_6_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceMaintenance6PropertiesKHR));
-        case VK_STRUCTURE_TYPE_BIND_MEMORY_STATUS_KHR:
-            return malloc(sizeof(VkBindMemoryStatusKHR));
-        case VK_STRUCTURE_TYPE_BIND_DESCRIPTOR_SETS_INFO_KHR:
-            return malloc(sizeof(VkBindDescriptorSetsInfoKHR));
-        case VK_STRUCTURE_TYPE_PUSH_CONSTANTS_INFO_KHR:
-            return malloc(sizeof(VkPushConstantsInfoKHR));
+            return malloc(sizeof(VkPhysicalDeviceLayeredDriverPropertiesMSFT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_POOL_OVERALLOCATION_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TILE_MEMORY_HEAP_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceTileMemoryHeapFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceTileMemoryHeapFeaturesQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TILE_MEMORY_HEAP_PROPERTIES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceTileMemoryHeapPropertiesQcom));
+            return malloc(sizeof(VkPhysicalDeviceTileMemoryHeapPropertiesQCOM));
         case VK_STRUCTURE_TYPE_TILE_MEMORY_REQUIREMENTS_QCOM:
-            return malloc(sizeof(VkTileMemoryRequirementsQcom));
+            return malloc(sizeof(VkTileMemoryRequirementsQCOM));
         case VK_STRUCTURE_TYPE_TILE_MEMORY_BIND_INFO_QCOM:
-            return malloc(sizeof(VkTileMemoryBindInfoQcom));
+            return malloc(sizeof(VkTileMemoryBindInfoQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceCopyMemoryIndirectFeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceCopyMemoryIndirectPropertiesKHR));
         case VK_STRUCTURE_TYPE_COPY_MEMORY_INDIRECT_INFO_KHR:
             return malloc(sizeof(VkCopyMemoryIndirectInfoKHR));
         case VK_STRUCTURE_TYPE_COPY_MEMORY_TO_IMAGE_INDIRECT_INFO_KHR:
             return malloc(sizeof(VkCopyMemoryToImageIndirectInfoKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceMemoryDecompressionFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceMemoryDecompressionPropertiesEXT));
         case VK_STRUCTURE_TYPE_DECOMPRESS_MEMORY_INFO_EXT:
             return malloc(sizeof(VkDecompressMemoryInfoEXT));
         case VK_STRUCTURE_TYPE_DISPLAY_SURFACE_STEREO_CREATE_INFO_NV:
-            return malloc(sizeof(VkDisplaySurfaceStereoCreateInfoNv));
+            return malloc(sizeof(VkDisplaySurfaceStereoCreateInfoNV));
         case VK_STRUCTURE_TYPE_DISPLAY_MODE_STEREO_PROPERTIES_NV:
-            return malloc(sizeof(VkDisplayModeStereoPropertiesNv));
+            return malloc(sizeof(VkDisplayModeStereoPropertiesNV));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_INTRA_REFRESH_CAPABILITIES_KHR:
             return malloc(sizeof(VkVideoEncodeIntraRefreshCapabilitiesKHR));
         case VK_STRUCTURE_TYPE_VIDEO_ENCODE_SESSION_INTRA_REFRESH_CREATE_INFO_KHR:
@@ -2063,19 +1609,19 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_QUANTIZATION_MAP_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAW_ACCESS_CHAINS_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceRawAccessChainsFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceRawAccessChainsFeaturesNV));
         case VK_STRUCTURE_TYPE_EXTERNAL_COMPUTE_QUEUE_DEVICE_CREATE_INFO_NV:
-            return malloc(sizeof(VkExternalComputeQueueDeviceCreateInfoNv));
+            return malloc(sizeof(VkExternalComputeQueueDeviceCreateInfoNV));
         case VK_STRUCTURE_TYPE_EXTERNAL_COMPUTE_QUEUE_CREATE_INFO_NV:
-            return malloc(sizeof(VkExternalComputeQueueCreateInfoNv));
+            return malloc(sizeof(VkExternalComputeQueueCreateInfoNV));
         case VK_STRUCTURE_TYPE_EXTERNAL_COMPUTE_QUEUE_DATA_PARAMS_NV:
-            return malloc(sizeof(VkExternalComputeQueueDataParamsNv));
+            return malloc(sizeof(VkExternalComputeQueueDataParamsNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_COMPUTE_QUEUE_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceExternalComputeQueuePropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceExternalComputeQueuePropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_RELAXED_EXTENDED_INSTRUCTION_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceShaderRelaxedExtendedInstructionFeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMMAND_BUFFER_INHERITANCE_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCommandBufferInheritanceFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceCommandBufferInheritanceFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_7_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceMaintenance7FeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_7_PROPERTIES_KHR:
@@ -2087,41 +1633,41 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LAYERED_API_VULKAN_PROPERTIES_KHR:
             return malloc(sizeof(VkPhysicalDeviceLayeredApiVulkanPropertiesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT16_VECTOR_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_REPLICATED_COMPOSITES_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FLOAT8_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShaderFloat8FeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_VALIDATION_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceRayTracingValidationFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceRayTracingValidationFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_ACCELERATION_STRUCTURE_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceClusterAccelerationStructureFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceClusterAccelerationStructureFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_ACCELERATION_STRUCTURE_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceClusterAccelerationStructurePropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceClusterAccelerationStructurePropertiesNV));
         case VK_STRUCTURE_TYPE_CLUSTER_ACCELERATION_STRUCTURE_CLUSTERS_BOTTOM_LEVEL_INPUT_NV:
-            return malloc(sizeof(VkClusterAccelerationStructureClustersBottomLevelInputNv));
+            return malloc(sizeof(VkClusterAccelerationStructureClustersBottomLevelInputNV));
         case VK_STRUCTURE_TYPE_CLUSTER_ACCELERATION_STRUCTURE_TRIANGLE_CLUSTER_INPUT_NV:
-            return malloc(sizeof(VkClusterAccelerationStructureTriangleClusterInputNv));
+            return malloc(sizeof(VkClusterAccelerationStructureTriangleClusterInputNV));
         case VK_STRUCTURE_TYPE_CLUSTER_ACCELERATION_STRUCTURE_MOVE_OBJECTS_INPUT_NV:
-            return malloc(sizeof(VkClusterAccelerationStructureMoveObjectsInputNv));
+            return malloc(sizeof(VkClusterAccelerationStructureMoveObjectsInputNV));
         case VK_STRUCTURE_TYPE_CLUSTER_ACCELERATION_STRUCTURE_INPUT_INFO_NV:
-            return malloc(sizeof(VkClusterAccelerationStructureInputInfoNv));
+            return malloc(sizeof(VkClusterAccelerationStructureInputInfoNV));
         case VK_STRUCTURE_TYPE_CLUSTER_ACCELERATION_STRUCTURE_COMMANDS_INFO_NV:
-            return malloc(sizeof(VkClusterAccelerationStructureCommandsInfoNv));
+            return malloc(sizeof(VkClusterAccelerationStructureCommandsInfoNV));
         case VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CLUSTER_ACCELERATION_STRUCTURE_CREATE_INFO_NV:
-            return malloc(sizeof(VkRayTracingPipelineClusterAccelerationStructureCreateInfoNv));
+            return malloc(sizeof(VkRayTracingPipelineClusterAccelerationStructureCreateInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PARTITIONED_ACCELERATION_STRUCTURE_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDevicePartitionedAccelerationStructureFeaturesNv));
+            return malloc(sizeof(VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PARTITIONED_ACCELERATION_STRUCTURE_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDevicePartitionedAccelerationStructurePropertiesNv));
+            return malloc(sizeof(VkPhysicalDevicePartitionedAccelerationStructurePropertiesNV));
         case VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_PARTITIONED_ACCELERATION_STRUCTURE_NV:
-            return malloc(sizeof(VkWriteDescriptorSetPartitionedAccelerationStructureNv));
+            return malloc(sizeof(VkWriteDescriptorSetPartitionedAccelerationStructureNV));
         case VK_STRUCTURE_TYPE_PARTITIONED_ACCELERATION_STRUCTURE_INSTANCES_INPUT_NV:
-            return malloc(sizeof(VkPartitionedAccelerationStructureInstancesInputNv));
+            return malloc(sizeof(VkPartitionedAccelerationStructureInstancesInputNV));
         case VK_STRUCTURE_TYPE_BUILD_PARTITIONED_ACCELERATION_STRUCTURE_INFO_NV:
-            return malloc(sizeof(VkBuildPartitionedAccelerationStructureInfoNv));
+            return malloc(sizeof(VkBuildPartitionedAccelerationStructureInfoNV));
         case VK_STRUCTURE_TYPE_PARTITIONED_ACCELERATION_STRUCTURE_FLAGS_NV:
-            return malloc(sizeof(VkPartitionedAccelerationStructureFlagsNv));
+            return malloc(sizeof(VkPartitionedAccelerationStructureFlagsNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_PROPERTIES_EXT:
@@ -2163,19 +1709,19 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_MEMORY_BARRIER_ACCESS_FLAGS_3_KHR:
             return malloc(sizeof(VkMemoryBarrierAccessFlags3KHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ALIGNMENT_CONTROL_FEATURES_MESA:
-            return malloc(sizeof(VkPhysicalDeviceImageAlignmentControlFeaturesMesa));
+            return malloc(sizeof(VkPhysicalDeviceImageAlignmentControlFeaturesMESA));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ALIGNMENT_CONTROL_PROPERTIES_MESA:
-            return malloc(sizeof(VkPhysicalDeviceImageAlignmentControlPropertiesMesa));
+            return malloc(sizeof(VkPhysicalDeviceImageAlignmentControlPropertiesMESA));
         case VK_STRUCTURE_TYPE_IMAGE_ALIGNMENT_CONTROL_CREATE_INFO_MESA:
-            return malloc(sizeof(VkImageAlignmentControlCreateInfoMesa));
+            return malloc(sizeof(VkImageAlignmentControlCreateInfoMESA));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FMA_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceShaderFmaFeaturesKHR));
         case VK_STRUCTURE_TYPE_PUSH_CONSTANT_BANK_INFO_NV:
-            return malloc(sizeof(VkPushConstantBankInfoNv));
+            return malloc(sizeof(VkPushConstantBankInfoNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_CONSTANT_BANK_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDevicePushConstantBankFeaturesNv));
+            return malloc(sizeof(VkPhysicalDevicePushConstantBankFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_CONSTANT_BANK_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDevicePushConstantBankPropertiesNv));
+            return malloc(sizeof(VkPhysicalDevicePushConstantBankPropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceRayTracingInvocationReorderFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_PROPERTIES_EXT:
@@ -2192,76 +1738,68 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
             return malloc(sizeof(VkQueueFamilyOwnershipTransferPropertiesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_2_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceVideoMaintenance2FeaturesKHR));
+#ifdef VK_USE_PLATFORM_OHOS
         case VK_STRUCTURE_TYPE_SURFACE_CREATE_INFO_OHOS:
-            return malloc(sizeof(VkSurfaceCreateInfoOhos));
+            return malloc(sizeof(VkSurfaceCreateInfoOHOS));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HDR_VIVID_FEATURES_HUAWEI:
-            return malloc(sizeof(VkPhysicalDeviceHdrVividFeaturesHuawei));
+            return malloc(sizeof(VkPhysicalDeviceHdrVividFeaturesHUAWEI));
         case VK_STRUCTURE_TYPE_HDR_VIVID_DYNAMIC_METADATA_HUAWEI:
-            return malloc(sizeof(VkHdrVividDynamicMetadataHuawei));
+            return malloc(sizeof(VkHdrVividDynamicMetadataHUAWEI));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_2_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCooperativeMatrix2FeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceCooperativeMatrix2FeaturesNV));
         case VK_STRUCTURE_TYPE_COOPERATIVE_MATRIX_FLEXIBLE_DIMENSIONS_PROPERTIES_NV:
-            return malloc(sizeof(VkCooperativeMatrixFlexibleDimensionsPropertiesNv));
+            return malloc(sizeof(VkCooperativeMatrixFlexibleDimensionsPropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_2_PROPERTIES_NV:
-            return malloc(sizeof(VkPhysicalDeviceCooperativeMatrix2PropertiesNv));
+            return malloc(sizeof(VkPhysicalDeviceCooperativeMatrix2PropertiesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_OPACITY_MICROMAP_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDevicePipelineOpacityMicromapFeaturesArm));
+            return malloc(sizeof(VkPhysicalDevicePipelineOpacityMicromapFeaturesARM));
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_IMPORT_MEMORY_METAL_HANDLE_INFO_EXT:
             return malloc(sizeof(VkImportMemoryMetalHandleInfoEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_MEMORY_METAL_HANDLE_PROPERTIES_EXT:
             return malloc(sizeof(VkMemoryMetalHandlePropertiesEXT));
+#endif
+#ifdef VK_USE_PLATFORM_METAL_EXT
         case VK_STRUCTURE_TYPE_MEMORY_GET_METAL_HANDLE_INFO_EXT:
             return malloc(sizeof(VkMemoryGetMetalHandleInfoEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceDepthClampZeroOneFeaturesKHR));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_COUNTERS_BY_REGION_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDevicePerformanceCountersByRegionFeaturesArm));
+            return malloc(sizeof(VkPhysicalDevicePerformanceCountersByRegionFeaturesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_COUNTERS_BY_REGION_PROPERTIES_ARM:
-            return malloc(sizeof(VkPhysicalDevicePerformanceCountersByRegionPropertiesArm));
+            return malloc(sizeof(VkPhysicalDevicePerformanceCountersByRegionPropertiesARM));
         case VK_STRUCTURE_TYPE_PERFORMANCE_COUNTER_ARM:
-            return malloc(sizeof(VkPerformanceCounterArm));
+            return malloc(sizeof(VkPerformanceCounterARM));
         case VK_STRUCTURE_TYPE_PERFORMANCE_COUNTER_DESCRIPTION_ARM:
-            return malloc(sizeof(VkPerformanceCounterDescriptionArm));
+            return malloc(sizeof(VkPerformanceCounterDescriptionARM));
         case VK_STRUCTURE_TYPE_RENDER_PASS_PERFORMANCE_COUNTERS_BY_REGION_BEGIN_INFO_ARM:
-            return malloc(sizeof(VkRenderPassPerformanceCountersByRegionBeginInfoArm));
+            return malloc(sizeof(VkRenderPassPerformanceCountersByRegionBeginInfoARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INSTRUMENTATION_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceShaderInstrumentationFeaturesArm));
+            return malloc(sizeof(VkPhysicalDeviceShaderInstrumentationFeaturesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INSTRUMENTATION_PROPERTIES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceShaderInstrumentationPropertiesArm));
+            return malloc(sizeof(VkPhysicalDeviceShaderInstrumentationPropertiesARM));
         case VK_STRUCTURE_TYPE_SHADER_INSTRUMENTATION_CREATE_INFO_ARM:
-            return malloc(sizeof(VkShaderInstrumentationCreateInfoArm));
+            return malloc(sizeof(VkShaderInstrumentationCreateInfoARM));
         case VK_STRUCTURE_TYPE_SHADER_INSTRUMENTATION_METRIC_DESCRIPTION_ARM:
-            return malloc(sizeof(VkShaderInstrumentationMetricDescriptionArm));
+            return malloc(sizeof(VkShaderInstrumentationMetricDescriptionARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_ROBUSTNESS_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FORMAT_PACK_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceFormatPackFeaturesArm));
+            return malloc(sizeof(VkPhysicalDeviceFormatPackFeaturesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_LAYERED_FEATURES_VALVE:
-            return malloc(sizeof(VkPhysicalDeviceFragmentDensityMapLayeredFeaturesValve));
+            return malloc(sizeof(VkPhysicalDeviceFragmentDensityMapLayeredFeaturesVALVE));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_LAYERED_PROPERTIES_VALVE:
-            return malloc(sizeof(VkPhysicalDeviceFragmentDensityMapLayeredPropertiesValve));
+            return malloc(sizeof(VkPhysicalDeviceFragmentDensityMapLayeredPropertiesVALVE));
         case VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_DENSITY_MAP_LAYERED_CREATE_INFO_VALVE:
-            return malloc(sizeof(VkPipelineFragmentDensityMapLayeredCreateInfoValve));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceRobustness2FeaturesKHR));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_PROPERTIES_KHR:
-            return malloc(sizeof(VkPhysicalDeviceRobustness2PropertiesKHR));
+            return malloc(sizeof(VkPipelineFragmentDensityMapLayeredCreateInfoVALVE));
         case VK_STRUCTURE_TYPE_SET_PRESENT_CONFIG_NV:
-            return malloc(sizeof(VkSetPresentConfigNv));
+            return malloc(sizeof(VkSetPresentConfigNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_METERING_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDevicePresentMeteringFeaturesNv));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_FEATURES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_PROPERTIES_EXT:
-            return malloc(sizeof(VkPhysicalDeviceFragmentDensityMapOffsetPropertiesEXT));
-        case VK_STRUCTURE_TYPE_RENDER_PASS_FRAGMENT_DENSITY_MAP_OFFSET_END_INFO_EXT:
-            return malloc(sizeof(VkRenderPassFragmentDensityMapOffsetEndInfoEXT));
-        case VK_STRUCTURE_TYPE_RENDERING_END_INFO_EXT:
-            return malloc(sizeof(VkRenderingEndInfoEXT));
+            return malloc(sizeof(VkPhysicalDevicePresentMeteringFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ZERO_INITIALIZE_DEVICE_MEMORY_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceZeroInitializeDeviceMemoryFeaturesEXT));
-        case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_MODE_FIFO_LATEST_READY_FEATURES_KHR:
-            return malloc(sizeof(VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_64_BIT_INDEXING_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShader64BitIndexingFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUSTOM_RESOLVE_FEATURES_EXT:
@@ -2271,69 +1809,69 @@ void* copy_struct_extends_from_vk_struct(void* structure) {
         case VK_STRUCTURE_TYPE_CUSTOM_RESOLVE_CREATE_INFO_EXT:
             return malloc(sizeof(VkCustomResolveCreateInfoEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DATA_GRAPH_MODEL_FEATURES_QCOM:
-            return malloc(sizeof(VkPhysicalDeviceDataGraphModelFeaturesQcom));
+            return malloc(sizeof(VkPhysicalDeviceDataGraphModelFeaturesQCOM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_BUILTIN_MODEL_CREATE_INFO_QCOM:
-            return malloc(sizeof(VkDataGraphPipelineBuiltinModelCreateInfoQcom));
+            return malloc(sizeof(VkDataGraphPipelineBuiltinModelCreateInfoQCOM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_10_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceMaintenance10FeaturesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_10_PROPERTIES_KHR:
             return malloc(sizeof(VkPhysicalDeviceMaintenance10PropertiesKHR));
         case VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_FLAGS_INFO_KHR:
             return malloc(sizeof(VkRenderingAttachmentFlagsInfoKHR));
-        case VK_STRUCTURE_TYPE_RENDERING_END_INFO_KHR:
-            return malloc(sizeof(VkRenderingEndInfoKHR));
         case VK_STRUCTURE_TYPE_RESOLVE_IMAGE_MODE_INFO_KHR:
             return malloc(sizeof(VkResolveImageModeInfoKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DATA_GRAPH_OPTICAL_FLOW_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceDataGraphOpticalFlowFeaturesArm));
+            return malloc(sizeof(VkPhysicalDeviceDataGraphOpticalFlowFeaturesARM));
         case VK_STRUCTURE_TYPE_QUEUE_FAMILY_DATA_GRAPH_OPTICAL_FLOW_PROPERTIES_ARM:
-            return malloc(sizeof(VkQueueFamilyDataGraphOpticalFlowPropertiesArm));
+            return malloc(sizeof(VkQueueFamilyDataGraphOpticalFlowPropertiesARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_OPTICAL_FLOW_IMAGE_FORMAT_INFO_ARM:
-            return malloc(sizeof(VkDataGraphOpticalFlowImageFormatInfoArm));
+            return malloc(sizeof(VkDataGraphOpticalFlowImageFormatInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_OPTICAL_FLOW_IMAGE_FORMAT_PROPERTIES_ARM:
-            return malloc(sizeof(VkDataGraphOpticalFlowImageFormatPropertiesArm));
+            return malloc(sizeof(VkDataGraphOpticalFlowImageFormatPropertiesARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_OPTICAL_FLOW_DISPATCH_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineOpticalFlowDispatchInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineOpticalFlowDispatchInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_OPTICAL_FLOW_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineOpticalFlowCreateInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineOpticalFlowCreateInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_RESOURCE_INFO_IMAGE_LAYOUT_ARM:
-            return malloc(sizeof(VkDataGraphPipelineResourceInfoImageLayoutArm));
+            return malloc(sizeof(VkDataGraphPipelineResourceInfoImageLayoutARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_SINGLE_NODE_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineSingleNodeCreateInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineSingleNodeCreateInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_SINGLE_NODE_CONNECTION_ARM:
-            return malloc(sizeof(VkDataGraphPipelineSingleNodeConnectionArm));
+            return malloc(sizeof(VkDataGraphPipelineSingleNodeConnectionARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_LONG_VECTOR_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShaderLongVectorFeaturesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_LONG_VECTOR_PROPERTIES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShaderLongVectorPropertiesEXT));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_CACHE_INCREMENTAL_MODE_FEATURES_SEC:
-            return malloc(sizeof(VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSec));
+            return malloc(sizeof(VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_UNIFORM_BUFFER_UNSIZED_ARRAY_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShaderUniformBufferUnsizedArrayFeaturesEXT));
         case VK_STRUCTURE_TYPE_COMPUTE_OCCUPANCY_PRIORITY_PARAMETERS_NV:
-            return malloc(sizeof(VkComputeOccupancyPriorityParametersNv));
+            return malloc(sizeof(VkComputeOccupancyPriorityParametersNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_OCCUPANCY_PRIORITY_FEATURES_NV:
-            return malloc(sizeof(VkPhysicalDeviceComputeOccupancyPriorityFeaturesNv));
+            return malloc(sizeof(VkPhysicalDeviceComputeOccupancyPriorityFeaturesNV));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_11_FEATURES_KHR:
             return malloc(sizeof(VkPhysicalDeviceMaintenance11FeaturesKHR));
         case VK_STRUCTURE_TYPE_QUEUE_FAMILY_OPTIMAL_IMAGE_TRANSFER_GRANULARITY_PROPERTIES_KHR:
             return malloc(sizeof(VkQueueFamilyOptimalImageTransferGranularityPropertiesKHR));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_PARTITIONED_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDeviceShaderSubgroupPartitionedFeaturesEXT));
+#ifdef VK_USE_PLATFORM_UBM_SEC
         case VK_STRUCTURE_TYPE_UBM_SURFACE_CREATE_INFO_SEC:
-            return malloc(sizeof(VkUbmSurfaceCreateInfoSec));
+            return malloc(sizeof(VkUbmSurfaceCreateInfoSEC));
+#endif
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MIXED_FLOAT_DOT_PRODUCT_FEATURES_VALVE:
-            return malloc(sizeof(VkPhysicalDeviceShaderMixedFloatDotProductFeaturesValve));
+            return malloc(sizeof(VkPhysicalDeviceShaderMixedFloatDotProductFeaturesVALVE));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_THROTTLE_HINT_FEATURES_SEC:
-            return malloc(sizeof(VkPhysicalDeviceThrottleHintFeaturesSec));
+            return malloc(sizeof(VkPhysicalDeviceThrottleHintFeaturesSEC));
         case VK_STRUCTURE_TYPE_THROTTLE_HINT_SUBMIT_INFO_SEC:
-            return malloc(sizeof(VkThrottleHintSubmitInfoSec));
+            return malloc(sizeof(VkThrottleHintSubmitInfoSEC));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_NEURAL_STATISTICS_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineNeuralStatisticsCreateInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineNeuralStatisticsCreateInfoARM));
         case VK_STRUCTURE_TYPE_DATA_GRAPH_PIPELINE_SESSION_NEURAL_STATISTICS_CREATE_INFO_ARM:
-            return malloc(sizeof(VkDataGraphPipelineSessionNeuralStatisticsCreateInfoArm));
+            return malloc(sizeof(VkDataGraphPipelineSessionNeuralStatisticsCreateInfoARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DATA_GRAPH_NEURAL_ACCELERATOR_STATISTICS_FEATURES_ARM:
-            return malloc(sizeof(VkPhysicalDeviceDataGraphNeuralAcceleratorStatisticsFeaturesArm));
+            return malloc(sizeof(VkPhysicalDeviceDataGraphNeuralAcceleratorStatisticsFeaturesARM));
         case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVE_RESTART_INDEX_FEATURES_EXT:
             return malloc(sizeof(VkPhysicalDevicePrimitiveRestartIndexFeaturesEXT));
         default:

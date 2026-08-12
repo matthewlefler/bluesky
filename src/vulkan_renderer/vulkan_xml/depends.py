@@ -3,7 +3,7 @@ from enum import Enum
 import xml.etree.ElementTree as ET
 
 import vk_version
-from structures import structure
+import structures as structures_py
 
 class DependsOperation(Enum):
     OR = 1
@@ -72,7 +72,7 @@ def parse_depends_recurse(string: list[str]) -> DependsStruct | None:
     # print(f"remaining string: {string[0]}")
     return DependsStruct(depends_operation, left, right)
 
-def calc_depends_struct(depends_struct: DependsStruct, extension_name_valid: dict[str, int], structures: dict[str, structure]) -> int | list[str]:
+def calc_depends_struct(depends_struct: DependsStruct, extension_name_valid: dict[str, int], structures: dict[str, structures_py.vk_structure]) -> int | list[str]:
     left = None
     right = None
 
@@ -163,7 +163,7 @@ def print_depends_struct(depends_struct: DependsStruct, level = 0):
     else: 
         print_depends_struct(right, level + 1)
 
-def eval_depends(element: ET.Element[str], extension_name_valid: dict[str, int], structures: dict[str, structure]) -> bool:
+def eval_depends(element: ET.Element[str], extension_name_valid: dict[str, int], structures: dict[str, structures_py.vk_structure]) -> bool:
     depends = element.get("depends")
     if depends is None:
         return True

@@ -1,17 +1,24 @@
 from dataclasses import dataclass
 import xml.etree.ElementTree as ET
 
+import enums
+import extensions
+
 @dataclass
 class struct_member:
     name: str
     base_type: str
     pointer_depth: int   # -1 = not a pointer
     array_len: list # -1 = not an array
+    optional: bool | None
+    values: str | None
 
 @dataclass
-class structure:
+class vk_structure:
     name: str
     members: list[struct_member]
+    
+    ext: extensions.extension
 
 def parse_struct_member(member: ET.Element[str]) -> struct_member | None:
     # <member api="list of api-s" noautovalidity="bool" optional="bool">
@@ -67,7 +74,28 @@ def parse_struct_member(member: ET.Element[str]) -> struct_member | None:
     if len(array_len) == 0:
         array_len = [-1]
     
+    optional = member.get("optional")
+    if optional is not None:
+        optional = bool(optional)
 
     if member_type is not None and member_name is not None and member_type.text is not None and member_name.text is not None:
-        return struct_member(member_name.text, member_type.text, pointer_depth, array_len)
+        return struct_member(member_name.text, member_type.text, pointer_depth, array_len, optional, member.get("values"))
     return None
+
+struct_name_to_enum: dict[str, enums.vk_enum] = dict()
+enum_name_to_struct: dict[str, vk_structure]  = dict()
+
+def find_enums_from_structures(structures: list[vk_structure], enums: list[enums.vk_enum]):
+    for structure in structures:
+        for member in structure.members:
+
+            if member.name == "sType" and member.values is not None:
+                enum_name_to_struct[member.values] = structure
+
+                for enum in enums:
+                    if enum.name == member.values:
+                        struct_name_to_enum[structure.name] = enum
+
+                # stop it get some help
+                break
+                

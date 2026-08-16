@@ -2,7 +2,8 @@ from dataclasses import dataclass
 import xml.etree.ElementTree as ET
 
 import enums
-import extensions
+import extensions as extensions_py
+import vk_types
 
 @dataclass
 class struct_member:
@@ -18,7 +19,7 @@ class vk_structure:
     name: str
     members: list[struct_member]
     
-    ext: extensions.extension
+    ext: extensions_py.extension
 
 def parse_struct_member(member: ET.Element[str]) -> struct_member | None:
     # <member api="list of api-s" noautovalidity="bool" optional="bool">
@@ -98,4 +99,53 @@ def find_enums_from_structures(structures: list[vk_structure], enums: list[enums
 
                 # stop it get some help
                 break
-                
+
+def collect_structures(root: ET.Element[str]) -> list[vk_structure]:
+    return_array = []
+    type_tags = list(root.iter("type"))
+    extensions = list(root.iter("extension"))
+
+    for type_tag in type_tags:
+        category = type_tag.get("category")
+        name = type_tag.get("name")
+        alias = type_tag.get("alias")
+        if category != "struct" or name is None or alias is not None:
+            continue
+        
+        members = type_tag.findall("member")
+        collected_members = []
+        for member in members:
+            struct_type = parse_struct_member(member)
+            if struct_type is None:
+                continue
+            collected_members.append(struct_type)
+
+        ext = None
+        for extension in extensions:
+            for require in extension:
+                for element in require:
+                    if element.get("name") == name:
+                        ext = extensions_py.parse_extension(extension)      
+        if ext is None:
+            continue
+        return_array.append(vk_structure(name, collected_members, ext))    
+
+    return return_array
+
+def get_type_string(member: struct_member) -> str:
+    return_str = f"{member.base_type}{(member.pointer_depth * "*")}"
+
+    if member.array_len[0] != -1:
+        for array in member.array_len:
+            return_str += f"[{array}]"
+    
+    return return_str
+
+def get_type_string_arg(base_type: str, pointer_depth: int, array_len: list) -> str:
+    return_str = f"{base_type}{(pointer_depth * "*")}"
+
+    if array_len[0] != -1:
+        for array in array_len:
+            return_str += f"[{array}]"
+    
+    return return_str

@@ -12,6 +12,7 @@ from structures import *
 from platforms import *
 from enums import *
 from extensions import *
+from vk_types import *
 
 xml_filename = "vk.xml"
 output_c_file_prepend = "bluesky_vulkan_xml"
@@ -23,28 +24,7 @@ structures: dict[str, vk_structure] = dict()
 # [<enum>ARRAY_LEN</enum>][<enum>ARRAY_LEN2</enum>]
 # [3][<enum>ARRAY_LEN2</enum>]
 
-def collect_structures(root: ET.Element[str]) -> list[vk_structure]:
-    return_array = []
-    type_tags = list(root.iter("extension"))
-
-    for type_tag in type_tags:
-        category = type_tag.get("category")
-        name = type_tag.get("name")
-        if category != "struct" or name is None:
-            continue
-        
-        members = type_tag.findall("member")
-        collected_members = []
-        for member in members:
-            struct_type = parse_struct_member(member)
-            if struct_type is None:
-                continue
-            collected_members.append(struct_type)
-
-        return_array.append(vk_structure(name, collected_members))    
-
-    return return_array
-
+ignore_str = "IGNORE"
 comparator_dict = {
     "uint8_t"  : ">=",
     "uint16_t" : ">=",
@@ -69,9 +49,11 @@ comparator_dict = {
     "VkFlags"  : ">=",
 
     "VkStructureType" : "==",
+
     # ignore
-    "void" : "IGNORE",
-    "char" : "IGNORE",
+
+    "void*" : ignore_str, # pointers shouldn't be comparied anyways
+    "VK_DEFINE_NON_DISPATCHABLE_HANDLE" : ignore_str # these pointers are meant to be opauque anyways
 }
         
 
@@ -118,10 +100,71 @@ def write_copy_extends_from_vk_struct_type(file_to_write_to: TextIOWrapper, enum
     ]) 
 
 def write_compare_function(file_to_write_to: TextIOWrapper, structure: vk_structure) -> None:
-    file_to_write_to.write("hi\n")
-    
+    protector = None
+    if structure.ext.platform is not None:
+        protector = platforms[structure.ext.platform].protect
+        file_to_write_to.write(f"#ifdef {protector}\n")
+
+    file_to_write_to.writelines([
+        f"\nbool are_requirements_met_{structure.name}({structure.name} actual, {structure.name} requirement) ",
+        "{\n",
+        "    if (\n"
+    ])
+
+    first = True
+    for member in structure.members:
+        base_type = type_name_to_base.get(member.base_type, None)
+        if base_type is None:
+            base_type = member.base_type
+        else:
+            if base_type.category == "enum":
+                base_type = "enum"
+            elif base_type.category == "bitmask":
+                bit_len = get_vk_flag_type_bit_len(base_type.name)
+                for bit_num in range(bit_len):
+                    if first:
+                        first = False
+                    else:
+                        file_to_write_to.write(" &&\n")
+
+                    bit_selector_str = "0b1" + (bit_num * "0")
+                    file_to_write_to.write(f"        (actual.{member.name} & {bit_selector_str}) >= (requirement.{member.name} & {bit_selector_str})")
+                continue
+            else:
+                base_type = base_type.name
+        
+        comparator = comparator_dict.get(get_type_string_arg(base_type, member.pointer_depth, member.array_len), None)
+        if comparator is None:
+            comparator = "=="
+            print(f"KeyError: \"{get_type_string_arg(base_type, member.pointer_depth, member.array_len)}\"\tin {structure.name}")
+        
+        if comparator is ignore_str:
+            continue
+
+        if first:
+            first = False
+        else:
+            file_to_write_to.write(" &&\n")
+
+        file_to_write_to.write(f"        actual.{member.name} {comparator} requirement.{member.name}")
+
+    file_to_write_to.writelines([
+        "\n"
+        "    ) {\n",
+        "        return true;\n",
+        "    }\n",
+        "    return false;\n",
+        "}\n"
+    ])
+
+    if protector is not None:
+        file_to_write_to.write("#endif\n")
+       
 
 def write_compare_functions(file_to_write_to: TextIOWrapper, structures: list[vk_structure]) -> None:
+    file_to_write_to.writelines([
+        "#include <vulkan/vulkan.h>\n"
+    ])
     for structure in structures:
         write_compare_function(file_to_write_to, structure)
 
@@ -132,6 +175,9 @@ if __name__ == "__main__":
         open(f"{output_c_file_prepend}_struct_comparision.c", "w") as output_comparision_file
     ):
         tree_root = ET.parse(xml_file).getroot()
+
+        resolve_types(tree_root)
+        print(f"resolved {len(type_name_to_base)} types")
 
         collected_platforms = collect_platforms(tree_root)
         print(f"got {len(collected_platforms)} plaforms")

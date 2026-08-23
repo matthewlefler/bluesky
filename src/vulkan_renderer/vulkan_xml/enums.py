@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import xml.etree.ElementTree as ET
-import structures as structures_py
+import vk_structures as structures_py
 import depends as depends_py
 import extensions as extenstion_py
 

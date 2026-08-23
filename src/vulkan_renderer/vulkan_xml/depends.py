@@ -3,7 +3,7 @@ from enum import Enum
 import xml.etree.ElementTree as ET
 
 import vk_version
-import structures as structures_py
+import vk_structures as structures_py
 
 class DependsOperation(Enum):
     OR = 1

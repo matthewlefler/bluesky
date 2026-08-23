@@ -32,6 +32,10 @@ def parse_extension(element: ET.Element[str]) -> extension | None:
     supported = element.get("supported")
     nofeatures = element.get("nofeatures")
     deprecatedby = element.get("deprecatedby")
+    api = element.get("api")
+
+    if api is not None and "vulkan" not in api.split(","):
+        return None
 
     if name is None:
         return None

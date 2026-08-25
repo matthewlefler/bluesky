@@ -263,7 +263,7 @@ def write_compare_function(file_to_write_to: TextIOWrapper, structure: vk_struct
                 elif base_type_is_from_external_header:
                     comparision_string += f"&actual.{member.name}{array_selector} == &requirement.{member.name}{array_selector}"
                 else:
-                    comparision_string += f"actual.{member.name}{array_selector} {comparator} requirement.{member.name}{array_selector} == false"
+                    comparision_string += f"(actual.{member.name}{array_selector} {comparator} requirement.{member.name}{array_selector}) == false"
 
                     indexer += 1
                 comparision_string +=     f" ) " + "{\n"
@@ -281,9 +281,9 @@ def write_compare_function(file_to_write_to: TextIOWrapper, structure: vk_struct
                 elif base_type_is_bitmask:
                     comparision_string = f"((~{member.pointer_depth * "*"}actual.{member.name}) & {member.pointer_depth * "*"}requirement.{member.name}) == 0"
                 elif base_type_is_from_external_header:
-                    comparision_string += f"&{member.pointer_depth * "*"}actual.{member.name} == &{member.pointer_depth * "*"}requirement.{member.name}"
+                    comparision_string += f"(&{member.pointer_depth * "*"}actual.{member.name}) == (&{member.pointer_depth * "*"}requirement.{member.name})"
                 else:
-                    comparision_string = f"{member.pointer_depth * "*"}actual.{member.name} {comparator} {member.pointer_depth * "*"}requirement.{member.name}"
+                    comparision_string = f"({member.pointer_depth * "*"}actual.{member.name}) {comparator} ({member.pointer_depth * "*"}requirement.{member.name})"
                 inline_member_comparisions[member.name] = True
 
             member_comparisions[member.name] = comparision_string
@@ -351,6 +351,50 @@ def write_compare_functions(c_file_to_write_to: TextIOWrapper, h_file_to_write_t
 
 VK_STRUCTURE_TYPE = "VkStructureType"
 
+def write_compare_extends_from_vk_struct_type(file_to_write_to: TextIOWrapper, comparision_functions_h_file_name: str, enums: list[vk_enum]) -> None:
+    enums_that_extend_vk_struct_type = get_enums_that_extend_from(enums, "VkStructureType")
+
+    file_to_write_to.writelines([
+        "#include <vulkan/vulkan.h>\n",
+        "\n",
+        f"#include \"{comparision_functions_h_file_name}\"\n\n",
+        "bool compare_struct_extends_from_vk_struct(void* actual, void* requirement) {\n",
+        "    if( *(VkStructureType*) actual != *(VkStructureType*) requirement ) {\n",
+        "        return false;\n",
+        "    }\n\n",
+        "    switch (*(VkStructureType*) actual) {\n"
+    ])
+    for enum in enums_that_extend_vk_struct_type:
+        if enum.deprecated is not None or enum.alias is not None or enum.extension_from.deprecatedby is not None:
+            continue
+
+        enum_name = enum.name
+
+        struct_name = enum_name_to_struct[enum_name].name
+
+        protector = None
+        if enum.extension_from.platform is not None:
+            platform = platforms[enum.extension_from.platform]
+            protector = f"#ifdef {platform.protect}\n"
+
+        if protector:
+            file_to_write_to.write(protector)
+
+        file_to_write_to.writelines([
+            f"        case {enum_name}:\n",
+            f"            return are_requirements_met_{struct_name}(*(({struct_name}*) actual), *(({struct_name}*) requirement));\n"
+        ])
+
+        if protector:
+            file_to_write_to.write("#endif\n")
+    
+    file_to_write_to.writelines([
+        "        default:\n",
+        "            return false;\n",
+        "    }\n",
+        "}\n"
+    ]) 
+
 if __name__ == "__main__":
     time_before = time.time_ns()
     with (
@@ -385,6 +429,7 @@ if __name__ == "__main__":
         write_compare_functions(output_comparision_func_file_c, output_comparision_func_file_h, collected_structures)
         print(f"wrote {len(structures_to_compare)} comparision functions")
 
+        write_compare_extends_from_vk_struct_type(output_struct_comparision_file_c, output_comparision_func_file_h.name, valid_enums)
+
     time_after = time.time_ns()
     print(f"took {(time_after - time_before) / 1e9} s")
-

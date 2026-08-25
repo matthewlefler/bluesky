@@ -1,28 +1,32 @@
+#include <stdlib.h>
+
 #include <vulkan/vulkan.h>
 
+#include "vulkan_structure.h"
 #include "vulkan_xml.h"
 
 void set_pNext(void* structure, void* addr) {
-    *((VkStructureType*) structure) + 1 = addr;
+    ((VkBaseOutStructure*) structure)->pNext = addr;
 }
 
 void* get_pNext(void* structure) {
-    return (((VkStructureType*) structure) + 1);
+    return ((VkBaseOutStructure*) structure)->pNext;
 }
+
 VkStructureType get_sType(void* structure) {
-    return *(VkStructureType*) structure;
+    return *((VkStructureType*) structure);
 }
 
 void* copy_struct_chain(void* start) {
     void* current_copied_struct = NULL;
-    void* previous_copied_struct = copy_structure(start);
+    void* previous_copied_struct = copy_struct_extends_from_vk_struct(start);
     void* current_struct = get_pNext(start);
 
     void* return_struct = previous_copied_struct;
     
     // walk the structure chain,
     while(current_struct != NULL) {
-        current_copied_struct = copy_structure(current_struct);
+        current_copied_struct = copy_struct_extends_from_vk_struct(current_struct);
         set_pNext(previous_copied_struct, current_copied_struct);
 
         current_struct = get_pNext(current_struct);
@@ -48,9 +52,9 @@ bool compare_struct_chain(void* actual, void* requirements) {
     void* current_actual = actual;
     void* current_requirements = requirements;
     
-    // walk the structure chain,
+    // walk the structure chain, while both pointers are valid
     while(current_actual != NULL && current_requirements != NULL) {
-        if(!compare_structure(current_actual, current_requirements)) {
+        if(!compare_struct_extends_from_vk_struct(current_actual, current_requirements)) {
             return false;
         }
 

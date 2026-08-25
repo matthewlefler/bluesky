@@ -9,7 +9,7 @@
  * 
  * @return the heap allocated structure with the .sType filled out
  */
-void* copy_structure(void* structure);
+void* copy_struct_extends_from_vk_struct(void* structure);
 
 /**
  * Compares a structure, a, to another structure, b
@@ -19,5 +19,5 @@ void* copy_structure(void* structure);
  * 
  * @return `true` if the structure, a, meets the requirements set in structure, b. `false` otherwise
  */
-bool compare_structure(void* a, void* b);
+bool compare_struct_extends_from_vk_struct(void* a, void* b);
 #endif

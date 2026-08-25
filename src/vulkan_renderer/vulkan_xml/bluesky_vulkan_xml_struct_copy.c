@@ -2,6 +2,8 @@
 
 #include <vulkan/vulkan.h>
 
+#include "vulkan_xml.h"
+
 void* copy_struct_extends_from_vk_struct(void* structure) {
     switch (*(VkStructureType*) structure) {
         case VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR:

@@ -3,11 +3,12 @@
 
 #define GLFW_INCLUDE_VULKAN
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
-#include "../../cglm/include/cglm/cglm.h"
 
 #include "../utilities/logger/logger.h"
 
@@ -22,7 +23,7 @@ VkResult vulkan_create_instance(Renderer* renderer) {
     VkApplicationInfo app_info = {
         .pApplicationName   = renderer->window.name,
         .applicationVersion = VK_MAKE_VERSION( 1, 0, 0 ),
-        .pEngineName        = "No Engine. yet.",
+        .pEngineName        = "BlueSky",
         .engineVersion      = VK_MAKE_VERSION( 1, 0, 0 ),
         .apiVersion         = VK_API_VERSION_1_4,
         .sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO,

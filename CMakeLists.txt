@@ -15,16 +15,22 @@ add_executable(vulkan_main)
 target_sources(vulkan_main PRIVATE
     src/main.c
 
+    src/utilities/logger/logger.c
+
     src/vulkan_renderer/extensions.c
     src/vulkan_renderer/layers.c
     src/vulkan_renderer/log_utilities.c
     src/vulkan_renderer/render.c
     src/vulkan_renderer/window.c
+
     src/vulkan_renderer/devices/devices.c
     src/vulkan_renderer/devices/logical_devices.c
     src/vulkan_renderer/devices/physical_devices.c
-    src/vulkan_renderer/vulkan_xml/vulkan_xml.c
+    
     src/vulkan_renderer/vulkan_xml/vulkan_structure.c
+    src/vulkan_renderer/vulkan_xml/bluesky_vulkan_xml_struct_copy.c
+    src/vulkan_renderer/vulkan_xml/bluesky_vulkan_xml_struct_comparision_functions.c
+    src/vulkan_renderer/vulkan_xml/bluesky_vulkan_xml_struct_comparision_vk_struct_type.c
 )
 
 # Find System Dependencies
@@ -34,7 +40,6 @@ find_package(glfw3 REQUIRED)
 # Include directories
 target_include_directories(vulkan_main PRIVATE 
     src
-    cglm/include
 )
 
 # Link libraries

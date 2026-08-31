@@ -286,3 +286,5 @@ __marimo__/
 build/**
 output.txt
 .vscode
+
+src/vulkan_renderer/vulkan_xml/xml_parsing_output/**

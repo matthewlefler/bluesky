@@ -9,44 +9,16 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 add_compile_options(-g -Wall -Wextra)
 
 # xml based parsing
-add_executable(vulkan_xml_parsing)
-target_sources(vulkan_xml_parsing PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/parse.c
-    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_structs.c
-    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_type_structs.c
-)
-
-# Find System Dependencies
-find_package(libXml2 REQUIRED)
-
-# Include directories
-target_include_directories(vulkan_xml_parsing PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing
-    ${LIBXML2_INCLUDE_DIR}
-)
-
-# Link libraries
-target_link_libraries(vulkan_xml_parsing PRIVATE
-    ${LIBXML2_LIBRARIES}
-    m
-)
-
-# Set output directory matching your old 'build' setup
-set_target_properties(vulkan_xml_parsing PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-    OUTPUT_NAME "parse_xml"
-)
-
-add_custom_command(
-  OUTPUT    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/bluesky_vulkan_xml_struct_copy.c
-            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/bluesky_vulkan_xml_struct_comparision_functions.c
-            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/bluesky_vulkan_xml_struct_comparision_vk_struct_type.c
-  DEPENDS vulkan_xml_parsing
-  COMMAND ./parse_xml ../src/vulkan_renderer/vulkan_xml/xml_parsing/vk.xml
+add_custom_target(xml_parsing
+    python ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/parse.py ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output
+    BYPRODUCTS  ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output/bluesky_vulkan_xml_struct_copy.c
+                ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output/bluesky_vulkan_xml_struct_compare.c
+                ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output/bluesky_vulkan_xml_struct_compare_functions.c
 )
 
 # Define the executable target
 add_executable(vulkan_main)
+add_dependencies(vulkan_main xml_parsing )
 
 # source files
 target_sources(vulkan_main PRIVATE
@@ -65,9 +37,9 @@ target_sources(vulkan_main PRIVATE
     ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/devices/physical_devices.c
     
     ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/vulkan_structure.c
-    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/bluesky_vulkan_xml_struct_copy.c
-    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/bluesky_vulkan_xml_struct_comparision_functions.c
-    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/bluesky_vulkan_xml_struct_comparision_vk_struct_type.c
+    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output/bluesky_vulkan_xml_struct_copy.c
+    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output/bluesky_vulkan_xml_struct_compare.c
+    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output/bluesky_vulkan_xml_struct_compare_functions.c
 )
 
 # Find System Dependencies

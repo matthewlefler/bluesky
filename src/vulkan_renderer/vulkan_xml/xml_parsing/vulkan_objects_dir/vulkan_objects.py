@@ -5,6 +5,15 @@ import xml.etree.ElementTree as ET
 
 import dependencies
 
+@dataclass
+class VkVersion:
+    Major: int
+    Minor: int
+    Patch: int
+
+    def get_name(self) -> str:
+        return f"{self.Major}.{self.Minor}.{self.Patch}"
+
 class ElementValid(Enum):
     VALID = 1,
     INVALID = 0,
@@ -36,8 +45,9 @@ class VkPlatform:
 class VkExtension:
     base: VkElement
     supported_apis: list[str]
-    version_number: str
+    id_number: int
     ext_type: str
+    platform: VkPlatform | None
     depends: dependencies.Depends | None
     promoted_to: str | None
     depreciated_by: str | None
@@ -53,11 +63,11 @@ class VkFeature:
 
 @dataclass
 class VulkanObject:
-    version: int
+    version: VkVersion
     readable_version_name: str
     supported_apis: list[str]
-    extensions: list[VkExtension]
-    features: list[VkFeature]
-    structures: list[VkStructure]
-    enums: list[VkEnum]
-    platforms: list[VkPlatform]
+    extensions: dict[str, VkExtension]
+    features:   dict[str, VkFeature]
+    structures: dict[str, VkStructure]
+    enums:      dict[str, VkEnum]
+    platforms:  dict[str, VkPlatform]

@@ -17,7 +17,7 @@ def validate(depend: Depends) -> bool:
 
 def parse_depend_string(depends: str) -> Depends | None:
     """
-    parses a depends statments i.e. name1,(name2+name3),name4
+    parses a depends statments i.e. "name1,(name2+name3),name4"
     """
         
     # parens () for order
@@ -88,7 +88,7 @@ def parse_depend_string(depends: str) -> Depends | None:
 
 def print_depends(depends: Depends, depth = 0) -> None:
     """
-    recursively prints a depends statments
+    recursively prints a depends statement
     """
     if depends is None:
         return

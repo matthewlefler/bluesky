@@ -2,7 +2,7 @@
 from io import TextIOWrapper
 import sys
 
-from vulkan_objects.dependices import parse_depend_string, print_depends
+import vulkan_object
 
 OUTPUT_DIR: str | None = None
 FILE_PREPEND="bluesky_vulkan_xml"
@@ -61,7 +61,5 @@ if __name__ == "__main__":
         open(f"{OUTPUT_DIR}/{FILE_PREPEND}_struct_compare_functions.h", "w") as compare_structure_funcs_h_file
     ):
         
-        print_depends(parse_depend_string("name,(name2+name3)"))
-
         # write_copy_struct(copy_structure_c_file, copy_structure_h_file, vk.structs)
-            
+        obj = vulkan_object.get_vulkan_object("vk.xml")

@@ -81,7 +81,7 @@ VkResult check_instance_layers(uint32_t required_instance_layers_count, const ch
 }
 
 void free_layers(const char * const* layers, uint32_t len) {
-    free((void*) layers);
+    free(layers);
 }
 
 #endif

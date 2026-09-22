@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
+from vulkan_objects_dir import vulkan_objects
 
 class DependsOperation(Enum):
     OR = 0
@@ -9,12 +10,64 @@ class DependsOperation(Enum):
 
 @dataclass
 class Depends:
+    # each sub_depends is one of 
+    #   A Depends, 
+    #   or a name string, which is one of:
+    #     - VK_VERSION_{major}_{minor}
+    #     - VK_XXX_extension
+    #     - structure_name::feature_name
     sub_depends: list[Depends | str]
     operation: DependsOperation
 
-def validate(depend: Depends) -> bool:
-    raise NotImplemented
+def validate_name(name: str, target_api_version: vulkan_objects.VkVersion, extensions: dict[str, vulkan_objects.VkExtension]) -> vulkan_objects.ElementValid:
+    # is the name of a api verion
+    if name.startswith("VK_VERSION_"):
+        version = [int(x) for x in name.removeprefix("VK_VERSION_").split("_")]
+        if version[0] < target_api_version.Major:
+            return False
+        elif version[0] == target_api_version.Major:
+            if version[1] >= target_api_version.Minor:
+                return True
+            else:
+                return False
+        else:
+            return True
 
+    # struct name
+    #   These are dependent on runtime features which can only be determined at runtime
+    if "::" in name:
+        return True
+    # extension name
+    if name not in extensions:
+        print(f"ERROR: extension name {name} not found in extension dictonary")
+    else:
+        return extensions[name].base.valid
+
+
+def validate(depend: Depends, target_api_version: vulkan_objects.VkVersion, extensions: dict[str, vulkan_objects.VkExtension]) -> vulkan_objects.ElementValid:
+    valid: vulkan_objects.ElementValid = vulkan_objects.ElementValid.UNKNOWN
+    for sub_depend in depend.sub_depends:
+        if isinstance(sub_depend, Depends):
+            valid = validate(sub_depend)
+        elif isinstance(sub_depend, str):
+            valid = validate_name(sub_depend, target_api_version, extensions)
+            
+        else:
+            print(f"ERROR: sub_depend {sub_depend} is not a `string` or a `Depends` object")
+            valid = vulkan_objects.ElementValid.INVALID
+
+        if depend.operation == DependsOperation.OR:
+            if valid:
+                return vulkan_objects.ElementValid.VALID
+        elif depend.operation == DependsOperation.AND:
+            if not valid:
+                return vulkan_objects.ElementValid.INVALID
+
+    if depend.operation == DependsOperation.OR:
+        return vulkan_objects.ElementValid.INVALID
+    elif depend.operation == DependsOperation.AND:
+        return vulkan_objects.ElementValid.VALID
+        
 def parse_depend_string(depends: str) -> Depends | None:
     """
     parses a depends statments i.e. "name1,(name2+name3),name4"
@@ -33,8 +86,12 @@ def parse_depend_string(depends: str) -> Depends | None:
     OR_CHAR = ','
     AND_CHAR = '+'
 
-    if(depends.isspace()):
+    if depends.isspace():
         return None
+
+    if not any(char in depends for char in [OPEN_PAREN_CHAR, CLOSE_PAREN_CHAR, OR_CHAR, AND_CHAR]):
+        # depends is of a single thing
+        return Depends([depends], DependsOperation.OR)
 
     depends_name: str = ""
     stack: list[Depends] = list()

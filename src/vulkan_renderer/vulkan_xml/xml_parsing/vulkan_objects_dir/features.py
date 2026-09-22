@@ -1,7 +1,7 @@
-import vulkan_objects
-import dependencies
-
 import xml.etree.ElementTree as ET
+
+from vulkan_objects_dir import vulkan_objects
+from vulkan_objects_dir import dependencies
 
 FEATURE_TAG_NAME = "feature"
 
@@ -35,8 +35,13 @@ def parse_feature(feature_element: ET.Element[str]) -> vulkan_objects.VkFeature 
     if apis is not None:
         apis = apis.split(",")
 
+    if number is not None:
+        versions = [int(x) for x in number.split(".")]
+        number = vulkan_objects.VkVersion(versions[0], versions[1], 0)
+
     return vulkan_objects.VkFeature(
-        vulkan_objects.VkElement( # base element
+        vulkan_objects.VkElement( 
+            feature_element, # base element
             name, # name
             None, # protect string
             vulkan_objects.ElementValid.UNKNOWN # is the element valid, unknown b/c validation requires all features and extensions
@@ -45,3 +50,17 @@ def parse_feature(feature_element: ET.Element[str]) -> vulkan_objects.VkFeature 
         number, # version number
         depends # dependencies
     )
+
+def meets_minimum_api_version(features: dict[str, vulkan_objects.VkFeature], target_api_version: vulkan_objects.VkVersion) -> dict[str, vulkan_objects.VkFeature]:
+    valid_feature: dict[str, vulkan_objects.VkFeature] = dict()
+
+    for feature_name, feature in features.items():
+        if feature.version_number.Major >= target_api_version.Major:
+            continue
+        if feature.version_number.Major == target_api_version.Major:
+            if feature.version_number.Minor >= target_api_version.Minor:
+                continue
+
+        valid_feature[feature_name] = feature
+
+    return valid_feature

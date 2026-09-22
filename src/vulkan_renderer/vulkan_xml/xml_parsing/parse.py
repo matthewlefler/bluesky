@@ -7,7 +7,7 @@ import vulkan_object
 OUTPUT_DIR: str | None = None
 FILE_PREPEND="bluesky_vulkan_xml"
 
-def write_copy_struct(output_c_file: TextIOWrapper, output_h_file: TextIOWrapper, structs: dict):
+def write_copy_struct(output_c_file: TextIOWrapper, output_h_file: TextIOWrapper, structs: dict[str, vulkan_object.VkStructure]):
     output_h_file.write("#include <vulkan/vulkan.h>\n\n")
     output_h_file.write("void *malloc_structure(VkBaseInStructure *structure);\n")
 
@@ -60,6 +60,10 @@ if __name__ == "__main__":
         open(f"{OUTPUT_DIR}/{FILE_PREPEND}_struct_compare_functions.c", "w") as compare_structure_funcs_c_file,
         open(f"{OUTPUT_DIR}/{FILE_PREPEND}_struct_compare_functions.h", "w") as compare_structure_funcs_h_file
     ):
+        if ALT_XML:
+            obj = vulkan_object.get_vulkan_object(ALT_XML, 1, 4, ["vulkan"])
+        else:
+            obj = vulkan_object.get_vulkan_object("vk.xml", 1, 4, ["vulkan"])
+            
+        write_copy_struct(copy_structure_c_file, copy_structure_h_file, obj.structures)
         
-        # write_copy_struct(copy_structure_c_file, copy_structure_h_file, vk.structs)
-        obj = vulkan_object.get_vulkan_object("vk.xml")

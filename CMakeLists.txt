@@ -10,7 +10,26 @@ add_compile_options(-g -Wall -Wextra)
 
 # xml based parsing
 add_custom_target(xml_parsing
-    python ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/parse.py ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output
+    python ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/parse.py ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output ../src/vulkan_renderer/vulkan_xml/xml_parsing/vk.xml
+
+    SOURCES ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/parse.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_object.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/dependencies.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/extensions.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/features.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/platforms.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects_types_dir/basetypes.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects_types_dir/bitmasks.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects_types_dir/defines.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects_types_dir/enumerations.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects_types_dir/function_pointers.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects_types_dir/handles.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects_types_dir/includes.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects_types_dir/structures.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects_types_dir/types.py
+            ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing/vulkan_objects_dir/vulkan_objects_types_dir/unions.py
+
     BYPRODUCTS  ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output/bluesky_vulkan_xml_struct_copy.c
                 ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output/bluesky_vulkan_xml_struct_compare.c
                 ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output/bluesky_vulkan_xml_struct_compare_functions.c
@@ -18,7 +37,7 @@ add_custom_target(xml_parsing
 
 # Define the executable target
 add_executable(vulkan_main)
-add_dependencies(vulkan_main xml_parsing )
+add_dependencies(vulkan_main xml_parsing)
 
 # source files
 target_sources(vulkan_main PRIVATE

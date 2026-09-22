@@ -1,5 +1,5 @@
-import vulkan_objects
-import dependencies
+from vulkan_objects_dir import vulkan_objects
+from vulkan_objects_dir import dependencies
 
 import xml.etree.ElementTree as ET
 
@@ -81,13 +81,41 @@ def parse_extension(extension_element: ET.Element[str], platforms: dict[str, vul
         provisional
     )
 
-def validate_extensions(extensions: dict[str, vulkan_objects.VkExtension]) -> dict[str, vulkan_objects.VkExtension]:
+def filter_by_supported_apis(extensions: dict[str, vulkan_objects.VkExtension], supported_apis: list[str]) -> dict[str, vulkan_objects.VkExtension]:
+    """
+    returns all extension that support at least one of the apis in `supported_apis`
+    """
+    valid_extensions: dict[str, vulkan_objects.VkExtension] = dict()
+
+    for extension_name, extension in extensions.items():
+        for api in apis:
+            if api in extension.supported_apis:
+                valid_extensions[extension_name] = extension
+
+    return valid_extensions
+
+def validate_extensions(extensions: dict[str, vulkan_objects.VkExtension], target_api_version: VkVersion) -> dict[str, vulkan_objects.VkExtension]:
     """
     vaildates the input extensions, and return a dictionary containing the valid extensions
     """
     valid_extensions: dict[str, vulkan_objects.VkExtension] = dict()
 
-    for extension_name in extensions:
-        extension = extensions[extension_name]
+    keep_going = True
+    while keep_going:
+        keep_going = False
+        for extension_name, extension in extensions.items():
+            if extension.base.valid != vulkan_objects.ElementValid.UNKNOWN:
+                continue
 
-        
+            valid = vulkan_objects.ElementValid.VALID
+            if extension.depends is not None:
+                valid = dependencies.validate(extension.depends, target_api_version, extensions)
+
+            valid_extensions[extension_name].base.valid = vulkan_objects.ElementValid.INVALID
+            if valid == vulkan_objects.ElementValid.VALID:
+                valid_extensions[extension_name] = extension
+                extensions[extension_name]
+            if valid == vulkan_objects.ElementValid.UNKNOWN:
+                keep_going == True
+
+                

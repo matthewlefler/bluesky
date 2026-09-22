@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 
-import vulkan_objects
+from vulkan_objects_dir import vulkan_objects
 
 PLATFORM_TAG = "platform"
 

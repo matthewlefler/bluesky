@@ -1,5 +1,4 @@
-from vulkan_objects_dir import vulkan_objects
-from vulkan_objects_dir import dependencies
+from vulkan_objects_dir import vulkan_objects, dependencies, validation
 
 import xml.etree.ElementTree as ET
 
@@ -64,6 +63,23 @@ def parse_extension(extension_element: ET.Element[str], platforms: dict[str, vul
         else:
             platform = platforms[platform]
 
+    requires: list[vulkan_objects.VkDefinedElementList] = []
+    depreciates: list[vulkan_objects.VkDefinedElementList] = []
+    obsoletes: list[vulkan_objects.VkDefinedElementList] = []
+
+    for sub_element in extension_element:
+        element_list = validation.parse_element_list(sub_element)
+
+        if element_list is None:
+            continue
+
+        if sub_element.tag == "require":
+            requires.append(element_list)
+        elif sub_element.tag == "depreciates":
+            depreciates.append(element_list)
+        elif sub_element.tag == "obsoletes":
+            obsoletes.append(element_list)
+
     return vulkan_objects.VkExtension(
         vulkan_objects.VkElement( # base element
             name, # name
@@ -78,7 +94,10 @@ def parse_extension(extension_element: ET.Element[str], platforms: dict[str, vul
         promoted_to,
         depreciated_by,
         obsoleted_by,
-        provisional
+        provisional,
+        requires,
+        depreciates,
+        obsoletes
     )
 
 def filter_by_supported_apis(extensions: dict[str, vulkan_objects.VkExtension], supported_apis: list[str]) -> dict[str, vulkan_objects.VkExtension]:
@@ -88,13 +107,13 @@ def filter_by_supported_apis(extensions: dict[str, vulkan_objects.VkExtension], 
     valid_extensions: dict[str, vulkan_objects.VkExtension] = dict()
 
     for extension_name, extension in extensions.items():
-        for api in apis:
+        for api in supported_apis:
             if api in extension.supported_apis:
                 valid_extensions[extension_name] = extension
 
     return valid_extensions
 
-def validate_extensions(extensions: dict[str, vulkan_objects.VkExtension], target_api_version: VkVersion) -> dict[str, vulkan_objects.VkExtension]:
+def validate_extensions(extensions: dict[str, vulkan_objects.VkExtension], target_api_version: vulkan_objects.VkVersion) -> dict[str, vulkan_objects.VkExtension]:
     """
     vaildates the input extensions, and return a dictionary containing the valid extensions
     """
@@ -117,5 +136,3 @@ def validate_extensions(extensions: dict[str, vulkan_objects.VkExtension], targe
                 extensions[extension_name]
             if valid == vulkan_objects.ElementValid.UNKNOWN:
                 keep_going == True
-
-                

@@ -1,7 +1,6 @@
 import xml.etree.ElementTree as ET
 
-from vulkan_objects_dir import vulkan_objects
-from vulkan_objects_dir import dependencies
+from vulkan_objects_dir import vulkan_objects, dependencies, validation
 
 FEATURE_TAG_NAME = "feature"
 
@@ -39,6 +38,23 @@ def parse_feature(feature_element: ET.Element[str]) -> vulkan_objects.VkFeature 
         versions = [int(x) for x in number.split(".")]
         number = vulkan_objects.VkVersion(versions[0], versions[1], 0)
 
+    requires: list[vulkan_objects.VkDefinedElementList] = []
+    depreciates: list[vulkan_objects.VkDefinedElementList] = []
+    obsoletes: list[vulkan_objects.VkDefinedElementList] = []
+
+    for sub_element in feature_element:
+        element_list = validation.parse_element_list(sub_element)
+
+        if element_list is None:
+            continue
+
+        if sub_element.tag == "require":
+            requires.append(element_list)
+        elif sub_element.tag == "depreciates":
+            depreciates.append(element_list)
+        elif sub_element.tag == "obsoletes":
+            obsoletes.append(element_list)
+
     return vulkan_objects.VkFeature(
         vulkan_objects.VkElement( 
             feature_element, # base element
@@ -48,7 +64,11 @@ def parse_feature(feature_element: ET.Element[str]) -> vulkan_objects.VkFeature 
         ),
         apis, # list of api strings or none
         number, # version number
-        depends # dependencies
+        depends, # dependencies
+
+        requires,
+        depreciates,
+        obsoletes
     )
 
 def meets_minimum_api_version(features: dict[str, vulkan_objects.VkFeature], target_api_version: vulkan_objects.VkVersion) -> dict[str, vulkan_objects.VkFeature]:

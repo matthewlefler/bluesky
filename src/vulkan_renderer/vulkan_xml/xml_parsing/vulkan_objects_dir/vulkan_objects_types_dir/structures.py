@@ -4,12 +4,13 @@ from vulkan_objects_dir import vulkan_objects
 from vulkan_objects_dir.vulkan_objects_types_dir import types
 
 def parse_member(structure_member_element: ET.Element[str], enums: dict[str, vulkan_objects.VkEnum]) -> vulkan_objects.VkStructureMember | None:
-    name = structure_member_element.get("name")
-    if name is None and structure_member_element.find("name") is not None and structure_member_element.find("name").text is not None:
-        name = structure_member_element.find("name").text
+    name = None
+    name_element = structure_member_element.find("name")
+    if name_element is not None and name_element.text is not None:
+        name = name_element.text
 
     if name is None:
-        print("ERROR: struct memeber name is None")
+        print("ERROR: struct member name is None")
         return None
     
     length = structure_member_element.get("len")
@@ -71,7 +72,7 @@ def resolve_member_array_lengths(structure_members: list[vulkan_objects.VkStruct
                         # replace
                         structure_member.array_lens[index] = other_structure_member
 
-def parse_structure(structure_element: ET.Element[str], enums: dict[str, vulkan_objects.VkEnum]) -> tuple[vulkan_objects.VkStructure, list[str] | None]:
+def parse_structure(structure_element: ET.Element[str], enums: dict[str, vulkan_objects.VkEnum]) -> vulkan_objects.VkStructure:
     name = structure_element.get("name")
     sType = None
     protect = None
@@ -100,26 +101,23 @@ def parse_structure(structure_element: ET.Element[str], enums: dict[str, vulkan_
     alias = structure_element.get("alias")
     required_limit_type = structure_element.get("requiredlimittype")
 
-    return (
-        vulkan_objects.VkStructure(
-            vulkan_objects.VkType(
-                vulkan_objects.VkElement(
-                    structure_element,
-                    name,
-                    protect,
-                    vulkan_objects.ElementValid.UNKNOWN
-                ),
-                types.Category.CATEGORY_STRUCTURE
+    return vulkan_objects.VkStructure(
+        vulkan_objects.VkType(
+            vulkan_objects.VkElement(
+                structure_element,
+                name,
+                protect,
+                vulkan_objects.ElementValid.UNKNOWN
             ),
-            sType,
-            None,
-            returned_only,
-            allow_duplicate,
-            alias,
-            required_limit_type,
-            members
+            types.Category.CATEGORY_STRUCTURE
         ),
-        extends
+        sType,
+        extends,
+        returned_only,
+        allow_duplicate,
+        alias,
+        required_limit_type,
+        members
     )
 
 def validate_structure() -> dict[str, vulkan_objects.VkStructure]:

@@ -13,29 +13,27 @@ def write_copy_struct(output_c_file: TextIOWrapper, output_h_file: TextIOWrapper
 
     output_c_file.write("#include <stdlib.h>\n")
     output_c_file.write("#include <vulkan/vulkan.h>\n\n")
-    output_c_file.write("#include \"src/utilities/logger/logger.h\"\n")
+    output_c_file.write("#include \"logger.h\"\n")
 
     output_c_file.write(f"#include \"{output_h_file.name}\"\n\n")
     output_c_file.write("void *malloc_structure(VkBaseInStructure *structure) {\n")
     output_c_file.write("    switch(structure->sType) {\n")
-    for struct_name in structs:
-        struct = structs[struct_name]
-
+    for struct_name,struct in structs.items():
         sType = struct.sType
         if sType is None:
             continue
 
-        if struct.protect is not None:
+        if struct.base_type.base.protect is not None:
             output_c_file.write(f"#ifdef {struct.protect}\n")
 
         output_c_file.write(f"        case {sType}:\n")
-        output_c_file.write(f"            return malloc(sizeof({struct.name}));\n")
+        output_c_file.write(f"            return malloc(sizeof({struct.base_type.base.name}));\n")
 
-        if struct.protect is not None:
+        if struct.base_type.base.protect is not None:
             output_c_file.write(f"#endif\n")
 
     output_c_file.write("        default:\n")
-    output_c_file.write("            log_message(LOG_LEVEL_DEBUG, \"unknown struct type: %d\", structure->sType);")
+    output_c_file.write("            log_message(LOG_LEVEL_DEBUG, \"unknown struct type: %d\", structure->sType);\n")
     output_c_file.write("            return NULL;\n")
     output_c_file.write("    }\n")
     output_c_file.write("}\n")

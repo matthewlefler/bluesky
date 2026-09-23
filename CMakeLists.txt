@@ -68,6 +68,7 @@ find_package(glfw3 REQUIRED)
 # Include directories
 target_include_directories(vulkan_main PRIVATE 
     ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/utilities/logger
 )
 
 # Link libraries

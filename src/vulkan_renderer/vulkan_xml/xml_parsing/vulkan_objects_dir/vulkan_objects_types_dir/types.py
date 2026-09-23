@@ -135,6 +135,8 @@ def get_all_types(root: ET.Element[str]) -> tuple[
                 print(f"ERROR: Unknown type catagory: \"{category}\"")
                 continue
 
+    
+
     return (
         return_include_dict,
         return_define_dict,

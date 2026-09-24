@@ -31,7 +31,6 @@ class ElementValid(Enum):
 class VkElement:
     element: ET.Element[str]
     name: str
-    protect: str | None
     valid: ElementValid
 
 # VkTypeSubElements:
@@ -48,6 +47,7 @@ class VkElement:
 @dataclass
 class VkType:
     base: VkElement
+    defined_from: VkExtension | VkFeature
     catagory: types.Category
 
 @dataclass
@@ -73,9 +73,9 @@ class VkBitMask:
 @dataclass
 class VkHandle:
     base_type: VkType
-    parent: VkHandle | None
-    # VkObjectType enum value
-    object_type_enum: VkEnumValue # objtypeenum
+    parent_name: str | None
+    # VkObjectType enum 
+    object_type_enum_name: str # objtypeenum
 
 @dataclass
 class VkEnum:
@@ -98,11 +98,11 @@ class VkStructureMember:
     array_lens: list[int | str]
     # if is some then `array_length` is a LaTeX expression
     # useful for code generation
-    alternate_lengths: list[str | None]
+    alternate_lengths: list[str]
     optional: list[bool] | None
     external_sync_required: bool
-    allowed_values: str
-    limit_type: str
+    allowed_values: str | None
+    limit_type: str | None
     # number of pointer *'s
     pointer_depth: int
     
@@ -117,8 +117,8 @@ class VkStructure:
     returned_only: bool
     # multiple copies allowed in a structure/pNext chain 
     allow_duplicate: bool
-    alias: str
-    required_limit_type: str
+    alias: str | None
+    required_limit_type: str | None
     members: list[VkStructureMember]
 
 @dataclass
@@ -143,6 +143,7 @@ class VkUnion:
 @dataclass
 class VkPlatform:
     base: VkElement
+    protect: str | None
 
 @dataclass
 class VkDefinedElementList:
@@ -153,10 +154,10 @@ class VkDefinedElementList:
     valid: ElementValid
     supported_apis: list[str] | None
 
-    enumerations: list[str]
-    commands:     list[str]
-    types:        list[str]
-    features:     list[str]
+    enumerations: list[VkDefinedElementListItem]
+    commands:     list[VkDefinedElementListItem]
+    types:        list[VkDefinedElementListItem]
+    features:     list[VkDefinedElementListItem]
 
 @dataclass
 class VkExtension:
@@ -187,14 +188,21 @@ class VkFeature:
     obsoletes:   list[VkDefinedElementList]
 
 @dataclass
+class VkDefinedElementListItem:
+    name: str
+    defined_from_name: str # (feature or extension)'s name
+
+@dataclass
 class VulkanObject:
     version: VkVersion
     readable_version_name: str
     supported_apis: list[str]
 
     platforms:         dict[str, VkPlatform]
+
     extensions:        dict[str, VkExtension]
     features:          dict[str, VkFeature]
+
     includes:          dict[str, VkInclude]
     defines:           dict[str, VkDefine]
     basetypes:         dict[str, VkBasetype]

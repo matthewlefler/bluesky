@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from enum import Enum
 
@@ -19,41 +20,58 @@ class Depends:
     sub_depends: list[Depends | str]
     operation: DependsOperation
 
-def validate_name(name: str, target_api_version: vulkan_objects.VkVersion, extensions: dict[str, vulkan_objects.VkExtension]) -> vulkan_objects.ElementValid:
+extension_dictionary: dict[str, vulkan_objects.VkExtension] = dict()
+feature_dictionary:   dict[str, vulkan_objects.VkFeature]   = dict()
+
+
+def set_dictionaries(extensions: dict[str, vulkan_objects.VkExtension], features: dict[str, vulkan_objects.VkFeature]) -> None:
+    vulkan_objects.dependencies.extension_dictionary = extensions
+    vulkan_objects.dependencies.feature_dictionary = features
+
+
+target_api_version: vulkan_objects.VkVersion
+def set_target_api_version(version: vulkan_objects.VkVersion) -> None:
+    vulkan_objects.dependencies.target_api_version = version
+
+
+def validate_name(name: str) -> vulkan_objects.ElementValid:
     # is the name of a api verion
     if name.startswith("VK_VERSION_"):
         version = [int(x) for x in name.removeprefix("VK_VERSION_").split("_")]
         if version[0] < target_api_version.Major:
-            return False
+            return vulkan_objects.ElementValid.INVALID
         elif version[0] == target_api_version.Major:
             if version[1] >= target_api_version.Minor:
-                return True
+                return vulkan_objects.ElementValid.VALID
             else:
-                return False
+                return vulkan_objects.ElementValid.INVALID
         else:
-            return True
+            return vulkan_objects.ElementValid.VALID
 
     # struct name
     #   These are dependent on runtime features which can only be determined at runtime
     if "::" in name:
-        return True
+        return vulkan_objects.ElementValid.VALID
     # extension name
-    if name not in extensions:
-        print(f"ERROR: extension name {name} not found in extension dictonary")
-    else:
-        return extensions[name].base.valid
+    if name in extension_dictionary:
+        return extension_dictionary[name].base.valid
+    if name in feature_dictionary:
+        return feature_dictionary[name].base.valid
+    
+    logging.error(f"extension name \'{name}\' not found in extension/feature dictonary")
+    return vulkan_objects.ElementValid.INVALID
 
 
-def validate(depend: Depends, target_api_version: vulkan_objects.VkVersion, extensions: dict[str, vulkan_objects.VkExtension]) -> vulkan_objects.ElementValid:
+def validate(depend: Depends) -> vulkan_objects.ElementValid:
     valid: vulkan_objects.ElementValid = vulkan_objects.ElementValid.UNKNOWN
     for sub_depend in depend.sub_depends:
         if isinstance(sub_depend, Depends):
             valid = validate(sub_depend)
         elif isinstance(sub_depend, str):
-            valid = validate_name(sub_depend, target_api_version, extensions)
+            valid = validate_name(sub_depend)
             
         else:
-            print(f"ERROR: sub_depend {sub_depend} is not a `string` or a `Depends` object")
+            logging.error(f"sub_depend {sub_depend} is not a `string` or a `Depends` object")
             valid = vulkan_objects.ElementValid.INVALID
 
         if depend.operation == DependsOperation.OR:
@@ -67,6 +85,8 @@ def validate(depend: Depends, target_api_version: vulkan_objects.VkVersion, exte
         return vulkan_objects.ElementValid.INVALID
     elif depend.operation == DependsOperation.AND:
         return vulkan_objects.ElementValid.VALID
+    
+    return vulkan_objects.ElementValid.INVALID
         
 def parse_depend_string(depends: str) -> Depends | None:
     """
@@ -89,10 +109,6 @@ def parse_depend_string(depends: str) -> Depends | None:
     if depends.isspace():
         return None
 
-    if not any(char in depends for char in [OPEN_PAREN_CHAR, CLOSE_PAREN_CHAR, OR_CHAR, AND_CHAR]):
-        # depends is of a single thing
-        return Depends([depends], DependsOperation.OR)
-
     depends_name: str = ""
     stack: list[Depends] = list()
     current: Depends = Depends([], DependsOperation.NONE)
@@ -100,22 +116,22 @@ def parse_depend_string(depends: str) -> Depends | None:
         if character == OR_CHAR:
             if current.operation == DependsOperation.AND:
                 # error
-                print(f"ERROR: depends contains AND \'{AND_CHAR}\' and OR \'{OR_CHAR}\' characters in the same sequence: \n\tin: {depends}")
+                logging.error(f"depends contains AND \'{AND_CHAR}\' and OR \'{OR_CHAR}\' characters in the same sequence: \n\tin: {depends}")
                 return None
             
             current.operation = DependsOperation.OR
-            if not depends_name.isspace():
+            if not depends_name.isspace() and len(depends_name) > 0:
                 current.sub_depends.append(depends_name)
             depends_name = ""
             
         elif character == AND_CHAR:
             if current.operation == DependsOperation.OR:
                 # error
-                print(f"ERROR: depends contains AND \'{AND_CHAR}\' and OR \'{OR_CHAR}\' characters in the same sequence\n\tin: {depends}")
+                logging.error(f"depends contains AND \'{AND_CHAR}\' and OR \'{OR_CHAR}\' characters in the same sequence\n\tin: {depends}")
                 return None
 
             current.operation = DependsOperation.AND
-            if not depends_name.isspace():
+            if not depends_name.isspace() and len(depends_name) > 0:
                 current.sub_depends.append(depends_name)
             depends_name = ""
                 
@@ -123,13 +139,12 @@ def parse_depend_string(depends: str) -> Depends | None:
             stack.append(current)
             current = Depends([], DependsOperation.NONE)
         elif character == CLOSE_PAREN_CHAR:
-            if not depends_name.isspace():
+            if not depends_name.isspace() and len(depends_name) > 0:
                 current.sub_depends.append(depends_name)
             depends_name = ""
 
             if current.operation == DependsOperation.NONE:
-                print(f"ERROR: depends contains a sequence with no operation characters (\'{AND_CHAR}\',\'{OR_CHAR}\')\n\tin: {depends}")
-                return None
+                current.operation = DependsOperation.OR
             
             previous = stack.pop()
             previous.sub_depends.append(current)
@@ -138,8 +153,8 @@ def parse_depend_string(depends: str) -> Depends | None:
             depends_name += character
     
     if current.operation == DependsOperation.NONE:
-        print(f"ERROR: depends contains a sequence with no operation characters (\'{AND_CHAR}\',\'{OR_CHAR}\')\n\tin: {depends}")
-        return None
+        current.operation = DependsOperation.OR
+        # logging.error(f"depends contains a sequence with no operation characters (\'{AND_CHAR}\',\'{OR_CHAR}\')\n\tin: {depends}")
     
     return current
 

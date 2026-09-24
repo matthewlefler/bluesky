@@ -1,88 +1,124 @@
+import logging
 import xml.etree.ElementTree as ET
 
-from vulkan_objects_dir import vulkan_objects
+from vulkan_objects_dir import vulkan_objects, dependencies
 
-def validate_items(
-    defines: dict[str, vulkan_objects.VkDefine],
-    bitmasks: dict[str, vulkan_objects.VkBitMask],
-    handles: dict[str, vulkan_objects.VkHandle],
-    enums: dict[str, vulkan_objects.VkEnum],
-    function_pointers: dict[str, vulkan_objects.VkFunctionPointer],
-    structures: dict[str, vulkan_objects.VkStructure],
-    unions: dict[str, vulkan_objects.VkUnion],
+def combine_features_extensions(valid_extensions: dict[str, vulkan_objects.VkExtension], valid_features: dict[str, vulkan_objects.VkFeature]) -> vulkan_objects.VkDefinedElementList:
+    return_list = vulkan_objects.VkDefinedElementList(
+        None, vulkan_objects.ElementValid.VALID, None,
+        enumerations = [],
+        commands     = [],
+        types        = [],
+        features     = [],
+    )
 
-    valid_extensions: dict[str, vulkan_objects.VkExtension],
-    valid_features: dict[str, vulkan_objects.VkFeature],
-    platforms: dict[str, vulkan_objects.VkPlatform]
-) -> None:
-    for feature in valid_features.values():
-        if not feature.base.valid == vulkan_objects.ElementValid.VALID:
-            continue
-        
+    for feature_name, feature in valid_features.items():
+        for require in feature.requires:
+            if require.depends is not None and dependencies.validate(require.depends) != vulkan_objects.ElementValid.INVALID:
+                continue
 
-    print(valid_extensions)
+            return_list.enumerations.extend(require.enumerations)
+            return_list.commands.extend(require.commands)
+            return_list.features.extend(require.features)
+            return_list.types.extend(require.types)
+
+        for depreciate in feature.depreciates:
+            if depreciate.depends is not None and dependencies.validate(depreciate.depends) != vulkan_objects.ElementValid.INVALID:
+                continue
+
+            for enum in depreciate.enumerations:
+                return_list.enumerations.remove(enum)
+            for command in depreciate.commands:
+                return_list.commands.remove(command)
+            for feature in depreciate.features:
+                return_list.features.remove(feature)
+            for type_ in depreciate.types:
+                return_list.types.remove(type_)
+
+        for obsolete in feature.obsoletes:
+            if obsolete.depends is not None and dependencies.validate(obsolete.depends) != vulkan_objects.ElementValid.INVALID:
+                continue
+
+            for enum in obsolete.enumerations:
+                return_list.enumerations.remove(enum)
+            for command in obsolete.commands:
+                return_list.commands.remove(command)
+            for feature in obsolete.features:
+                return_list.features.remove(feature)
+            for type_ in obsolete.types:
+                return_list.types.remove(type_)
+
     for extension_name, extension in valid_extensions.items():
-        if not extension.base.valid == vulkan_objects.ElementValid.VALID:
-            for required in extension.requires:
-                for name in required.types:
-                    if name in structures:
-                        structures[name].base_type.base.valid = vulkan_objects.ElementValid.VALID
-                        if extension.platform is not None:
-                            structures[name].base_type.base.protect = extension.platform.base.protect
-                            
-                    elif name in unions:
-                        unions[name].base_type.base.valid = vulkan_objects.ElementValid.VALID
-                        if extension.platform is not None:
-                            unions[name].base_type.base.protect = extension.platform.base.protect
+        for require in extension.requires:
+            if require.depends is not None and dependencies.validate(require.depends) != vulkan_objects.ElementValid.INVALID:
+                continue
 
-                    elif name in bitmasks:
-                        bitmasks[name].base_type.base.valid = vulkan_objects.ElementValid.VALID
-                        if extension.platform is not None:
-                            bitmasks[name].base_type.base.protect = extension.platform.base.protect
+            return_list.enumerations.extend(require.enumerations)
+            return_list.commands.extend(require.commands)
+            return_list.features.extend(require.features)
+            return_list.types.extend(require.types)
 
-                    elif name in function_pointers:
-                        function_pointers[name].base_type.base.valid = vulkan_objects.ElementValid.VALID
-                        if extension.platform is not None:
-                            function_pointers[name].base_type.base.protect = extension.platform.base.protect
+        for depreciate in extension.depreciates:
+            if depreciate.depends is not None and dependencies.validate(depreciate.depends) != vulkan_objects.ElementValid.INVALID:
+                continue
 
-                    elif name in handles:
-                        handles[name].base_type.base.valid = vulkan_objects.ElementValid.VALID
-                        if extension.platform is not None:
-                            handles[name].base_type.base.protect = extension.platform.base.protect
+            for enum in depreciate.enumerations:
+                return_list.enumerations.remove(enum)
+            for command in depreciate.commands:
+                return_list.commands.remove(command)
+            for feature in depreciate.features:
+                return_list.features.remove(feature)
+            for type_ in depreciate.types:
+                return_list.types.remove(type_)
 
-                    elif name in defines:
-                        defines[name].base_type.base.valid = vulkan_objects.ElementValid.VALID
-                        if extension.platform is not None:
-                            defines[name].base_type.base.protect = extension.platform.base.protect
+        for obsolete in extension.obsoletes:
+            if obsolete.depends is not None and dependencies.validate(obsolete.depends) != vulkan_objects.ElementValid.INVALID:
+                continue
 
-                for name in required.enumerations:
-                    if name in enums:
-                        enums[name].base.base.valid = vulkan_objects.ElementValid.VALID
+            for enum in obsolete.enumerations:
+                return_list.enumerations.remove(enum)
+            for command in obsolete.commands:
+                return_list.commands.remove(command)
+            for feature in obsolete.features:
+                return_list.features.remove(feature)
+            for type_ in obsolete.types:
+                return_list.types.remove(type_)
 
+    return return_list
 
-
-def parse_element_list(element: ET.Element[str]) -> vulkan_objects.VkDefinedElementList | None:
+def parse_element_list(element: ET.Element[str], defined_from_name: str) -> vulkan_objects.VkDefinedElementList | None:
     depends = element.get("depend")
     supported_apis = element.get("supported")
 
-    enumerations: list[str] = []
-    commands:     list[str] = []
-    types:        list[str] = []
-    features:     list[str] = []
+    enumerations: list[vulkan_objects.VkDefinedElementListItem] = []
+    commands:     list[vulkan_objects.VkDefinedElementListItem] = []
+    types:        list[vulkan_objects.VkDefinedElementListItem] = []
+    features:     list[vulkan_objects.VkDefinedElementListItem] = []
 
     for sub_element in element:
         name = sub_element.get("name")
         if name is None:
-            print(f"ERROR: got element in element list with no name: {sub_element}")
+            logging.error(f"got element in element list with no name: {sub_element}")
+            continue
+
+        item = vulkan_objects.VkDefinedElementListItem(
+            name, defined_from_name
+        )
 
         if sub_element.tag == "enum":
-            enumerations.append(name)
+            enumerations.append(item)
         elif sub_element.tag == "command":
-            commands.append(name)
+            commands.append(item)
         elif sub_element.tag == "type":
-            types.append(name)
+            types.append(item)
         elif sub_element.tag == "feature":
-            features.append(name)
+            features.append(item)
+
+    if supported_apis is not None:
+        supported_apis = supported_apis.split(",")
+
+    if depends is not None:
+        depends = dependencies.parse_depend_string(depends)
 
     return vulkan_objects.VkDefinedElementList(
         depends,

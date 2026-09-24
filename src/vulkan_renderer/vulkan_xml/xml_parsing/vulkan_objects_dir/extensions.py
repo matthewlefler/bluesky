@@ -1,17 +1,20 @@
+import logging
 from vulkan_objects_dir import vulkan_objects, dependencies, validation
 
 import xml.etree.ElementTree as ET
 
+EXTENSIONS_TAG_NAME = "extensions"
 EXTENSION_TAG_NAME = "extension"
 
 def get_extensions(root: ET.Element[str], platforms: dict[str, vulkan_objects.VkPlatform]) -> dict[str, vulkan_objects.VkExtension]:
-    extensions = root.findall(EXTENSION_TAG_NAME)
+    extensionss = root.findall(EXTENSIONS_TAG_NAME)
     return_dict: dict[str, vulkan_objects.VkExtension] = dict()
 
-    for extension_element in extensions:
-        extension = parse_extension(extension_element, platforms)
-        if extension is not None:
-            return_dict[extension.base.name] = extension
+    for extensions in extensionss:
+        for extension_element in extensions:
+            extension = parse_extension(extension_element, platforms)
+            if extension is not None:
+                return_dict[extension.base.name] = extension
 
     return return_dict
 
@@ -42,7 +45,7 @@ def parse_extension(extension_element: ET.Element[str], platforms: dict[str, vul
 
     platform = extension_element.get("platform")
 
-    if name is None:
+    if name is None or id_number is None or ext_type is None:
         return None
 
     if depends is not None:
@@ -50,6 +53,8 @@ def parse_extension(extension_element: ET.Element[str], platforms: dict[str, vul
 
     if supported_apis is not None:
         supported_apis = supported_apis.split(",")
+    else:
+        supported_apis = []
 
     if provisional is not None:
         provisional = bool(provisional)
@@ -59,7 +64,8 @@ def parse_extension(extension_element: ET.Element[str], platforms: dict[str, vul
 
     if platform is not None:
         if platform not in platforms:
-            print(f"ERROR: platform {platform} in given platforms")
+            logging.error(f"platform {platform} not in given platforms")
+            return None
         else:
             platform = platforms[platform]
 
@@ -68,7 +74,7 @@ def parse_extension(extension_element: ET.Element[str], platforms: dict[str, vul
     obsoletes: list[vulkan_objects.VkDefinedElementList] = []
 
     for sub_element in extension_element:
-        element_list = validation.parse_element_list(sub_element)
+        element_list = validation.parse_element_list(sub_element, name)
 
         if element_list is None:
             continue
@@ -82,9 +88,9 @@ def parse_extension(extension_element: ET.Element[str], platforms: dict[str, vul
 
     return vulkan_objects.VkExtension(
         vulkan_objects.VkElement( # base element
+            extension_element,
             name, # name
-            None, # protect string
-            vulkan_objects.ElementValid.UNKNOWN # is the element valid, unknown b/c validation requires all features and extensions
+            vulkan_objects.ElementValid.UNKNOWN, # is the element valid, unknown b/c validation requires all features and extensions
         ),
         supported_apis,
         id_number,
@@ -113,7 +119,7 @@ def filter_by_supported_apis(extensions: dict[str, vulkan_objects.VkExtension], 
 
     return valid_extensions
 
-def validate_extensions(extensions: dict[str, vulkan_objects.VkExtension], target_api_version: vulkan_objects.VkVersion) -> dict[str, vulkan_objects.VkExtension]:
+def validate_extensions(extensions: dict[str, vulkan_objects.VkExtension]) -> dict[str, vulkan_objects.VkExtension]:
     """
     vaildates the input extensions, and return a dictionary containing the valid extensions
     """
@@ -128,11 +134,14 @@ def validate_extensions(extensions: dict[str, vulkan_objects.VkExtension], targe
 
             valid = vulkan_objects.ElementValid.VALID
             if extension.depends is not None:
-                valid = dependencies.validate(extension.depends, target_api_version, extensions)
+                valid = dependencies.validate(extension.depends)
 
+            valid_extensions[extension_name] = extension
             valid_extensions[extension_name].base.valid = vulkan_objects.ElementValid.INVALID
             if valid == vulkan_objects.ElementValid.VALID:
                 valid_extensions[extension_name] = extension
                 extensions[extension_name]
             if valid == vulkan_objects.ElementValid.UNKNOWN:
-                keep_going == True
+                keep_going = True
+
+    return valid_extensions

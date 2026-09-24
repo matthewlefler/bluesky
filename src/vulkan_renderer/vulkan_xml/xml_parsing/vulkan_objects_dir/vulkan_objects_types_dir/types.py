@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 import xml.etree.ElementTree as ET
 
@@ -27,7 +28,7 @@ class Category(Enum):
     CATEGORY_STRUCTURE        = "struct"
     CATEGORY_UNION            = "union"
 
-def get_all_types(root: ET.Element[str]) -> tuple[
+def get_all_types(root: ET.Element[str], elements: vulkan_objects.VkDefinedElementList) -> tuple[
     dict[str, vulkan_objects.VkInclude],
     dict[str, vulkan_objects.VkDefine],
     dict[str, vulkan_objects.VkBasetype],
@@ -51,91 +52,111 @@ def get_all_types(root: ET.Element[str]) -> tuple[
     return_structure_dict:        dict[str, vulkan_objects.VkStructure]       = dict()
     return_union_dict:            dict[str, vulkan_objects.VkUnion]           = dict()
 
-    types_elements = root.findall(TYPES_TAG)
+    types = root.findall(TYPES_TAG)
 
-    for type_elements in types_elements:
-        for type_element in type_elements:
-            # filter out comments
-            if type_element.tag == "comment":
-                continue
+    for element in elements.types:
+        type_element = None
+        for type_elements in types:
+            for temp in type_elements:
+                if element.name == temp.get("name"):
+                    type_element = temp
+                name_tag = temp.find("name")
+                if name_tag is not None and name_tag.text == element.name:
+                    type_element = temp
 
-            category = type_element.get(CATAGORY_ATTRIBUTE_NAME)
-            name = type_element.get("name")
+        if type_element is None:
+            logging.error(f"element {element.name} not found in <type>")
+            continue
+        
+        # filter out comments
+        if type_element.tag == "comment":
+            continue
 
-            if name is None:
-                print(f"ERROR: no name for type element: {type_element} {type_element.tag} {type_element.text} {type_element.tail.replace("\n", "")}")
-                continue
-            if category is None:
-                print(f"ERROR: no catagory for type element: {type_element} {type_element.tag} {type_element.text} {type_element.tail.replace("\n", "")}")
-                continue
+        category = type_element.get(CATAGORY_ATTRIBUTE_NAME)
+        name = type_element.get("name")
 
-            if category == Category.CATEGORY_INCLUDE.value:
-                include = includes.parse_include(type_element)
-                if include is not None:
-                    return_include_dict[name] = include
-                else:
-                    print("ERROR: parsed and returned include is None")
-            elif category == Category.CATEGORY_DEFINE.value:  
-                define = defines.parse_define(type_element)
-                if define is not None:
-                    return_define_dict[name] = define
-                else:
-                    print("ERROR: parsed and returned define is None")
+        if name is None:
+            logging.error(f"no name for type element: {type_element} {type_element.tag} {type_element.text} {type_element.tail}")
+            continue
+        if category is None:
+            logging.error(f"no catagory for type element: {type_element} {type_element.tag} {type_element.text} {type_element.tail}")
+            continue
 
-            elif category == Category.CATEGORY_BASETYPE.value:
-                basetype = basetypes.parse_basetype(type_element)
-                if basetype is not None:
-                    return_basetype_dict[name] = basetype
-                else:
-                    print("ERROR: parsed and returned basetype is None")
+        defined_from = None
+        if element.defined_from_name in vulkan_objects.dependencies.feature_dictionary:
+            defined_from = vulkan_objects.dependencies.feature_dictionary[element.defined_from_name]
+        elif element.defined_from_name in vulkan_objects.dependencies.extension_dictionary:
+            defined_from = vulkan_objects.dependencies.extension_dictionary[element.defined_from_name]
 
-            elif category == Category.CATEGORY_BITMASK.value:
-                bitmask = bitmasks.parse_bitmask(type_element)
-                if bitmask is not None:
-                    return_bitmask_dict[name] = bitmask
-                else:
-                    print("ERROR: parsed and returned bitmask is None")
+        if defined_from is None:
+            logging.error("element defined from name is not found in either features or extension dictionaries")
+            continue
 
-            elif category == Category.CATEGORY_HANDLE.value:
-                handle = handles.parse_handle(type_element)
-                if handle is not None:
-                    return_handle_dict[name] = handle
-                else:
-                    print("ERROR: parsed and returned handle is None")
-
-            elif category == Category.CATEGORY_ENUMERATION.value:
-                enumeration = enumerations.parse_enumeration(type_element)
-                if enumeration is not None:
-                    return_enumeration_dict[name] = enumeration
-                else:
-                    print("ERROR: parsed and returned enumeration is None")
-
-            elif category == Category.CATEGORY_FUNCTION_POINTER.value:
-                function_pointer = function_pointers.parse_function_pointer(type_element)
-                if function_pointer is not None:
-                    return_function_pointer_dict[name] = function_pointer
-                else:
-                    print("ERROR: parsed and returned function_pointer is None")
-
-            elif category == Category.CATEGORY_STRUCTURE.value:
-                structure = structures.parse_structure(type_element, return_enumeration_dict)
-                if structure is not None:
-                    return_structure_dict[name] = structure
-                else:
-                    print("ERROR: parsed and returned structure is None")
-
-            elif category == Category.CATEGORY_UNION.value:
-                union = unions.parse_union(type_element)
-                if union is not None:
-                    return_union_dict[name] = union
-                else:
-                    print("ERROR: parsed and returned union is None")
-
+        if category == Category.CATEGORY_INCLUDE.value:
+            include = includes.parse_include(type_element, defined_from)
+            if include is not None:
+                return_include_dict[name] = include
             else:
-                print(f"ERROR: Unknown type catagory: \"{category}\"")
-                continue
+                logging.error("parsed and returned include is None")
+        elif category == Category.CATEGORY_DEFINE.value:  
+            define = defines.parse_define(type_element)
+            if define is not None:
+                return_define_dict[name] = define
+            else:
+                logging.error("parsed and returned define is None")
 
-    
+        elif category == Category.CATEGORY_BASETYPE.value:
+            basetype = basetypes.parse_basetype(type_element, defined_from)
+            if basetype is not None:
+                return_basetype_dict[name] = basetype
+            else:
+                logging.error("parsed and returned basetype is None")
+
+        elif category == Category.CATEGORY_BITMASK.value:
+            bitmask = bitmasks.parse_bitmask(type_element)
+            if bitmask is not None:
+                return_bitmask_dict[name] = bitmask
+            else:
+                logging.error("parsed and returned bitmask is None")
+
+        elif category == Category.CATEGORY_HANDLE.value:
+            handle = handles.parse_handle(type_element, defined_from)
+            if handle is not None:
+                return_handle_dict[name] = handle
+            else:
+                logging.error("parsed and returned handle is None")
+
+        elif category == Category.CATEGORY_ENUMERATION.value:
+            enumeration = enumerations.parse_enumeration(type_element)
+            if enumeration is not None:
+                return_enumeration_dict[name] = enumeration
+            else:
+                logging.error("parsed and returned enumeration is None")
+
+        elif category == Category.CATEGORY_FUNCTION_POINTER.value:
+            function_pointer = function_pointers.parse_function_pointer(type_element)
+            if function_pointer is not None:
+                return_function_pointer_dict[name] = function_pointer
+            else:
+                logging.error("parsed and returned function_pointer is None")
+
+        elif category == Category.CATEGORY_STRUCTURE.value:
+            structure = structures.parse_structure(type_element, defined_from)
+            if structure is not None:
+                return_structure_dict[name] = structure
+            else:
+                logging.error("parsed and returned structure is None")
+
+        elif category == Category.CATEGORY_UNION.value:
+            union = unions.parse_union(type_element)
+            if union is not None:
+                return_union_dict[name] = union
+            else:
+                logging.error("parsed and returned union is None")
+
+        else:
+            logging.error(f"Unknown type catagory: \"{category}\"")
+            continue
 
     return (
         return_include_dict,

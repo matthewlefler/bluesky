@@ -10,7 +10,8 @@ def get_features(root: ET.Element[str]) -> dict[str, vulkan_objects.VkFeature]:
 
     for feature_element in features:
         feature = parse_feature(feature_element)
-        return_dict[feature.base.name] = feature
+        if feature is not None:
+            return_dict[feature.base.name] = feature
 
     return return_dict
 
@@ -25,7 +26,7 @@ def parse_feature(feature_element: ET.Element[str]) -> vulkan_objects.VkFeature 
     number  = feature_element.get("number")
     depends = feature_element.get("depends")
 
-    if name is None:
+    if name is None or apis is None or number is None:
         return None
 
     if depends is not None:
@@ -43,7 +44,7 @@ def parse_feature(feature_element: ET.Element[str]) -> vulkan_objects.VkFeature 
     obsoletes: list[vulkan_objects.VkDefinedElementList] = []
 
     for sub_element in feature_element:
-        element_list = validation.parse_element_list(sub_element)
+        element_list = validation.parse_element_list(sub_element, name)
 
         if element_list is None:
             continue
@@ -59,7 +60,6 @@ def parse_feature(feature_element: ET.Element[str]) -> vulkan_objects.VkFeature 
         vulkan_objects.VkElement( 
             feature_element, # base element
             name, # name
-            None, # protect string
             vulkan_objects.ElementValid.UNKNOWN # is the element valid, unknown b/c validation requires all features and extensions
         ),
         apis, # list of api strings or none

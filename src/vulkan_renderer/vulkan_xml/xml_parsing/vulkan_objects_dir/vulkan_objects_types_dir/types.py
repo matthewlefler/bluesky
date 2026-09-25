@@ -58,28 +58,42 @@ def get_all_types(root: ET.Element[str], elements: vulkan_objects.VkDefinedEleme
         type_element = None
         for type_elements in types:
             for temp in type_elements:
-                if element.name == temp.get("name"):
-                    type_element = temp
-                name_tag = temp.find("name")
-                if name_tag is not None and name_tag.text == element.name:
+                name = get_name(temp)
+                if element.name == name:
                     type_element = temp
 
         if type_element is None:
             logging.error(f"element {element.name} not found in <type>")
             continue
-        
-        # filter out comments
-        if type_element.tag == "comment":
+
+        # follow alias's to base
+        alias = type_element.get("alias")
+        while alias is not None:
+            type_element = None
+            for type_elements in types:
+                for temp in type_elements:
+                    name = get_name(temp)        
+                    if alias == name:
+                        type_element = temp
+
+            if type_element is None:
+                logging.error(f"element {element.name} not found in <type>")
+                break
+
+            alias = type_element.get("alias")
+
+        if type_element is None:
+            logging.error(f"element {element.name} not found in <type>")
             continue
 
         category = type_element.get(CATAGORY_ATTRIBUTE_NAME)
-        name = type_element.get("name")
+        name = get_name(type_element)
 
         if name is None:
-            logging.error(f"no name for type element: {type_element} {type_element.tag} {type_element.text} {type_element.tail}")
+            logging.error(f"no name for type element: {element.name} {type_element} {type_element.tag}")
             continue
         if category is None:
-            logging.error(f"no catagory for type element: {type_element} {type_element.tag} {type_element.text} {type_element.tail}")
+            logging.error(f"no catagory for type element: {type_element} {type_element.tag}")
             continue
 
         defined_from = None
@@ -89,9 +103,9 @@ def get_all_types(root: ET.Element[str], elements: vulkan_objects.VkDefinedEleme
             defined_from = vulkan_objects.dependencies.extension_dictionary[element.defined_from_name]
 
         if defined_from is None:
-            logging.error("element defined from name is not found in either features or extension dictionaries")
+            logging.error(f"element defined from {name} is not found in either features or extension dictionaries")
             continue
-
+#region match case
         if category == Category.CATEGORY_INCLUDE.value:
             include = includes.parse_include(type_element, defined_from)
             if include is not None:
@@ -113,7 +127,7 @@ def get_all_types(root: ET.Element[str], elements: vulkan_objects.VkDefinedEleme
                 logging.error("parsed and returned basetype is None")
 
         elif category == Category.CATEGORY_BITMASK.value:
-            bitmask = bitmasks.parse_bitmask(type_element)
+            bitmask = bitmasks.parse_bitmask(type_element, defined_from)
             if bitmask is not None:
                 return_bitmask_dict[name] = bitmask
             else:
@@ -127,14 +141,14 @@ def get_all_types(root: ET.Element[str], elements: vulkan_objects.VkDefinedEleme
                 logging.error("parsed and returned handle is None")
 
         elif category == Category.CATEGORY_ENUMERATION.value:
-            enumeration = enumerations.parse_enumeration(type_element)
+            enumeration = enumerations.parse_enumeration(type_element, defined_from)
             if enumeration is not None:
                 return_enumeration_dict[name] = enumeration
             else:
                 logging.error("parsed and returned enumeration is None")
 
         elif category == Category.CATEGORY_FUNCTION_POINTER.value:
-            function_pointer = function_pointers.parse_function_pointer(type_element)
+            function_pointer = function_pointers.parse_function_pointer(type_element, defined_from)
             if function_pointer is not None:
                 return_function_pointer_dict[name] = function_pointer
             else:
@@ -148,7 +162,7 @@ def get_all_types(root: ET.Element[str], elements: vulkan_objects.VkDefinedEleme
                 logging.error("parsed and returned structure is None")
 
         elif category == Category.CATEGORY_UNION.value:
-            union = unions.parse_union(type_element)
+            union = unions.parse_union(type_element, defined_from)
             if union is not None:
                 return_union_dict[name] = union
             else:
@@ -157,6 +171,7 @@ def get_all_types(root: ET.Element[str], elements: vulkan_objects.VkDefinedEleme
         else:
             logging.error(f"Unknown type catagory: \"{category}\"")
             continue
+#endregion match case
 
     return (
         return_include_dict,
@@ -169,3 +184,21 @@ def get_all_types(root: ET.Element[str], elements: vulkan_objects.VkDefinedEleme
         return_structure_dict,
         return_union_dict
     )
+    
+def get_name(element: ET.Element[str]) -> str | None:
+    name = element.get("name")
+    if name is not None:
+        return name
+    
+    name_tag = element.find("name")
+    if name_tag is not None and name_tag.text is not None:
+        return name_tag.text
+    
+    proto = element.find("proto")
+    if proto is not None:
+        name_tag = proto.find("name")
+        if name_tag is not None and name_tag.text is not None:
+            return name_tag.text
+    
+    return None
+        

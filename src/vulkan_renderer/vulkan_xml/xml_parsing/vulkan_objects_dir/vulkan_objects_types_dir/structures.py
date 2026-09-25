@@ -14,7 +14,7 @@ def parse_member(structure_member_element: ET.Element[str]) -> vulkan_objects.Vk
         logging.error("struct member name is None")
         return None
     
-    length = structure_member_element.get("len")
+    lengths = structure_member_element.get("len")
     alt_lens_temp = structure_member_element.get("altlen")
 
     type_tag = structure_member_element.find("type")
@@ -25,28 +25,55 @@ def parse_member(structure_member_element: ET.Element[str]) -> vulkan_objects.Vk
     if type_tag.tail is not None:
         pointer_depth = type_tag.tail.count('*')
 
-    array_lengths: list[int | str] = []
+    temp_array_lengths: list[int | str] = []
     # get type definition, aka *...*type[len_1]...[len_n]
     for element in structure_member_element:
         if element.tail is not None and ']' in element.tail:
             if '[' in element.tail:
                 array_len_name = element.tail.strip("[]")
                 if array_len_name.isnumeric():
-                    array_lengths.append(int(array_len_name))
+                    temp_array_lengths.append(int(array_len_name))
                 else:
-                    array_lengths.append(array_len_name)
+                    temp_array_lengths.append(array_len_name)
             else:
                 if element.tag == "enum":
                     if element.text is not None:
-                        array_lengths.append(element.text)
+                        temp_array_lengths.append(element.text)
                     else:
-                        logging.error(f"encountered <enum> based array length that has .text == None\n\t{name}: {element.text}")
+                        logging.error(f"encountered <enum> based array length that has .text == None\t{name}: {element.text}")
 
-    if len(array_lengths) > 0 and length is not None:
-        logging.error(f"struct member has non None length attribute and array designators\n\t{array_lengths} | {length}")
+    array_lengths: list[vulkan_objects.VkStructureMemberArrayLen] = []
+    if lengths is not None:
+        lengths = lengths.split(",")
 
-    if length is not None:
-        array_lengths = [int(x) if x.isnumeric() else x for x in length.split(",")]
+    if len(temp_array_lengths) > 0 and lengths is not None:
+        i = 0
+        for length, array_len in zip(lengths, temp_array_lengths):
+            array_lengths.append(vulkan_objects.VkStructureMemberArrayLen(
+                array_len,
+                [length]
+            ))
+            i += 1
+
+        if i < len(lengths):
+            while(i < len(lengths)):
+                array_lengths.append(vulkan_objects.VkStructureMemberArrayLen(
+                    lengths[i],
+                    [lengths[i]]
+                ))
+                i += 1
+        if i < len(temp_array_lengths):
+            while(i < len(lengths)):
+                array_lengths.append(vulkan_objects.VkStructureMemberArrayLen(
+                    temp_array_lengths[i],
+                    []
+                ))
+                i += 1
+    elif lengths is not None:
+        array_lengths = [vulkan_objects.VkStructureMemberArrayLen(x, [x]) for x in lengths]
+    elif len(temp_array_lengths) > 0:
+        array_lengths = [vulkan_objects.VkStructureMemberArrayLen(x, []) for x in temp_array_lengths]
+
     if alt_lens_temp is not None:
         alt_lens: list[str] = alt_lens_temp.split(",")
     else:
@@ -142,6 +169,3 @@ def parse_structure(structure_element: ET.Element[str], defined_from: vulkan_obj
         required_limit_type,
         members
     )
-
-def validate_structure() -> dict[str, vulkan_objects.VkStructure]:
-    raise NotImplementedError

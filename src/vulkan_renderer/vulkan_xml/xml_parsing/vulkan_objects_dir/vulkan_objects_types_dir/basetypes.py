@@ -1,3 +1,4 @@
+import logging
 import xml.etree.ElementTree as ET
 
 from vulkan_objects_dir import vulkan_objects
@@ -9,14 +10,13 @@ def parse_basetype(element: ET.Element[str], defined_from: vulkan_objects.VkFeat
         name = name.text
 
     if name is None:
+        logging.error("parse_basetype: name is None")
         return None
 
     type_str = element.find("type")
     if type_str is not None:
         type_str = type_str.text
     # TODO: parse (#ifdef _objc) and etc.
-    if type_str is None:
-        return None
 
     return vulkan_objects.VkBasetype(
         vulkan_objects.VkType(

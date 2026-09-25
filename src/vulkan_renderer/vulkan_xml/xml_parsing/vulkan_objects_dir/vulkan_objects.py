@@ -62,13 +62,14 @@ class VkDefine:
 class VkBasetype:
     base_type: VkType
     # i.e. VkBool32 may be typedef'ed to a uint32_t
-    underlying_type: str
+    underlying_type: str | None # can be None b/c of anonymous types
 
 @dataclass
 class VkBitMask:
     base_type: VkType
     bit_width: int # 32 or 64
-    bitvalues: VkEnum
+    bit_values_enum_name: str | None
+    flag_type: str # VkFlags or VkFlags64
 
 @dataclass
 class VkHandle:
@@ -93,9 +94,14 @@ class VkFunctionPointer:
     base_type: VkType
 
 @dataclass
+class VkStructureMemberArrayLen:
+    value: str | int
+    attributes: list[str]
+
+@dataclass
 class VkStructureMember:
     name: str
-    array_lens: list[int | str]
+    array_lens: list[VkStructureMemberArrayLen]
     # if is some then `array_length` is a LaTeX expression
     # useful for code generation
     alternate_lengths: list[str]

@@ -2,6 +2,7 @@
 import logging
 from io import TextIOWrapper
 import sys
+import subprocess
 
 import vulkan_object
 
@@ -16,7 +17,8 @@ FILE_COMMENT="""/**
 
 def write_copy_struct(output_c_file: TextIOWrapper, output_h_file: TextIOWrapper, structs: dict[str, vulkan_object.VkStructure]):
     output_h_file.write(FILE_COMMENT)
-    output_h_file.write("#include <vulkan/vulkan.h>\n\n")
+    output_h_file.write("#include <vulkan/vulkan.h>\n")
+    output_h_file.write("#include <vulkan/vulkan_core.h>\n\n")
     output_h_file.write("void *malloc_structure(VkBaseInStructure *structure);\n")
 
     output_c_file.write(FILE_COMMENT)
@@ -40,7 +42,7 @@ def write_copy_struct(output_c_file: TextIOWrapper, output_h_file: TextIOWrapper
             output_c_file.write(f"#ifdef {protect}\n")
 
         output_c_file.write(f"        case {sType}:\n")
-        output_c_file.write(f"            return malloc(sizeof({struct.base_type.base.name}));\n")
+        output_c_file.write(f"            return malloc(sizeof({struct_name}));\n")
 
         if protect is not None:
             output_c_file.write(f"#endif\n")
@@ -54,21 +56,33 @@ def write_copy_struct(output_c_file: TextIOWrapper, output_h_file: TextIOWrapper
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.ERROR,
+        level=logging.NOTSET,
         format='[%(asctime)s] [%(levelname)s]: %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
 
-    if not (len(sys.argv) == 2 or len(sys.argv) == 3):
-        print("usage: python parse.py <path to ouput directory> [alternate vk.xml file]")
+    if not (len(sys.argv) == 3 or len(sys.argv) == 4):
+        print("usage: python parse.py <vulkan version> <path to ouput directory> [alternate vk.xml file]")
         exit(1)
 
-    OUTPUT_DIR = sys.argv[1]
+    OUTPUT_DIR = sys.argv[2]
+    VULKAN_VERSION = sys.argv[1]
 
     ALT_XML = None
-    if len(sys.argv) >= 3:
-        ALT_XML = sys.argv[2]
+    if len(sys.argv) >= 4:
+        ALT_XML = sys.argv[3]
 
+    logging.info(f"args:\n\t{sys.argv[0]}\n\t{sys.argv[1]}\n\t{sys.argv[2]}\n\t{sys.argv[3]}")
+    if not ALT_XML:
+        # git clone repo for vk.xml
+        subprocess.call("git clone https://github.com/KhronosGroup/Vulkan-Docs.git")
+        # checkout proper tag
+        subprocess.call(f"git checkout tags/{VULKAN_VERSION}")
+        # copy vk.xml
+        subprocess.call("cp Vulkan-Docs/xml/vk.xml ./vk.xml")
+        # rm -rf repo
+        subprocess.call("rm -rf Vulkan-Docs")
+    
     with (
         open(f"{OUTPUT_DIR}/{FILE_PREPEND}_struct_copy.c", "w") as copy_structure_c_file,
         open(f"{OUTPUT_DIR}/{FILE_PREPEND}_struct_copy.h", "w") as copy_structure_h_file,
@@ -77,6 +91,7 @@ if __name__ == "__main__":
         open(f"{OUTPUT_DIR}/{FILE_PREPEND}_struct_compare_functions.c", "w") as compare_structure_funcs_c_file,
         open(f"{OUTPUT_DIR}/{FILE_PREPEND}_struct_compare_functions.h", "w") as compare_structure_funcs_h_file
     ):
+        logging.info(f"vulkan version {VULKAN_VERSION}")
         if ALT_XML:
             obj = vulkan_object.get_vulkan_object(ALT_XML, 1, 4, ["vulkan"])
         else:
@@ -86,4 +101,5 @@ if __name__ == "__main__":
             exit(-1)
         
         write_copy_struct(copy_structure_c_file, copy_structure_h_file, obj.structures)
-        
+        # for testing purposes
+                

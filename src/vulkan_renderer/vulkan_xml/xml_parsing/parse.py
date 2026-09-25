@@ -3,8 +3,10 @@ import logging
 from io import TextIOWrapper
 import sys
 import subprocess
+import os
 
 import vulkan_object
+from contextlib import chdir
 
 OUTPUT_DIR: str | None = None
 FILE_PREPEND="bluesky_vulkan_xml"
@@ -62,26 +64,31 @@ if __name__ == "__main__":
     )
 
     if not (len(sys.argv) == 3 or len(sys.argv) == 4):
-        print("usage: python parse.py <vulkan version> <path to ouput directory> [alternate vk.xml file]")
+        print("usage: python parse.py <vulkan version> <path to ouput directory> <path to tmp dir>")
         exit(1)
 
-    OUTPUT_DIR = sys.argv[2]
     VULKAN_VERSION = sys.argv[1]
-
-    ALT_XML = None
-    if len(sys.argv) >= 4:
-        ALT_XML = sys.argv[3]
-
-    logging.info(f"args:\n\t{sys.argv[0]}\n\t{sys.argv[1]}\n\t{sys.argv[2]}\n\t{sys.argv[3]}")
-    if not ALT_XML:
-        # git clone repo for vk.xml
-        subprocess.call("git clone https://github.com/KhronosGroup/Vulkan-Docs.git")
-        # checkout proper tag
-        subprocess.call(f"git checkout tags/{VULKAN_VERSION}")
-        # copy vk.xml
-        subprocess.call("cp Vulkan-Docs/xml/vk.xml ./vk.xml")
-        # rm -rf repo
-        subprocess.call("rm -rf Vulkan-Docs")
+    OUTPUT_DIR = sys.argv[2]
+    TEMP_DIR_PATH = sys.argv[3]
+    
+    os.makedirs(TEMP_DIR_PATH, exist_ok=True)
+    logging.info(f"args:\n\t{sys.argv[0]}\n\t{sys.argv[1]}\n\t{sys.argv[2]}")
+    # git clone repo for vk.xml
+    # checkout proper tag
+    # copy vk.xml
+    # rm -rf repo
+    try:
+        with chdir(TEMP_DIR_PATH):
+            subprocess.call(["git", "clone", "https://github.com/KhronosGroup/Vulkan-Docs.git"])
+        with chdir(f"{TEMP_DIR_PATH}/Vulkan-Docs"):
+            subprocess.call(["git", "checkout", f"tags/v{VULKAN_VERSION}"])
+            
+        subprocess.call(["cp", f"{TEMP_DIR_PATH}/Vulkan-Docs/xml/vk.xml", f"{TEMP_DIR_PATH}/vk.xml"]) # build/tmp/Vulkan-Docs/xml/vk.xml
+    except:
+        subprocess.call(["rm", "-rf", f"{TEMP_DIR_PATH}/Vulkan-Docs"])
+        exit(-1)
+    finally:
+        subprocess.call(["rm", "-rf", f"{TEMP_DIR_PATH}/Vulkan-Docs"])
     
     with (
         open(f"{OUTPUT_DIR}/{FILE_PREPEND}_struct_copy.c", "w") as copy_structure_c_file,
@@ -92,14 +99,13 @@ if __name__ == "__main__":
         open(f"{OUTPUT_DIR}/{FILE_PREPEND}_struct_compare_functions.h", "w") as compare_structure_funcs_h_file
     ):
         logging.info(f"vulkan version {VULKAN_VERSION}")
-        if ALT_XML:
-            obj = vulkan_object.get_vulkan_object(ALT_XML, 1, 4, ["vulkan"])
-        else:
-            obj = vulkan_object.get_vulkan_object("vk.xml", 1, 4, ["vulkan"])
+        obj = vulkan_object.get_vulkan_object(f"{TEMP_DIR_PATH}/vk.xml", 1, 4, ["vulkan"])
 
         if obj is None:
             exit(-1)
         
         write_copy_struct(copy_structure_c_file, copy_structure_h_file, obj.structures)
+        
         # for testing purposes
-                
+        # exit(-1)
+        

@@ -15,7 +15,7 @@ message(STATUS ${Vulkan_VERSION})
 set(XML_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing)
 # xml based parsing
 add_custom_target(xml_parsing
-    python ${XML_SOURCE_DIR}/parse.py ${Vulkan_VERSION} ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output ../src/vulkan_renderer/vulkan_xml/xml_parsing/vk.xml
+    python ${XML_SOURCE_DIR}/parse.py ${Vulkan_VERSION} ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/vulkan_xml/xml_parsing_output ./tmp
 
     SOURCES ${XML_SOURCE_DIR}/parse.py
             ${XML_SOURCE_DIR}/vulkan_object.py

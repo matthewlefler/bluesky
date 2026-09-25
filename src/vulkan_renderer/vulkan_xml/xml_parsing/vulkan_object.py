@@ -26,7 +26,7 @@ def get_vulkan_object(xml_file_path: str, api_version_major: int, api_version_mi
     valid_extensions = vulkan_objects_dir.extensions.filter_by_supported_apis(extensions, target_apis)
     valid_extensions = vulkan_objects_dir.extensions.validate_extensions(valid_extensions)
 
-    element_list = vulkan_objects_dir.validation.combine_features_extensions(valid_extensions, valid_features)
+    element_list = vulkan_objects_dir.validation.combine_features_extensions(valid_extensions, valid_features, target_apis)
 
     (
         includes,

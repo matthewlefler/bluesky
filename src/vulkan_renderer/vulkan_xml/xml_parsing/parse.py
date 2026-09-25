@@ -78,17 +78,15 @@ if __name__ == "__main__":
     # copy vk.xml
     # rm -rf repo
     try:
-        with chdir(TEMP_DIR_PATH):
-            subprocess.call(["git", "clone", "https://github.com/KhronosGroup/Vulkan-Docs.git"])
+        if not os.path.exists(f"{TEMP_DIR_PATH}/Vulkan-Docs"):
+            with chdir(TEMP_DIR_PATH):
+                subprocess.call(["git", "clone", "https://github.com/KhronosGroup/Vulkan-Docs.git"])
         with chdir(f"{TEMP_DIR_PATH}/Vulkan-Docs"):
             subprocess.call(["git", "checkout", f"tags/v{VULKAN_VERSION}"])
             
         subprocess.call(["cp", f"{TEMP_DIR_PATH}/Vulkan-Docs/xml/vk.xml", f"{TEMP_DIR_PATH}/vk.xml"]) # build/tmp/Vulkan-Docs/xml/vk.xml
     except:
-        subprocess.call(["rm", "-rf", f"{TEMP_DIR_PATH}/Vulkan-Docs"])
         exit(-1)
-    finally:
-        subprocess.call(["rm", "-rf", f"{TEMP_DIR_PATH}/Vulkan-Docs"])
     
     with (
         open(f"{OUTPUT_DIR}/{FILE_PREPEND}_struct_copy.c", "w") as copy_structure_c_file,
@@ -105,7 +103,4 @@ if __name__ == "__main__":
             exit(-1)
         
         write_copy_struct(copy_structure_c_file, copy_structure_h_file, obj.structures)
-        
-        # for testing purposes
-        # exit(-1)
         

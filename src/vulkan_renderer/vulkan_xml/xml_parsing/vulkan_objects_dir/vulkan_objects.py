@@ -109,6 +109,7 @@ class VkStructureMember:
     external_sync_required: bool
     allowed_values: str | None
     limit_type: str | None
+    c_type: str
     # number of pointer *'s
     pointer_depth: int
     

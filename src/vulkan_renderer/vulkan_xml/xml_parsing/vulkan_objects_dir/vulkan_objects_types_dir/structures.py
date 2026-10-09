@@ -83,6 +83,15 @@ def parse_member(structure_member_element: ET.Element[str]) -> vulkan_objects.Vk
     externally_synced = structure_member_element.get("externsync")
     allowed_values = structure_member_element.get("values")
     limit_type = structure_member_element.get("limittype")
+    
+    c_type = structure_member_element.find("type")
+    if c_type is not None:
+        c_type = c_type.text
+    
+    if c_type is None:
+        logging.error("parse_member: c_type is None")
+        return None
+    
 
     if optional is not None:
         optional = [bool(x) for x in optional.split(",")]
@@ -100,6 +109,7 @@ def parse_member(structure_member_element: ET.Element[str]) -> vulkan_objects.Vk
         externally_synced,
         allowed_values,
         limit_type,
+        c_type,
         pointer_depth
     )
 

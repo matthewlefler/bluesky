@@ -25,59 +25,7 @@ def parse_member(structure_member_element: ET.Element[str]) -> vulkan_objects.Vk
     if type_tag.tail is not None:
         pointer_depth = type_tag.tail.count('*')
 
-    temp_array_lengths: list[int | str] = []
-    # get type definition, aka *...*type[len_1]...[len_n]
-    for element in structure_member_element:
-        if element.tail is not None and ']' in element.tail:
-            if '[' in element.tail:
-                array_len_name = element.tail.strip("[]")
-                if array_len_name.isnumeric():
-                    temp_array_lengths.append(int(array_len_name))
-                else:
-                    temp_array_lengths.append(array_len_name)
-            else:
-                if element.tag == "enum":
-                    if element.text is not None:
-                        temp_array_lengths.append(element.text)
-                    else:
-                        logging.error(f"encountered <enum> based array length that has .text == None\t{name}: {element.text}")
-
-    array_lengths: list[vulkan_objects.VkStructureMemberArrayLen] = []
-    if lengths is not None:
-        lengths = lengths.split(",")
-
-    if len(temp_array_lengths) > 0 and lengths is not None:
-        i = 0
-        for length, array_len in zip(lengths, temp_array_lengths):
-            array_lengths.append(vulkan_objects.VkStructureMemberArrayLen(
-                array_len,
-                [length]
-            ))
-            i += 1
-
-        if i < len(lengths):
-            while(i < len(lengths)):
-                array_lengths.append(vulkan_objects.VkStructureMemberArrayLen(
-                    lengths[i],
-                    [lengths[i]]
-                ))
-                i += 1
-        if i < len(temp_array_lengths):
-            while(i < len(lengths)):
-                array_lengths.append(vulkan_objects.VkStructureMemberArrayLen(
-                    temp_array_lengths[i],
-                    []
-                ))
-                i += 1
-    elif lengths is not None:
-        array_lengths = [vulkan_objects.VkStructureMemberArrayLen(x, [x]) for x in lengths]
-    elif len(temp_array_lengths) > 0:
-        array_lengths = [vulkan_objects.VkStructureMemberArrayLen(x, []) for x in temp_array_lengths]
-
-    if alt_lens_temp is not None:
-        alt_lens: list[str] = alt_lens_temp.split(",")
-    else:
-        alt_lens: list[str] = []
+    temp_array_lengths: list[vulkan_objects.VkMemberArrayLen] = types.get_arrays(structure_member_element)
 
     optional = structure_member_element.get("optional")
     externally_synced = structure_member_element.get("externsync")
@@ -89,7 +37,7 @@ def parse_member(structure_member_element: ET.Element[str]) -> vulkan_objects.Vk
         c_type = c_type.text
     
     if c_type is None:
-        logging.error("parse_member: c_type is None")
+        logging.error("structures.py -> parse_member: c_type is None")
         return None
     
 

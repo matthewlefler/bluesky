@@ -75,12 +75,23 @@ def meets_minimum_api_version(features: dict[str, vulkan_objects.VkFeature], tar
     valid_feature: dict[str, vulkan_objects.VkFeature] = dict()
 
     for feature_name, feature in features.items():
-        if feature.version_number.Major >= target_api_version.Major:
+        if feature.version_number.Major > target_api_version.Major:
             continue
         if feature.version_number.Major == target_api_version.Major:
             if feature.version_number.Minor >= target_api_version.Minor:
                 continue
 
+        valid_feature[feature_name] = feature
+
+    return valid_feature
+
+def supports_apis(features: dict[str, vulkan_objects.VkFeature], target_apis: list[str]) -> dict[str, vulkan_objects.VkFeature]:
+    valid_feature: dict[str, vulkan_objects.VkFeature] = dict()
+
+    for feature_name, feature in features.items():
+        if not any([x if x in target_apis else None for x in feature.supported_apis]):
+            continue
+        
         valid_feature[feature_name] = feature
 
     return valid_feature

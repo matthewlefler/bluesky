@@ -20,7 +20,7 @@ int window_create(int width, int height, Window* window, char* name) {
     return 1;
 }
 
-int window_cleanup(Window* window) {
+int window_free(Window* window) {
     glfwDestroyWindow(window->window_ptr);
     window->window_ptr = NULL;
 

@@ -180,7 +180,7 @@ VkResult vulkan_renderer_run(Renderer* renderer) {
 }
 
 VkResult vulkan_renderer_cleanup(Renderer* renderer) {
-    window_cleanup(&renderer->window);
+    window_free(&renderer->window);
 
     if(renderer->debug_messenger != NULL) {
         // Fetch function address

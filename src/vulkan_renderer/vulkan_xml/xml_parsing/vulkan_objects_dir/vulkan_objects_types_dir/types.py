@@ -201,4 +201,38 @@ def get_name(element: ET.Element[str]) -> str | None:
             return name_tag.text
     
     return None
-        
+
+def get_arrays(element: ET.Element[str]) -> list[vulkan_objects.VkMemberArrayLen]:
+    temp_array_lengths: list[vulkan_objects.VkMemberArrayLen] = []
+    # get type definition, aka *...*type[len_1]...[len_n]
+    for sub_element in element:
+        if sub_element.tail is not None and ']' in sub_element.tail:
+            if '[' in sub_element.tail:
+                array_len_name = sub_element.tail.strip("[]")
+                temp_array_lengths.append(vulkan_objects.VkMemberArrayLen(
+                    array_len_name,
+                    None,
+                    []
+                ))
+            else:
+                if sub_element.tag == "enum":
+                    if sub_element.text is not None:
+                        temp_array_lengths.append(vulkan_objects.VkMemberArrayLen(
+                            sub_element.text,
+                            None,
+                            []
+                        ))
+                    else:
+                        logging.error(f"encountered <enum> based array length that has .text == None\t {sub_element.text}")
+
+    alt_lens = element.get("altlens")
+    if alt_lens is not None:
+        for array_length, alt_len in zip(temp_array_lengths, alt_lens.split(",")):
+            array_length.alternate_length = alt_len
+
+    length_attr = element.get("len")
+    if length_attr is not None:
+        for array_length, attr in zip(temp_array_lengths, length_attr.split(",")):
+            array_length.attributes.append(attr)
+
+    return temp_array_lengths

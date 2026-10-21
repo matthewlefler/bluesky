@@ -1,10 +1,13 @@
 import xml.etree.ElementTree as ET
+import logging
 
 import vulkan_objects_dir.extensions, vulkan_objects_dir.features, vulkan_objects_dir.platforms, vulkan_objects_dir.validation
 from vulkan_objects_dir.util import xml_util
 from vulkan_objects_dir.vulkan_objects import *
 
 import vulkan_objects_dir.vulkan_objects_types_dir.types
+
+NULL_TERMINATED = "null-terminated"
 
 def get_vulkan_object(xml_file_path: str, api_version_major: int, api_version_minor: int, target_apis: list[str] = ["vulkan"]) -> VulkanObject | None:
     api_version_patch = 0 # again this is here for completeness's sake, but also if this becomes important at any points it should be easier to implement
@@ -23,10 +26,14 @@ def get_vulkan_object(xml_file_path: str, api_version_major: int, api_version_mi
     dependencies.set_dictionaries(extensions, features)
 
     valid_features = vulkan_objects_dir.features.meets_minimum_api_version(features, target_api_version)
+    valid_features = vulkan_objects_dir.features.supports_apis(valid_features, target_apis)
     valid_extensions = vulkan_objects_dir.extensions.filter_by_supported_apis(extensions, target_apis)
     valid_extensions = vulkan_objects_dir.extensions.validate_extensions(valid_extensions)
 
     element_list = vulkan_objects_dir.validation.combine_features_extensions(valid_extensions, valid_features, target_apis)
+    logging.info(f"number of types: {len(element_list.types)}")
+    logging.info(f"number of features: {len(element_list.features)}")
+    logging.info(f"number of enumerations: {len(element_list.enumerations)}")
 
     (
         includes,
@@ -39,6 +46,15 @@ def get_vulkan_object(xml_file_path: str, api_version_major: int, api_version_mi
         structures,
         unions
     ) = vulkan_objects_dir.vulkan_objects_types_dir.types.get_all_types(root, element_list)
+
+    logging.info(f"number of defines: {len(defines)}")
+    logging.info(f"number of basetypes: {len(basetypes)}")
+    logging.info(f"number of bitmasks: {len(bitmasks)}")
+    logging.info(f"number of handles: {len(handles)}")
+    logging.info(f"number of enumerations: {len(enumerations)}")
+    logging.info(f"number of function_pointers: {len(function_pointers)}")
+    logging.info(f"number of structures: {len(structures)}")
+    logging.info(f"number of unions: {len(unions)}")
 
     return VulkanObject(
         version=target_api_version,

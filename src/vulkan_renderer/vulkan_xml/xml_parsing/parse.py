@@ -56,6 +56,14 @@ def write_copy_struct(output_c_file: TextIOWrapper, output_h_file: TextIOWrapper
     output_c_file.write("    }\n")
     output_c_file.write("}\n")
 
+ACTUAL_PARAMETER = "ACTUAL_PARAM_PLACEHOLDER"
+REQUIREMENTS_PARAMETER = "REQUIREMENTS_PARAM_PLACEHOLDER"
+def get_comparator_string(member: vulkan_object.VkStructureMember, comparator: str, array_sel: str, target_ptr_depth: int) -> str:
+    if target_ptr_depth == 0:
+        return comparator.replace(ACTUAL_PARAMETER, f"actual->{member.name}{array_sel}").replace(REQUIREMENTS_PARAMETER, f"requirements->{member.name}{array_sel}")
+    else:
+        return comparator.replace(ACTUAL_PARAMETER, f"&(actual->{member.name}{array_sel})").replace(REQUIREMENTS_PARAMETER, f"&(requirements->{member.name}{array_sel})")
+    
 
 def write_compare_funcs(output_c_file: TextIOWrapper, output_h_file: TextIOWrapper, obj: vulkan_object.VulkanObject) -> None:
     output_c_file.write(FILE_COMMENT)
@@ -63,7 +71,10 @@ def write_compare_funcs(output_c_file: TextIOWrapper, output_h_file: TextIOWrapp
     
     output_h_file.write("#include <vulkan/vulkan.h>\n\n")
     
+    output_c_file.write(f"#include <string.h>\n")
     output_c_file.write(f"#include \"{output_h_file.name}\"\n\n")
+
+    temp_fallthroughtypes: set[str] = set()
     
     for struct_name, struct in obj.structures.items():
         if struct.sType is None:
@@ -77,17 +88,23 @@ def write_compare_funcs(output_c_file: TextIOWrapper, output_h_file: TextIOWrapp
             output_c_file.write(f"#ifdef {protect}\n")
             output_h_file.write(f"#ifdef {protect}\n")
         
-        output_h_file.write(f"bool vulkan_xml_compare_{struct_name}({struct_name} actual, {struct_name} requirements);\n")
-        output_c_file.write(f"bool vulkan_xml_compare_{struct_name}({struct_name} actual, {struct_name} requirements)"+" {\n")
+        output_h_file.write(f"bool vulkan_xml_compare_{struct_name}({struct_name}* actual, {struct_name}* requirements);\n")
+        output_c_file.write(f"bool vulkan_xml_compare_{struct_name}({struct_name}* actual, {struct_name}* requirements)"+" {\n")
 
         member_comparators: list[str] = []
 
+        ignore_names: list[str] = ["pNext"]
         for member in struct.members:
-            comparator = f"actual.{member.name} == requirements.{member.name}"
+            if member.name in ignore_names:
+                continue
+
+            target_ptr_depth = 0
+            comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
             if member.c_type in obj.structures:
-                comparator = f"vulkan_xml_compare_{member.c_type}(actual.{member.name}, requirements.{member.name})"
+                target_ptr_depth = 1
+                comparator = f"vulkan_xml_compare_{member.c_type}({ACTUAL_PARAMETER}, {REQUIREMENTS_PARAMETER})"
             elif member.c_type in obj.basetypes:
-                comparator = f"actual.{member.name} == requirements.{member.name}"
+                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
             elif member.c_type in obj.bitmasks:
                 # actual | ~requirements
                 # actual or not(requirements)
@@ -97,18 +114,72 @@ def write_compare_funcs(output_c_file: TextIOWrapper, output_h_file: TextIOWrapp
                 # 0 | 1 |  0
                 # 1 | 0 |  1
                 # 1 | 1 |  1
-                comparator = f"actual.{member.name} | ~requirements.{member.name}"
+                comparator = f"({ACTUAL_PARAMETER} | ~{REQUIREMENTS_PARAMETER})"
             elif member.c_type in obj.handles:
-                comparator = f"actual.{member.name} == requirements.{member.name}"
+                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
             elif member.c_type in obj.enumerations:
-                comparator = f"actual.{member.name} == requirements.{member.name}"
+                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
             elif member.c_type in obj.function_pointers:
-                comparator = f"actual.{member.name} == requirements.{member.name}"
+                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
+            elif member.c_type == "void" and member.pointer_depth > 0:
+                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
+                target_ptr_depth = 1
             else:
-                print(f"fall through type {member.c_type}")
-                comparator = f"actual.{member.name} == requirements.{member.name}"
+                temp_fallthroughtypes.add(member.c_type)
+                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
 
-            member_comparators.append(comparator)
+            array_sel = ""
+            if len(member.array_lens) > 0:
+                output_c_file.write(f"\tbool req_{member.name}_met = true;\n")
+                depth = 1
+                indexer = "i"
+                # is a n dimensional array
+                for i, length in enumerate(member.array_lens):
+                    length_type = "size_t"
+                    length_name = length.length
+                    other_length_name = ""
+                    internal_reference = False
+                    if len(member.alternate_lengths) > 0:
+                        length_name = member.alternate_lengths[i]
+                    
+                    for other_member in struct.members:
+                        if isinstance(length_name,str) and other_member.name in length_name:
+                            length_type = other_member.c_type
+                            other_length_name = length_name.replace(other_member.name, f"requirements->{other_member.name}") # type:ignore
+                            length_name = length_name.replace(other_member.name, f"actual->{other_member.name}")
+                            internal_reference = True
+                            break
+
+                    if length.length == vulkan_object.NULL_TERMINATED:
+                        comparator = f"strcmp({ACTUAL_PARAMETER}, {REQUIREMENTS_PARAMETER}) == 0"
+                        target_ptr_depth = 1
+                    elif vulkan_object.NULL_TERMINATED in length.attributes:
+                        comparator = f"memcmp({ACTUAL_PARAMETER}, {REQUIREMENTS_PARAMETER}, MIN({length.length}, MIN(strlen({ACTUAL_PARAMETER}), strlen({REQUIREMENTS_PARAMETER}))+1))"
+                        target_ptr_depth = 1
+                    else:
+                        array_sel += f"[{indexer}]"
+                        if internal_reference:
+                            output_c_file.write(f"{depth * "\t"}for({length_type} {indexer} = 0; {indexer} < {length_name} && {indexer} < {other_length_name}; ++{indexer})" + "{\n")
+                        else:
+                            output_c_file.write(f"{depth * "\t"}for({length_type} {indexer} = 0; {indexer} < {length_name}; ++{indexer})" + "{\n")
+                        indexer = chr(ord(indexer) + 1)
+                        depth += 1
+
+                if struct_name == "VkImageBlit2" and (member.name == "dstOffsets" or member.name == "srcOffsets"):
+                    print(f"\n\n{member.pointer_depth}, {comparator}, {array_sel}, {target_ptr_depth + depth - 1}")
+                    print(get_comparator_string(member, comparator, array_sel, target_ptr_depth))
+                    print("\n")
+
+                output_c_file.write(f"{depth * "\t"}if(!({get_comparator_string(member, comparator, array_sel, target_ptr_depth)}))" + "{\n")
+                output_c_file.write(f"{depth * "\t"}\treq_{member.name}_met = false;\n")
+                output_c_file.write(f"{depth * "\t"}" + "}\n")
+
+                output_c_file.write(f"\t{(depth - 1) * "}"}\n")
+                comparator = f"req_{member.name}_met"
+                target_ptr_depth = -1
+
+            member.pointer_depth
+            member_comparators.append(get_comparator_string(member, comparator, array_sel, target_ptr_depth))
 
         # the IF statement 
         output_c_file.write("    if (\n")
@@ -128,6 +199,8 @@ def write_compare_funcs(output_c_file: TextIOWrapper, output_h_file: TextIOWrapp
         if protect is not None:
             output_c_file.write(f"#endif\n")
             output_h_file.write(f"#endif\n")
+
+    logging.info(f"fall through types: {temp_fallthroughtypes}")
 
 
 if __name__ == "__main__":

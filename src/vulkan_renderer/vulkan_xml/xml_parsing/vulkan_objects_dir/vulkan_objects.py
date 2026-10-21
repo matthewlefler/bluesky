@@ -94,17 +94,17 @@ class VkFunctionPointer:
     base_type: VkType
 
 @dataclass
-class VkStructureMemberArrayLen:
-    value: str | int
+class VkMemberArrayLen:
+    length: str
+    # alternate_lengths: useful for code generation
+    # if is some then `length` is a LaTeX expression
+    alternate_length: str | None
     attributes: list[str]
 
 @dataclass
 class VkStructureMember:
     name: str
-    array_lens: list[VkStructureMemberArrayLen]
-    # if is some then `array_length` is a LaTeX expression
-    # useful for code generation
-    alternate_lengths: list[str]
+    array_lens: list[VkMemberArrayLen]
     optional: list[bool] | None
     external_sync_required: bool
     allowed_values: str | None
@@ -131,14 +131,14 @@ class VkStructure:
 @dataclass
 class VkUnionMember:
     name: str
-    array_length: str | None
+    array_lens: list[VkMemberArrayLen]
+    # alternate_lengths: useful for code generation
     # if is some then `array_length` is a LaTeX expression
-    # useful for code generation
-    alternate_length: str | None 
     optional: list[bool] | None
     external_sync_required: bool
-    allowed_values: list[str]
-    limit_type: str
+    allowed_values: str | None
+    limit_type: str | None
+    c_type: str
     # number of pointer *'s
     pointer_depth: int
 
@@ -190,9 +190,9 @@ class VkFeature:
     version_number: VkVersion
     depends: dependencies.Depends | None
 
-    requires:    list[VkDefinedElementList]
+    requires: list[VkDefinedElementList]
     depreciates: list[VkDefinedElementList]
-    obsoletes:   list[VkDefinedElementList]
+    obsoletes: list[VkDefinedElementList]
 
 @dataclass
 class VkDefinedElementListItem:

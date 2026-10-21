@@ -5,7 +5,7 @@ from vulkan_objects_dir import vulkan_objects, dependencies
 
 def combine_features_extensions(valid_extensions: dict[str, vulkan_objects.VkExtension], valid_features: dict[str, vulkan_objects.VkFeature], target_apis: list[str]) -> vulkan_objects.VkDefinedElementList:
     return_list = vulkan_objects.VkDefinedElementList(
-        None, vulkan_objects.ElementValid.VALID, None,
+        None, vulkan_objects.ElementValid.VALID, target_apis,
         enumerations = [],
         commands     = [],
         types        = [],
@@ -16,7 +16,7 @@ def combine_features_extensions(valid_extensions: dict[str, vulkan_objects.VkExt
         for require in feature.requires:
             if(
                 (require.depends is not None and dependencies.validate(require.depends) != vulkan_objects.ElementValid.VALID) or 
-                (require.supported_apis is not None and any([x if x in target_apis else None for x in require.supported_apis]))
+                (require.supported_apis is not None and not any([x if x in target_apis else None for x in require.supported_apis]))
             ):
                 continue
 
@@ -28,7 +28,7 @@ def combine_features_extensions(valid_extensions: dict[str, vulkan_objects.VkExt
         for depreciate in feature.depreciates:
             if(
                 (depreciate.depends is not None and dependencies.validate(depreciate.depends) != vulkan_objects.ElementValid.VALID) or 
-                (depreciate.supported_apis is not None and any([x if x in depreciate.supported_apis else None for x in target_apis]))
+                (depreciate.supported_apis is not None and not any([x if x in depreciate.supported_apis else None for x in target_apis]))
             ):
                 continue
 
@@ -44,7 +44,7 @@ def combine_features_extensions(valid_extensions: dict[str, vulkan_objects.VkExt
         for obsolete in feature.obsoletes: # type: ignore
             if(
                 (obsolete.depends is not None and dependencies.validate(obsolete.depends) != vulkan_objects.ElementValid.VALID) or 
-                (obsolete.supported_apis is not None and any([x if x in obsolete.supported_apis else None for x in target_apis]))
+                (obsolete.supported_apis is not None and not any([x if x in obsolete.supported_apis else None for x in target_apis]))
             ):
                 continue
 
@@ -89,7 +89,7 @@ def combine_features_extensions(valid_extensions: dict[str, vulkan_objects.VkExt
         for obsolete in extension.obsoletes:
             if(
                 (obsolete.depends is not None and dependencies.validate(obsolete.depends) != vulkan_objects.ElementValid.VALID) or 
-                (obsolete.supported_apis is not None and any([x if x in obsolete.supported_apis else None for x in target_apis]))
+                (obsolete.supported_apis is not None and not any([x if x in obsolete.supported_apis else None for x in target_apis]))
             ):
                 continue
 
@@ -133,7 +133,6 @@ def parse_element_list(element: ET.Element[str], defined_from_name: str) -> vulk
             features.append(item)
 
     if supported_apis is not None:
-        print(f"parse {supported_apis}")
         supported_apis = supported_apis.split(",")
 
     if depends is not None:

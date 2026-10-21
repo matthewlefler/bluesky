@@ -12,6 +12,6 @@ typedef struct Window {
 
 int window_create(int width, int height, Window* window, char* name);
 
-int window_cleanup(Window* window);
+int window_free(Window* window);
 
 #endif

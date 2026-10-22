@@ -1,0 +1,122 @@
+\documentclass{article}
+\usepackage{listings}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{12pt}
+\title{Vulkan Devices}
+
+\date{\today} 
+
+\author{
+    Matthew Lefler | @skye\\
+}
+
+\begin{document}
+
+\maketitle
+\clearpage
+
+\section{The problem}
+I want to be able to input a chain of structures 
+that define what I want a device to support.
+Then the program returns a logical device that has that support.
+
+\section{The issue}
+The list of structures is very long, fix by parsing \textit{vk.xml}.
+
+Though the main problem is that compairing two structures is nigh
+impossible based on \textit{vk.xml}
+
+\subsection{Prob. 1}
+It is not possible to tell which items have been set or not.
+
+Example: 
+
+\begin{lstlisting}[mathescape]
+VkPhysicalDeviceFeatures2 device_features_2 = {
+    .features.geometryShader = VK_TRUE,
+    .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+};
+\end{lstlisting}
+Results in:
+\begin{lstlisting}[mathescape]
+VkPhysicalDeviceFeatures2 device_features_2 = {
+    VkStructureType sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+    void* pNext = 0;
+    VkPhysicalDeviceFeatures features = {
+        VkBool32    robustBufferAccess = VkFalse;
+        VkBool32    fullDrawIndexUint32 = VkFalse;
+        VkBool32    imageCubeArray = VkFalse;
+        VkBool32    independentBlend = VkFalse;
+        VkBool32    geometryShader = VkTrue;
+        VkBool32    tessellationShader = VkFalse;
+        VkBool32    sampleRateShading = VkFalse;
+        VkBool32    dualSrcBlend = VkFalse;
+        VkBool32    logicOp = VkFalse;
+        VkBool32    multiDrawIndirect = VkFalse;
+        VkBool32    drawIndirectFirstInstance = VkFalse;
+        VkBool32    depthClamp = VkFalse;
+        VkBool32    depthBiasClamp = VkFalse;
+        VkBool32    fillModeNonSolid = VkFalse;
+        VkBool32    depthBounds = VkFalse;
+        VkBool32    wideLines = VkFalse;
+        VkBool32    largePoints = VkFalse;
+        VkBool32    alphaToOne = VkFalse;
+        VkBool32    multiViewport = VkFalse;
+        VkBool32    samplerAnisotropy = VkFalse;
+        VkBool32    textureCompressionETC2 = VkFalse;
+        VkBool32    textureCompressionASTC_LDR = VkFalse;
+        VkBool32    textureCompressionBC = VkFalse;
+        VkBool32    occlusionQueryPrecise = VkFalse;
+        VkBool32    pipelineStatisticsQuery = VkFalse;
+        VkBool32    vertexPipelineStoresAndAtomics = VkFalse;
+        VkBool32    fragmentStoresAndAtomics = VkFalse;
+        VkBool32    shaderTessellationAndGeometryPointSize = VkFalse;
+        VkBool32    shaderImageGatherExtended = VkFalse;
+        VkBool32    shaderStorageImageExtendedFormats = VkFalse;
+        VkBool32    shaderStorageImageMultisample = VkFalse;
+        VkBool32    shaderStorageImageReadWithoutFormat = VkFalse;
+        VkBool32    shaderStorageImageWriteWithoutFormat = VkFalse;
+        VkBool32    shaderUniformBufferArrayDynamicIndexing = VkFalse;
+        VkBool32    shaderSampledImageArrayDynamicIndexing = VkFalse;
+        VkBool32    shaderStorageBufferArrayDynamicIndexing = VkFalse;
+        VkBool32    shaderStorageImageArrayDynamicIndexing = VkFalse;
+        VkBool32    shaderClipDistance = VkFalse;
+        VkBool32    shaderCullDistance = VkFalse;
+        VkBool32    shaderFloat64 = VkFalse;
+        VkBool32    shaderInt64 = VkFalse;
+        VkBool32    shaderInt16 = VkFalse;
+        VkBool32    shaderResourceResidency = VkFalse;
+        VkBool32    shaderResourceMinLod = VkFalse;
+        VkBool32    sparseBinding = VkFalse;
+        VkBool32    sparseResidencyBuffer = VkFalse;
+        VkBool32    sparseResidencyImage2D = VkFalse;
+        VkBool32    sparseResidencyImage3D = VkFalse;
+        VkBool32    sparseResidency2Samples = VkFalse;
+        VkBool32    sparseResidency4Samples = VkFalse;
+        VkBool32    sparseResidency8Samples = VkFalse;
+        VkBool32    sparseResidency16Samples = VkFalse;
+        VkBool32    sparseResidencyAliased = VkFalse;
+        VkBool32    variableMultisampleRate = VkFalse;
+        VkBool32    inheritedQueries = VkFalse;
+    };
+};
+\end{lstlisting}
+So how does one tell which fields were set on purpose, 
+because while in this case only chencking for true values makes sense, 
+it is completely possible that a structure has a field that requires the corresponding
+value from the device's feature's to also be false and not true
+\end{document}

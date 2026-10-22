@@ -27,7 +27,7 @@ void* copy_struct_chain(void* start) {
     VkBaseInStructure* basein_start = (VkBaseInStructure*) start;
 
     VkBaseOutStructure* current_copied_struct = NULL;
-    VkBaseOutStructure* previous_copied_struct = copy_struct_extends_from_vk_struct(basein_start);
+    VkBaseOutStructure* previous_copied_struct = malloc_structure(basein_start);
     if(previous_copied_struct == NULL) {
         log_message(LOG_LEVEL_ERROR, "init copied is null: %d", basein_start->sType);
     }
@@ -37,7 +37,7 @@ void* copy_struct_chain(void* start) {
     
     // walk the structure chain,
     while(current_struct != NULL) {
-        current_copied_struct = copy_struct_extends_from_vk_struct(current_struct);
+        current_copied_struct = malloc_structure(current_struct);
         if(current_copied_struct == NULL) {
             log_message(LOG_LEVEL_ERROR, "copied is null: %d", current_struct->sType);
         }
@@ -69,7 +69,7 @@ bool compare_struct_chain(void* actual, void* requirements) {
     
     // walk the structure chain, while both pointers are valid
     while(current_actual != NULL && current_requirements != NULL) {
-        if(!compare_struct_extends_from_vk_struct(current_actual, current_requirements)) {
+        if(!compare_struct_extends_from_VkPhysicalDeviceFeatures2(current_actual, current_requirements)) {
             return false;
         }
 

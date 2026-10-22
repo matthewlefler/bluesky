@@ -51,8 +51,7 @@ def parse_member(structure_member_element: ET.Element[str]) -> vulkan_objects.Vk
 
     return vulkan_objects.VkStructureMember(
         name,
-        array_lengths,
-        alt_lens,
+        temp_array_lengths,
         optional,
         externally_synced,
         allowed_values,

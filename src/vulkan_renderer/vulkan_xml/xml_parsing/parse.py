@@ -77,7 +77,10 @@ def write_compare_funcs(output_c_file: TextIOWrapper, output_h_file: TextIOWrapp
     temp_fallthroughtypes: set[str] = set()
     
     for struct_name, struct in obj.structures.items():
-        if struct.sType is None:
+        if struct.sType is None or struct.extends is None:
+            continue
+
+        if "VkPhysicalDeviceFeatures2" not in struct.extends:
             continue
 
         protect = None
@@ -92,115 +95,90 @@ def write_compare_funcs(output_c_file: TextIOWrapper, output_h_file: TextIOWrapp
         output_c_file.write(f"bool vulkan_xml_compare_{struct_name}({struct_name}* actual, {struct_name}* requirements)"+" {\n")
 
         member_comparators: list[str] = []
-
         ignore_names: list[str] = ["pNext"]
         for member in struct.members:
+            is_structure = False
+            if not (member.name == "sType" or member.name == "pNext"):
+                if member.c_type != "VkBool32":
+                    logging.error(f"write_compare_funcs -> structure {struct.base_type.base.name} has {member.c_type} {member.name} that is not \"VkBool32\" or is one of the \"sType\" or \"pNext\" fields")
+                if member.pointer_depth > 0:
+                    logging.info(f"write_compare_funcs -> structure {struct.base_type.base.name} has {member.c_type} {member.name} that has a pointer depth more than 0")
+
             if member.name in ignore_names:
                 continue
 
-            target_ptr_depth = 0
-            comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
-            if member.c_type in obj.structures:
-                target_ptr_depth = 1
-                comparator = f"vulkan_xml_compare_{member.c_type}({ACTUAL_PARAMETER}, {REQUIREMENTS_PARAMETER})"
-            elif member.c_type in obj.basetypes:
-                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
-            elif member.c_type in obj.bitmasks:
-                # actual | ~requirements
-                # actual or not(requirements)
-                # a | r | out
-                #---|---|-----
-                # 0 | 0 |  1
-                # 0 | 1 |  0
-                # 1 | 0 |  1
-                # 1 | 1 |  1
-                comparator = f"({ACTUAL_PARAMETER} | ~{REQUIREMENTS_PARAMETER})"
-            elif member.c_type in obj.handles:
-                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
-            elif member.c_type in obj.enumerations:
-                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
-            elif member.c_type in obj.function_pointers:
-                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
-            elif member.c_type == "void" and member.pointer_depth > 0:
-                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
-                target_ptr_depth = 1
+            if member.name == "sType":
+                member_comparators.append(f"requirements->{member.name} == actual->{member.name}")
             else:
-                temp_fallthroughtypes.add(member.c_type)
-                comparator = f"{ACTUAL_PARAMETER} == {REQUIREMENTS_PARAMETER}"
+                member_comparators.append(f"requirements->{member.name} >= actual->{member.name}")
+            
+        if len(member_comparators) <= 0:
+            logging.error(f"write_compare_funcs -> structure {struct.base_type.base.name} has no comparable fields?")
+            output_c_file.write("return true;\n")
+        else:
+            output_c_file.write("    if(\n")
+            first = True
+            for comparator in member_comparators:
+                if not first:
+                    output_c_file.write(" &&\n")
+                output_c_file.write(f"        {comparator}")
+                first = False
 
-            array_sel = ""
-            if len(member.array_lens) > 0:
-                output_c_file.write(f"\tbool req_{member.name}_met = true;\n")
-                depth = 1
-                indexer = "i"
-                # is a n dimensional array
-                for i, length in enumerate(member.array_lens):
-                    length_type = "size_t"
-                    length_name = length.length
-                    other_length_name = ""
-                    internal_reference = False
-                    if len(member.alternate_lengths) > 0:
-                        length_name = member.alternate_lengths[i]
-                    
-                    for other_member in struct.members:
-                        if isinstance(length_name,str) and other_member.name in length_name:
-                            length_type = other_member.c_type
-                            other_length_name = length_name.replace(other_member.name, f"requirements->{other_member.name}") # type:ignore
-                            length_name = length_name.replace(other_member.name, f"actual->{other_member.name}")
-                            internal_reference = True
-                            break
-
-                    if length.length == vulkan_object.NULL_TERMINATED:
-                        comparator = f"strcmp({ACTUAL_PARAMETER}, {REQUIREMENTS_PARAMETER}) == 0"
-                        target_ptr_depth = 1
-                    elif vulkan_object.NULL_TERMINATED in length.attributes:
-                        comparator = f"memcmp({ACTUAL_PARAMETER}, {REQUIREMENTS_PARAMETER}, MIN({length.length}, MIN(strlen({ACTUAL_PARAMETER}), strlen({REQUIREMENTS_PARAMETER}))+1))"
-                        target_ptr_depth = 1
-                    else:
-                        array_sel += f"[{indexer}]"
-                        if internal_reference:
-                            output_c_file.write(f"{depth * "\t"}for({length_type} {indexer} = 0; {indexer} < {length_name} && {indexer} < {other_length_name}; ++{indexer})" + "{\n")
-                        else:
-                            output_c_file.write(f"{depth * "\t"}for({length_type} {indexer} = 0; {indexer} < {length_name}; ++{indexer})" + "{\n")
-                        indexer = chr(ord(indexer) + 1)
-                        depth += 1
-
-                if struct_name == "VkImageBlit2" and (member.name == "dstOffsets" or member.name == "srcOffsets"):
-                    print(f"\n\n{member.pointer_depth}, {comparator}, {array_sel}, {target_ptr_depth + depth - 1}")
-                    print(get_comparator_string(member, comparator, array_sel, target_ptr_depth))
-                    print("\n")
-
-                output_c_file.write(f"{depth * "\t"}if(!({get_comparator_string(member, comparator, array_sel, target_ptr_depth)}))" + "{\n")
-                output_c_file.write(f"{depth * "\t"}\treq_{member.name}_met = false;\n")
-                output_c_file.write(f"{depth * "\t"}" + "}\n")
-
-                output_c_file.write(f"\t{(depth - 1) * "}"}\n")
-                comparator = f"req_{member.name}_met"
-                target_ptr_depth = -1
-
-            member.pointer_depth
-            member_comparators.append(get_comparator_string(member, comparator, array_sel, target_ptr_depth))
-
-        # the IF statement 
-        output_c_file.write("    if (\n")
-
-        for index, comparator in enumerate(member_comparators):
-            if index != 0:
-                output_c_file.write(" &&\n")
-            output_c_file.write(f"        {comparator}")
-
-        output_c_file.write("\n    ) {\n")
-        output_c_file.write("        return true;\n")
-        output_c_file.write("    }\n")
-        output_c_file.write("    return false;\n")
-
-        output_c_file.write("}\n") # close the function body
-
+            output_c_file.write("\n    ) {\n")
+            output_c_file.write("        return true;\n")
+            output_c_file.write("    }\n")
+            output_c_file.write("    return false;\n")
+        
+        output_c_file.write("}\n")
         if protect is not None:
             output_c_file.write(f"#endif\n")
             output_h_file.write(f"#endif\n")
 
-    logging.info(f"fall through types: {temp_fallthroughtypes}")
+    if len(temp_fallthroughtypes) > 0:
+        logging.error(f"fall through types: {temp_fallthroughtypes}")
+
+
+def write_compare_funcs_switch(output_c_file: TextIOWrapper, output_h_file: TextIOWrapper, compare_funcs_h_file: TextIOWrapper, obj: vulkan_object.VulkanObject) -> None:
+    output_c_file.write(FILE_COMMENT)
+    output_h_file.write(FILE_COMMENT)
+
+    output_h_file.write("#include <vulkan/vulkan.h>\n\n")
+    
+    output_c_file.write("#include \"logger.h\"\n")
+    output_c_file.write(f"#include <string.h>\n")
+    output_c_file.write(f"#include \"{output_h_file.name}\"\n\n")
+    output_c_file.write(f"#include \"{compare_funcs_h_file.name}\"\n\n")
+
+    output_c_file.write("bool compare_struct_extends_from_VkPhysicalDeviceFeatures2(VkBaseInStructure *actual, VkBaseInStructure *requirements) {\n")
+    output_c_file.write("    switch(actual->sType) {\n")
+        
+    for struct_name, struct in obj.structures.items():
+        sType = struct.sType
+        if sType is None or struct.extends is None:
+            continue
+
+        if "VkPhysicalDeviceFeatures2" not in struct.extends:
+            continue
+
+        protect = None
+        if isinstance(struct.base_type.defined_from, vulkan_object.VkExtension) and struct.base_type.defined_from.platform is not None:
+            protect = struct.base_type.defined_from.platform.protect
+
+        if protect is not None:
+            output_c_file.write(f"#ifdef {protect}\n")
+
+        output_c_file.write(f"        case {sType}:\n")
+        output_c_file.write(f"            return vulkan_xml_compare_{struct_name}(({struct_name}*) actual, ({struct_name}*) requirements);\n")
+
+        if protect is not None:
+            output_c_file.write(f"#endif\n")
+
+    output_c_file.write("        default:\n")
+    output_c_file.write("            log_message(LOG_LEVEL_DEBUG, \"unknown struct type: %d\", actual->sType);\n")
+    output_c_file.write("            return false;\n")
+    output_c_file.write("    }\n")
+    output_c_file.write("    return false;\n")
+    output_c_file.write("}\n")
 
 
 if __name__ == "__main__":
@@ -255,5 +233,5 @@ if __name__ == "__main__":
         
         write_copy_struct(copy_structure_c_file, copy_structure_h_file, obj.structures)
         write_compare_funcs(compare_structure_funcs_c_file, compare_structure_funcs_h_file, obj)
-        exit(-1)
+        write_compare_funcs_switch(compare_structure_switch_c_file, compare_structure_switch_h_file, compare_structure_funcs_h_file, obj)
         

@@ -172,7 +172,7 @@ VkResult vulkan_renderer_init(
 }
 
 VkResult vulkan_renderer_run(Renderer* renderer) {
-    while (false && !glfwWindowShouldClose(renderer->window.window_ptr)) {
+    while (!glfwWindowShouldClose(renderer->window.window_ptr)) {
         glfwPollEvents();
     }
 

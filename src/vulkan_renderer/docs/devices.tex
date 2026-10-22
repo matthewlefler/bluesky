@@ -21,7 +21,7 @@
 \date{\today} 
 
 \author{
-    Matthew Lefler | @skye\\
+    Matthew Lefler | @skye
 }
 
 \begin{document}
@@ -118,5 +118,14 @@ VkPhysicalDeviceFeatures2 device_features_2 = {
 So how does one tell which fields were set on purpose, 
 because while in this case only chencking for true values makes sense, 
 it is completely possible that a structure has a field that requires the corresponding
-value from the device's feature's to also be false and not true
+value from the device's feature's to also be false and not true.
+
+And even more pressing a value may be left as uninitilized, 
+resulting in any possible value technically. This makes the field 
+impossible to be used, and therefore requires knowing which fields 
+were set.
+
+\section{Why}
+Why do I have to query a device for its features.
+
 \end{document}

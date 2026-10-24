@@ -1,6 +1,8 @@
 #ifndef VULKAN_STRUCTURE_H
 #define VULKAN_STRUCTURE_H
 
+#include <vulkan/vulkan.h>
+
 /**
  * copies a chain of structures with internals:
  * struct {
@@ -28,10 +30,10 @@ void* copy_struct_chain(void* start);
 void free_struct_chain(void* start);
 
 /**
- * compares two structure chain and checks if a, meet the requirements b
+ * compares two structure chain and checks if the `actual`, meet the `requirements`
  * 
  * @return `true` if the requirements are met, `false` otherwise
  */
-bool compare_struct_chain(void* a, void* b);
+bool compare_VkPhysicalDeviceFeatures2_chain(VkPhysicalDeviceFeatures2* actual, VkPhysicalDeviceFeatures2* requirements);
 
 #endif

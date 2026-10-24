@@ -46,7 +46,7 @@ int main(int argc, char** argv)
         dynamic_rendering.pNext = &vulkan_11;
         vulkan_11.pNext = &extended_dynamic_state;
         extended_dynamic_state.pNext = NULL;
-
+        
         VkQueueFlagBits flagbits = VK_QUEUE_GRAPHICS_BIT;
 
     Renderer renderer;

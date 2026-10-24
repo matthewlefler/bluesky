@@ -57,11 +57,17 @@ VkResult device_get(
         };
         vkGetPhysicalDeviceProperties2(physical_device, &physical_device_properties);
 
+        log_message(LOG_LEVEL_DEBUG, "device selection, device: %s", physical_device_properties.properties.deviceName);
+
         uint32_t score = score_func(physical_device_properties);
         
         // get indices of the required queues
         uint32_t* queue_indices = physical_device_queue_families_supports(physical_device, queue_flags_count, queue_flags, physical_device_properties.properties.deviceName);
         bool has_requried_properties = physical_device_supports_features(physical_device, device_feature_requirements);
+
+        log_message(LOG_LEVEL_DEBUG, "device selection, score: %d", score);
+        log_message(LOG_LEVEL_DEBUG, "device selection, queue_indices: %p", queue_indices);
+        log_message(LOG_LEVEL_DEBUG, "device selection, has_requried_properties: %s", has_requried_properties ? "true" : "false");
 
         if(
             score > max_score && 
@@ -76,6 +82,11 @@ VkResult device_get(
         } else {
             free(queue_indices);
         }
+    }
+
+    if(current_best_physical_device_queue_indices == NULL) {
+        log_message(LOG_LEVEL_FATAL, "no device found");
+        return VK_ERROR_INITIALIZATION_FAILED;
     }
 
     device.physical_device = current_best_physical_device;

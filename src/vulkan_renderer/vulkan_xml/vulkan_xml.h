@@ -11,7 +11,7 @@
  * 
  * @return the heap allocated structure with the .sType filled out
  */
-void* malloc_structure(const VkBaseInStructure *structure);
+void* alloc_structure(const VkBaseInStructure *structure);
 
 /**
  * Compares a structure, a, to another structure, b
@@ -21,5 +21,15 @@ void* malloc_structure(const VkBaseInStructure *structure);
  * 
  * @return `true` if the structure, a, meets the requirements set in structure, b. `false` otherwise
  */
-bool compare_struct_extends_from_VkPhysicalDeviceFeatures2(void* a, void* b);
+bool compare_struct_extends_from_VkPhysicalDeviceFeatures2(const VkBaseInStructure *a, const VkBaseInStructure *b);
+
+/**
+ * returns the name of a given VkStructureType based structure
+ * 
+ * @param structure The structure to get the name of
+ * 
+ * @return The name of a given VkStructureType based structure
+ */
+char* helper_print_VkStructureType(const VkBaseInStructure *structure);
+
 #endif

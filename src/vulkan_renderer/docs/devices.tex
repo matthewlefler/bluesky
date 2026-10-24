@@ -120,12 +120,16 @@ because while in this case only chencking for true values makes sense,
 it is completely possible that a structure has a field that requires the corresponding
 value from the device's feature's to also be false and not true.
 
+\section{Prob. 2}
 And even more pressing a value may be left as uninitilized, 
 resulting in any possible value technically. This makes the field 
 impossible to be used, and therefore requires knowing which fields 
 were set.
 
-\section{Why}
-Why do I have to query a device for its features.
+\section{The fix}
+Notice that every structure that extends "VkPhysicalDeviceFeatures2" 
+only contains the "sType", "pNext", and some number of "VkBool32" fields
+
+\textit{4 months ago...}
 
 \end{document}

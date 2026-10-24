@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "../../utilities/logger/logger.h"
 #include "../vulkan_xml/vulkan_structure.h"
@@ -60,7 +61,7 @@ bool physical_device_supports_features(VkPhysicalDevice physical_device, VkPhysi
 
     vkGetPhysicalDeviceFeatures2(physical_device, actual);
 
-    bool return_val = compare_struct_chain(actual, device_feature_requirements);
+    bool return_val = compare_VkPhysicalDeviceFeatures2_chain(actual, device_feature_requirements);
 
     free_struct_chain(actual);
 

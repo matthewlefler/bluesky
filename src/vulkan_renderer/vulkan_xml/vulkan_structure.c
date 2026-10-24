@@ -1,8 +1,9 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <vulkan/vulkan.h>
 
-#include "../../utilities/logger/logger.h"
+#include "logger.h"
 
 #include "vulkan_structure.h"
 #include "vulkan_xml.h"
@@ -27,24 +28,28 @@ void* copy_struct_chain(void* start) {
     VkBaseInStructure* basein_start = (VkBaseInStructure*) start;
 
     VkBaseOutStructure* current_copied_struct = NULL;
-    VkBaseOutStructure* previous_copied_struct = malloc_structure(basein_start);
+    VkBaseOutStructure* previous_copied_struct = alloc_structure(basein_start);
+    previous_copied_struct->sType = basein_start->sType;
     if(previous_copied_struct == NULL) {
-        log_message(LOG_LEVEL_ERROR, "init copied is null: %d", basein_start->sType);
+        log_message(LOG_LEVEL_ERROR, "in copy_struct_chain -> init copied is null: %d", basein_start->sType);
     }
-    const VkBaseInStructure* current_struct = basein_start->pNext;
-
     void* return_struct = previous_copied_struct;
-    
+
     // walk the structure chain,
-    while(current_struct != NULL) {
-        current_copied_struct = malloc_structure(current_struct);
+    for(const VkBaseInStructure* current_struct = basein_start->pNext; current_struct != NULL; current_struct = current_struct->pNext) {
+        current_copied_struct = alloc_structure(current_struct);
+        current_copied_struct->sType = current_struct->sType;
+
         if(current_copied_struct == NULL) {
-            log_message(LOG_LEVEL_ERROR, "copied is null: %d", current_struct->sType);
+            log_message(LOG_LEVEL_ERROR, "copy_struct_chain: copied is null: %d", current_struct->sType);
+        }
+
+        if (current_struct == current_struct->pNext) {
+            log_message(LOG_LEVEL_FATAL, "in copy_struct_chain -> structure chain to copy has infinite loop");
+            exit(-1);
         }
 
         previous_copied_struct->pNext = current_copied_struct;
-
-        current_struct = basein_start->pNext;
         previous_copied_struct = current_copied_struct;
     }
 
@@ -63,18 +68,20 @@ void free_struct_chain(void* start) {
     }
 }
 
-bool compare_struct_chain(void* actual, void* requirements) {
-    void* current_actual = actual;
-    void* current_requirements = requirements;
+bool compare_VkPhysicalDeviceFeatures2_chain(VkPhysicalDeviceFeatures2* actual, VkPhysicalDeviceFeatures2* requirements) {
+    const VkBaseInStructure* current_actual = (VkBaseInStructure*) actual;
+    const VkBaseInStructure* current_requirements = (VkBaseInStructure*) requirements;
     
     // walk the structure chain, while both pointers are valid
     while(current_actual != NULL && current_requirements != NULL) {
-        if(!compare_struct_extends_from_VkPhysicalDeviceFeatures2(current_actual, current_requirements)) {
+        bool valid = compare_struct_extends_from_VkPhysicalDeviceFeatures2(current_actual, current_requirements);
+        log_message(LOG_LEVEL_DEBUG, "\t compare_VkPhysicalDeviceFeatures2_chain: %s | %s", helper_print_VkStructureType(current_requirements), valid ? "true" : "false");
+        if(!valid) {
             return false;
         }
 
-        current_actual = get_pNext(current_actual);
-        current_requirements = get_pNext(current_requirements);
+        current_actual = current_actual->pNext;
+        current_requirements = current_requirements->pNext;
     }
 
     if( // one structure chain is done while the other is not

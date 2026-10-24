@@ -77,7 +77,7 @@ VkResult vulkan_create_instance(Renderer* renderer) {
 
 const char* get_debug_message_type_string(VkDebugUtilsMessageTypeFlagsEXT flags) {
     char* buffer = malloc(sizeof(char) * 256);
-    buffer[0] = '\0'; // Clear the buffer
+    buffer[0] = '\0'; // "Clear" the buffer
 
     if (flags & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) {
         strcat(buffer, "General ");
@@ -172,7 +172,7 @@ VkResult vulkan_renderer_init(
 }
 
 VkResult vulkan_renderer_run(Renderer* renderer) {
-    while (!glfwWindowShouldClose(renderer->window.window_ptr)) {
+    while (false && !glfwWindowShouldClose(renderer->window.window_ptr)) {
         glfwPollEvents();
     }
 

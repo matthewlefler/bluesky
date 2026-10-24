@@ -4,8 +4,9 @@ This is a work in progress project
 
 TODOs:
 1. parse arbitrary `vk.xml`
-    - fix depends statment parsing so that (hi,hi_2+hi_3) is valid
-    - get compiler to like outputed files
+    - ~~fix depends statment parsing so that (hi,hi_2+hi_3) is valid~~
+    - ~~get compiler to like outputed files~~
+    - parse `unions` and `defines` correctly
 2. create pipeline
 3. create spirv from shaders automatically
     - tag with spirv extension requirements

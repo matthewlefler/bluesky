@@ -5,6 +5,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "logger.h"
+
 #include "layers.h"
 
 #ifndef NDEBUG
@@ -46,7 +48,7 @@ VkResult get_instance_layers(VkLayerProperties** out_layers, uint32_t* out_layer
     return vkEnumerateInstanceLayerProperties(out_layers_count, *out_layers);
 }
 
-VkResult check_instance_layers(uint32_t required_instance_layers_count, const char const * const * required_instance_layers) {
+VkResult check_instance_layers(uint32_t required_instance_layers_count, const char* const * required_instance_layers) {
     uint32_t instance_layers_count;
     VkLayerProperties* instance_layers;
 
@@ -57,7 +59,7 @@ VkResult check_instance_layers(uint32_t required_instance_layers_count, const ch
     
     result = VK_SUCCESS;
     for(uint32_t i = 0; i < required_instance_layers_count; ++i) {
-        const char const * required_instance_layer_name = required_instance_layers[i];
+        const char *required_instance_layer_name = required_instance_layers[i];
         bool found = false;
 
         for(uint32_t j = 0; j < instance_layers_count; ++j) {
@@ -69,7 +71,7 @@ VkResult check_instance_layers(uint32_t required_instance_layers_count, const ch
         }
 
         if(found == false) {
-            printf("could not find required layer: %s\n", required_instance_layer_name);
+            log_message(LOG_LEVEL_ERROR, "could not find required layer: %s\n", required_instance_layer_name);
 
             result = VK_ERROR_LAYER_NOT_PRESENT;
         }
@@ -81,7 +83,7 @@ VkResult check_instance_layers(uint32_t required_instance_layers_count, const ch
 }
 
 void free_layers(const char * const* layers, uint32_t len) {
-    free(layers);
+    free((void*) layers);
 }
 
 #endif

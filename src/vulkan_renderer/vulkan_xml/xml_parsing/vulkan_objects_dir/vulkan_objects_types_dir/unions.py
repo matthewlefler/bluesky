@@ -12,10 +12,10 @@ def parse_member(element: ET.Element[str]) -> vulkan_objects.VkUnionMember | Non
         logging.error("unions.py -> parse_member: name or name.text is None")
         return None
     if selection is None:
-        logging.error("unions.py -> parse_member: selection is None")
+        logging.error(f"unions.py -> parse_member: {name_element.text} selection is None")
         return None
     if type_tag is None or type_tag.text is None:
-        logging.error("unions.py -> parse_member: type_tag or type_tag.text is None")
+        logging.error(f"unions.py -> parse_member: {name_element.text} type_tag or type_tag.text is None")
         return None
 
     array_lens = types.get_arrays(element)

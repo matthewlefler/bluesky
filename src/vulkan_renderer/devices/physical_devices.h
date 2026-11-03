@@ -14,7 +14,7 @@
  * 
  * @return `NULL` if any requested flag is unsupported, otherwise the array of indices of the queue families
  */
-uint32_t* physical_device_queue_families_supports(VkPhysicalDevice device, uint32_t flags_count, VkQueueFlagBits* flags, const char* device_name);
+uint32_t* physical_device_queue_families_supports(const VkPhysicalDevice device, const uint32_t flags_count, const VkQueueFlagBits* flags, const char* device_name);
 
 /**
  * checks if the physical device, `device`, meets the requirements specificed in `requirements`
@@ -24,6 +24,20 @@ uint32_t* physical_device_queue_families_supports(VkPhysicalDevice device, uint3
  * 
  * @return `true` if the requirements are met, `false` otherwise
  */
-bool physical_device_supports_features(VkPhysicalDevice device, VkPhysicalDeviceFeatures2* requirements);
+bool physical_device_supports_features(const VkPhysicalDevice physical_device, const VkPhysicalDeviceFeatures2* device_feature_requirements);
+
+/**
+ * checks if the physical device, `device`, has the extensions specificed in `extension_names`
+ * 
+ * @param device The device to check for support of the requirements on
+ * @param extension_count the number of extensions to check for
+ * @param extension_names the extensions required for the physical device
+ * 
+ * @return `true` if the extensions are found, `false` otherwise
+ */
+bool physical_device_supports_extensions(const VkPhysicalDevice physical_device, const uint32_t extension_count, const char *const *extension_names);
+
+VkResult query_physical_device_surface_formats(const VkPhysicalDevice physical_device, const VkSurfaceKHR surface, uint32_t *out_surface_format_count, VkSurfaceFormat2KHR **out_surface_formats);
+VkResult query_physical_device_presentation_modes(const VkPhysicalDevice physical_device, const VkSurfaceKHR surface, uint32_t *out_surface_presentation_modes_count, VkPresentModeKHR **out_surface_presentation_modes);
 
 #endif

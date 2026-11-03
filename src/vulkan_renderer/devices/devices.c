@@ -8,21 +8,29 @@
 #include "logical_devices.h"
 
 uint32_t default_score_func(VkPhysicalDeviceProperties2 device_properties) {
+    uint32_t score = 1;
     uint32_t driver_version = device_properties.properties.driverVersion;
 
     if(driver_version >= VK_API_VERSION_1_4) {
-        return 2;
+        score++;
     }
+
+    // VK_PHYSICAL_DEVICE_TYPE_OTHER = 0,
+    // VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU = 1,
+    // VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU = 2,
+    // VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU = 3,
+    // VK_PHYSICAL_DEVICE_TYPE_CPU = 4,
+    score += device_properties.properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 
     return 1;
 }
 
 VkResult device_get(
-    VkInstance instance, 
-    uint32_t (*score_func)(VkPhysicalDeviceProperties2), 
-    VkPhysicalDeviceFeatures2* device_feature_requirements, 
-    uint32_t queue_flags_count, 
-    VkQueueFlagBits* queue_flags, 
+    const VkInstance instance, 
+    const uint32_t (*score_func)(VkPhysicalDeviceProperties2), 
+    const VkPhysicalDeviceFeatures2* device_feature_requirements, 
+    const uint32_t device_extension_count, const char* const *device_extension_requirements,
+    const uint32_t queue_flags_count, const VkQueueFlagBits* queue_flags, 
     Device* out_device
 ) {
     if(instance == NULL) {
@@ -34,7 +42,7 @@ VkResult device_get(
         score_func = &default_score_func;
     }
 
-    Device device;
+    Device device = {0};
 
     // get physical devices
     uint32_t physical_devices_count = 0;
@@ -64,6 +72,7 @@ VkResult device_get(
         // get indices of the required queues
         uint32_t* queue_indices = physical_device_queue_families_supports(physical_device, queue_flags_count, queue_flags, physical_device_properties.properties.deviceName);
         bool has_requried_properties = physical_device_supports_features(physical_device, device_feature_requirements);
+        bool has_required_extensions = physical_device_supports_extensions(physical_device, device_extension_count, device_extension_requirements);
 
         log_message(LOG_LEVEL_DEBUG, "device selection, score: %d", score);
         log_message(LOG_LEVEL_DEBUG, "device selection, queue_indices: %p", queue_indices);
@@ -72,7 +81,8 @@ VkResult device_get(
         if(
             score > max_score && 
             queue_indices != NULL && 
-            has_requried_properties
+            has_requried_properties && 
+            has_required_extensions
         ) {
             max_score = score;
 
@@ -92,7 +102,12 @@ VkResult device_get(
     device.physical_device = current_best_physical_device;
     device.physical_device_properties = current_best_physical_device_properties;
 
-    create_logical_device(current_best_physical_device, queue_flags_count, queue_flags, current_best_physical_device_queue_indices, &device.logical_device);
+    create_logical_device(
+        current_best_physical_device, 
+        queue_flags_count, queue_flags, current_best_physical_device_queue_indices, 
+        device_extension_count, device_extension_requirements,
+        &device.logical_device
+    );
 
     free(current_best_physical_device_queue_indices);
 

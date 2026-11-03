@@ -10,9 +10,10 @@
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
 
-#include "../utilities/logger/logger.h"
+#include "logger.h"
+#include "log_utilities.h"
 
-#include "window.h"
+#include "window/window.h"
 #include "extensions.h"
 #include "layers.h"
 #include "devices/devices.h"
@@ -32,9 +33,11 @@ VkResult vulkan_create_instance(Renderer* renderer) {
 
     uint32_t instance_extensions_count;
     const char **instance_extensions;
-    get_required_instance_extensions(&instance_extensions_count, &instance_extensions);
-    
     VkResult result;
+    if((result = get_required_instance_extensions(&instance_extensions_count, &instance_extensions)) != VK_SUCCESS) {
+        return result;
+    }
+    
     if((result = check_instance_extensions(instance_extensions_count, instance_extensions)) != VK_SUCCESS) {
         return result;
     }
@@ -73,34 +76,6 @@ VkResult vulkan_create_instance(Renderer* renderer) {
     free_layers(create_info.ppEnabledLayerNames, create_info.enabledLayerCount);
     
     return result;
-}
-
-const char* get_debug_message_type_string(VkDebugUtilsMessageTypeFlagsEXT flags) {
-    char* buffer = malloc(sizeof(char) * 256);
-    buffer[0] = '\0'; // "Clear" the buffer
-
-    if (flags & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) {
-        strcat(buffer, "General ");
-    }
-    if (flags & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT) {
-        strcat(buffer, "Validation ");
-    }
-    if (flags & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) {
-        strcat(buffer, "Performance ");
-    }
-    if (flags & VK_DEBUG_UTILS_MESSAGE_TYPE_DEVICE_ADDRESS_BINDING_BIT_EXT) {
-        strcat(buffer, "DeviceAddressBinding ");
-    }
-
-    // Remove the trailing space if at least one type was added
-    size_t len = strlen(buffer);
-    if (len > 0) {
-        buffer[len - 1] = '\0';
-    } else {
-        strcpy(buffer, "Unknown");
-    }
-
-    return buffer;
 }
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -153,14 +128,22 @@ VkResult create_debug_messenger(Renderer* renderer) {
 
 VkResult vulkan_renderer_init(
     Renderer* renderer, 
-    uint32_t (*physical_device_score_function)(VkPhysicalDeviceProperties2), 
-    VkPhysicalDeviceFeatures2 *device_feature_requirements, 
-    uint32_t queue_flags_count, 
-    VkQueueFlagBits *queue_flags
+    const uint32_t (*physical_device_score_function)(VkPhysicalDeviceProperties2), 
+    const VkPhysicalDeviceFeatures2 *device_feature_requirements, 
+    const uint32_t device_extension_count, const char* const *device_extension_requirements, 
+    const uint32_t queue_flags_count, const VkQueueFlagBits *queue_flags
 ) {
-    window_create(600, 800, &renderer->window, "TreeWalk");
+    if(glfwInit() == GLFW_FALSE) { // have to init glfw before getting instance extension
+        return VK_NOT_READY;
+    }
 
     vulkan_create_instance(renderer);
+
+    VkResult result = window_create(renderer->vk_instance, 800, 800, "TreeWalk", &renderer->window);
+    if(result) {
+        log_message(LOG_LEVEL_FATAL, "vulkan_renderer_init -> failed to create window %s", to_string_VkResult(result));
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
 
     renderer->debug_messenger = NULL;
 #ifndef NDEBUG
@@ -168,11 +151,19 @@ VkResult vulkan_renderer_init(
 #endif
 
     renderer->devices = malloc(sizeof(Device) * 1);
-    return device_get(renderer->vk_instance, physical_device_score_function, device_feature_requirements, queue_flags_count, queue_flags, renderer->devices);
+    renderer->num_devices = 1;
+    return device_get(
+        renderer->vk_instance, 
+        physical_device_score_function, 
+        device_feature_requirements, 
+        device_extension_count, device_extension_requirements, 
+        queue_flags_count, queue_flags, 
+        renderer->devices // out device
+    );
 }
 
 VkResult vulkan_renderer_run(Renderer* renderer) {
-    while (false && !glfwWindowShouldClose(renderer->window.window_ptr)) {
+    while (!glfwWindowShouldClose(renderer->window.window_ptr)) {
         glfwPollEvents();
     }
 
@@ -180,7 +171,17 @@ VkResult vulkan_renderer_run(Renderer* renderer) {
 }
 
 VkResult vulkan_renderer_cleanup(Renderer* renderer) {
-    window_free(&renderer->window);
+    if(renderer->devices != NULL) {
+        for(size_t i = 0; i < renderer->num_devices; ++i) {
+            if(renderer->devices[i].logical_device != NULL) {
+                vkDestroyDevice(renderer->devices[i].logical_device, NULL);
+            }
+        }
+
+        free(renderer->devices);
+    }
+
+    window_free(renderer->vk_instance, renderer->window);
 
     if(renderer->debug_messenger != NULL) {
         // Fetch function address

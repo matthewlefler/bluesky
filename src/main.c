@@ -46,18 +46,39 @@ int main(int argc, char** argv)
         dynamic_rendering.pNext = &vulkan_11;
         vulkan_11.pNext = &extended_dynamic_state;
         extended_dynamic_state.pNext = NULL;
-        
+
+        const uint32_t required_device_extensions_count = 1;
+        const char *const required_device_extensions[] = {
+            "VK_KHR_swapchain"
+        };
+
+        // rewrite extensions(.c/.h) to allow for user inputted extensions
+        // aka make the process more malliable and changable
+        // 
+        // const uint32_t required_instance_extensions_count = 1;
+        // const char *const * required_instance_extensions = {
+        //     "VK_KHR_surface"
+        // };
+                
         VkQueueFlagBits flagbits = VK_QUEUE_GRAPHICS_BIT;
 
-    Renderer renderer;
-    result = vulkan_renderer_init(&renderer, &score_physical_device, &device_features_2, 1, &flagbits);
-    log_message(LOG_LEVEL_DEBUG, "init result: %s", string_VkResult(result));
+    Renderer renderer = {0};
+    result = vulkan_renderer_init(
+        &renderer, 
+        &score_physical_device, &device_features_2, 
+        required_device_extensions_count, required_device_extensions,
+        1, &flagbits
+    );
+    log_message(LOG_LEVEL_INFO, "init result: %s", string_VkResult(result));
+    if(result) { return EXIT_FAILURE; }
 
     result = vulkan_renderer_run(&renderer);
-    log_message(LOG_LEVEL_DEBUG, "run result: %s", string_VkResult(result));
+    log_message(LOG_LEVEL_INFO, "run result: %s", string_VkResult(result));
+    if(result) { return EXIT_FAILURE; }
 
     result = vulkan_renderer_cleanup(&renderer);
-    log_message(LOG_LEVEL_DEBUG, "cleanup result: %s", string_VkResult(result));
+    log_message(LOG_LEVEL_INFO, "cleanup result: %s", string_VkResult(result));
+    if(result) { return EXIT_FAILURE; }
 
     return EXIT_SUCCESS;
 }

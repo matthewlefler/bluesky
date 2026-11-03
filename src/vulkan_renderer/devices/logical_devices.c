@@ -6,7 +6,12 @@
 
 #include "logical_devices.h"
 
-VkResult create_logical_device(VkPhysicalDevice physical_device, uint32_t queue_count, VkQueueFlagBits* queue_flags, uint32_t* queue_indices, VkDevice* out_logical_device) {
+VkResult create_logical_device(
+    VkPhysicalDevice physical_device, 
+    const uint32_t queue_count, const VkQueueFlagBits* queue_flags, const uint32_t* queue_indices, 
+    const uint32_t enabledExtensionCount, const char* const *ppEnabledExtensionNames,
+    VkDevice* out_logical_device
+) {
     if(physical_device == NULL) {
         return VK_ERROR_INITIALIZATION_FAILED;
     }
@@ -16,7 +21,7 @@ VkResult create_logical_device(VkPhysicalDevice physical_device, uint32_t queue_
     for(uint32_t i = 0; i < queue_count; ++i) {
         queue_create_infos[i] = (VkDeviceQueueCreateInfo) {
             .queueFamilyIndex = queue_indices[i],
-            .flags = queue_flags[i],
+            .flags = 0, 
 
             .queueCount = 1,
             .pQueuePriorities = &queuePriority,
@@ -30,8 +35,8 @@ VkResult create_logical_device(VkPhysicalDevice physical_device, uint32_t queue_
         .queueCreateInfoCount = queue_count,
         .pQueueCreateInfos = queue_create_infos,
 
-        .enabledExtensionCount = 0,
-        .ppEnabledExtensionNames = NULL,
+        .enabledExtensionCount = enabledExtensionCount,
+        .ppEnabledExtensionNames = ppEnabledExtensionNames,
 
         .enabledLayerCount = 0,
         .ppEnabledLayerNames = NULL,

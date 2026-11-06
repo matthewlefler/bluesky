@@ -8,6 +8,8 @@ typedef struct Device {
     VkDevice logical_device;
 
     VkPhysicalDeviceProperties2 physical_device_properties;
+    uint32_t queue_count;
+    uint32_t* queue_indices;
 } Device;
 
 /**
@@ -26,11 +28,13 @@ typedef struct Device {
  */
 VkResult device_get(
     const VkInstance instance, 
-    const uint32_t (*score_func)(VkPhysicalDeviceProperties2), 
+    uint32_t (*score_func)(VkPhysicalDeviceProperties2), 
     const VkPhysicalDeviceFeatures2* device_feature_requirements, 
     const uint32_t device_extension_count, const char* const *device_extension_requirements,
     const uint32_t queue_flags_count, const VkQueueFlagBits* queue_flags, 
     Device* out_device
 );
+
+void device_free(Device device);
 
 #endif

@@ -37,7 +37,4 @@ bool physical_device_supports_features(const VkPhysicalDevice physical_device, c
  */
 bool physical_device_supports_extensions(const VkPhysicalDevice physical_device, const uint32_t extension_count, const char *const *extension_names);
 
-VkResult query_physical_device_surface_formats(const VkPhysicalDevice physical_device, const VkSurfaceKHR surface, uint32_t *out_surface_format_count, VkSurfaceFormat2KHR **out_surface_formats);
-VkResult query_physical_device_presentation_modes(const VkPhysicalDevice physical_device, const VkSurfaceKHR surface, uint32_t *out_surface_presentation_modes_count, VkPresentModeKHR **out_surface_presentation_modes);
-
 #endif

@@ -55,6 +55,7 @@ target_sources(vulkan_main PRIVATE
     ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/layers.c
     ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/log_utilities.c
     ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/render.c
+    ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/swapchain.c
     
     ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/window/window.c
     ${CMAKE_SOURCE_DIR}/src/vulkan_renderer/window/glfw_window.c

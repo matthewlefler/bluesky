@@ -14,6 +14,42 @@ uint32_t score_physical_device(VkPhysicalDeviceProperties2 device_properties_2) 
         (device_properties_2.properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) * 0b100;
 }
 
+uint32_t score_surface_format(VkSurfaceFormat2KHR surface_format) {
+    return (surface_format.surfaceFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR);
+}
+uint32_t score_presentation_mode(VkPresentModeKHR present_mode) {
+    switch (present_mode) {
+        case VK_PRESENT_MODE_IMMEDIATE_KHR:
+            return 0;
+        case VK_PRESENT_MODE_MAILBOX_KHR:
+            return 5;
+        case VK_PRESENT_MODE_FIFO_KHR:
+            return 4;
+        case VK_PRESENT_MODE_FIFO_RELAXED_KHR:
+            return 0;
+        case VK_PRESENT_MODE_SHARED_DEMAND_REFRESH_KHR:
+            return 0;
+        case VK_PRESENT_MODE_SHARED_CONTINUOUS_REFRESH_KHR:
+            return 0;
+        case VK_PRESENT_MODE_FIFO_LATEST_READY_KHR:
+            return 0;
+        default:
+            return 0;
+    }
+}
+
+VkExtent2D get_window_extent(VkSurfaceCapabilities2KHR surface_capabilities) {
+    return surface_capabilities.surfaceCapabilities.currentExtent;
+}
+
+uint32_t get_min_image_count(VkSurfaceCapabilities2KHR surface_capabilities) {
+    const uint32_t target_count = 2;
+    const uint32_t max = surface_capabilities.surfaceCapabilities.maxImageCount;
+    const uint32_t min = surface_capabilities.surfaceCapabilities.minImageCount;
+    
+    return target_count > max ? max : (target_count < min ? min : target_count);
+}
+
 int main(int argc, char** argv)
 {
     set_log_level(LOG_LEVEL_VERBOSE);
@@ -55,10 +91,10 @@ int main(int argc, char** argv)
         // rewrite extensions(.c/.h) to allow for user inputted extensions
         // aka make the process more malliable and changable
         // 
-        // const uint32_t required_instance_extensions_count = 1;
-        // const char *const * required_instance_extensions = {
-        //     "VK_KHR_surface"
-        // };
+        const uint32_t required_instance_extensions_count = 1;
+        const char *const * required_instance_extensions = {
+            "VK_KHR_get_surface_capabilities2"
+        };
                 
         VkQueueFlagBits flagbits = VK_QUEUE_GRAPHICS_BIT;
 
@@ -67,7 +103,11 @@ int main(int argc, char** argv)
         &renderer, 
         &score_physical_device, &device_features_2, 
         required_device_extensions_count, required_device_extensions,
-        1, &flagbits
+        1, &flagbits,
+        &score_surface_format,
+        &score_presentation_mode,
+        &get_window_extent,
+        &get_min_image_count
     );
     log_message(LOG_LEVEL_INFO, "init result: %s", string_VkResult(result));
     if(result) { return EXIT_FAILURE; }

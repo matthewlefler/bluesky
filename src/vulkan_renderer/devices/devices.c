@@ -22,19 +22,19 @@ uint32_t default_score_func(VkPhysicalDeviceProperties2 device_properties) {
     // VK_PHYSICAL_DEVICE_TYPE_CPU = 4,
     score += device_properties.properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
 
-    return 1;
+    return score;
 }
 
 VkResult device_get(
     const VkInstance instance, 
-    const uint32_t (*score_func)(VkPhysicalDeviceProperties2), 
+    uint32_t (*score_func)(VkPhysicalDeviceProperties2), 
     const VkPhysicalDeviceFeatures2* device_feature_requirements, 
     const uint32_t device_extension_count, const char* const *device_extension_requirements,
     const uint32_t queue_flags_count, const VkQueueFlagBits* queue_flags, 
     Device* out_device
 ) {
     if(instance == NULL) {
-        log_message(LOG_LEVEL_ERROR, "instance is null");
+        log_message(LOG_LEVEL_ERROR, "device_get -> instance is null");
         return VK_ERROR_INITIALIZATION_FAILED;
     }
     
@@ -101,6 +101,8 @@ VkResult device_get(
 
     device.physical_device = current_best_physical_device;
     device.physical_device_properties = current_best_physical_device_properties;
+    device.queue_indices = current_best_physical_device_queue_indices;
+    device.queue_count = queue_flags_count;
 
     create_logical_device(
         current_best_physical_device, 
@@ -109,9 +111,11 @@ VkResult device_get(
         &device.logical_device
     );
 
-    free(current_best_physical_device_queue_indices);
-
     *out_device = device;
 
     return VK_SUCCESS;
+}
+
+void device_free(Device device) {
+    free(device.queue_indices);
 }

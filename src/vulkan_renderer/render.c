@@ -17,6 +17,7 @@
 #include "extensions.h"
 #include "layers.h"
 #include "devices/devices.h"
+#include "swapchain.h"
 
 #include "render.h"
 
@@ -93,8 +94,8 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
 VkResult create_debug_messenger(Renderer* renderer) {
     VkDebugUtilsMessageSeverityFlagsEXT severity_flags =
-        VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-        VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT 
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | 
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
     ;
 
     VkDebugUtilsMessageTypeFlagsEXT message_type_flags =
@@ -128,12 +129,17 @@ VkResult create_debug_messenger(Renderer* renderer) {
 
 VkResult vulkan_renderer_init(
     Renderer* renderer, 
-    const uint32_t (*physical_device_score_function)(VkPhysicalDeviceProperties2), 
+    uint32_t (*physical_device_score_function)(VkPhysicalDeviceProperties2), 
     const VkPhysicalDeviceFeatures2 *device_feature_requirements, 
     const uint32_t device_extension_count, const char* const *device_extension_requirements, 
-    const uint32_t queue_flags_count, const VkQueueFlagBits *queue_flags
+    const uint32_t queue_flags_count, const VkQueueFlagBits *queue_flags,
+
+    uint32_t (*score_surface_format)(VkSurfaceFormat2KHR),
+    uint32_t (*score_presentation_mode)(VkPresentModeKHR),
+    VkExtent2D (*get_window_extent)(VkSurfaceCapabilities2KHR),
+    uint32_t (*get_min_image_count)(VkSurfaceCapabilities2KHR)
 ) {
-    if(glfwInit() == GLFW_FALSE) { // have to init glfw before getting instance extension
+    if(glfwInit() == GLFW_FALSE) { // have to init glfw before getting instance extensions
         return VK_NOT_READY;
     }
 
@@ -152,7 +158,7 @@ VkResult vulkan_renderer_init(
 
     renderer->devices = malloc(sizeof(Device) * 1);
     renderer->num_devices = 1;
-    return device_get(
+    result = device_get(
         renderer->vk_instance, 
         physical_device_score_function, 
         device_feature_requirements, 
@@ -160,6 +166,39 @@ VkResult vulkan_renderer_init(
         queue_flags_count, queue_flags, 
         renderer->devices // out device
     );
+
+    if(result) {
+        log_message(LOG_LEVEL_FATAL, "vulkan_renderer_init -> failed to create window %s", to_string_VkResult(result));
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
+
+    VkSwapchainKHR swapchain;
+    result = create_swap_chain(
+        renderer->devices[0].logical_device,  // const VkDevice device,
+        renderer->devices[0].physical_device, // const VkPhysicalDevice physical_device,
+        renderer->window.surface,             // const VkSurfaceKHR surface,
+        score_surface_format,                 // uint32_t (*score_surface_format)(VkSurfaceFormat2KHR),
+        score_presentation_mode,              // uint32_t (*score_presentation_mode)(VkPresentModeKHR),
+        get_window_extent,                    // VkExtent2D (*get_window_extent)(VkSurfaceCapabilities2KHR),
+        get_min_image_count,                  // uint32_t (*get_min_image_count)(VkSurfaceCapabilities2KHR),
+        0,                                    // uint32_t queue_family_index_count,
+        NULL,                                 // const uint32_t *p_queue_family_indices,
+        0,                                    // VkSwapchainCreateFlagsKHR create_info_flags,
+        1,                                    // uint32_t image_array_layers, // For non-stereoscopic-3D applications, this value is 1
+        0,                                    // VkImageUsageFlags image_usage,
+        VK_SHARING_MODE_EXCLUSIVE,            // VkSharingMode image_sharing_mode,
+        VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,    // VkCompositeAlphaFlagBitsKHR composite_alpha,
+        VK_TRUE,                              // VkBool32 clipped,
+        VK_NULL_HANDLE,                       // VkSwapchainKHR old_swapchain, // set to VK_NULL_HANDLE to not use, or to the old swapchain being recreated
+        &swapchain                            // VkSwapchainKHR *out_swapchain
+    );
+
+    if(result) {
+        log_message(LOG_LEVEL_FATAL, "vulkan_renderer_init -> failed to create swapchain %s", to_string_VkResult(result));
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }    
+
+    return result;
 }
 
 VkResult vulkan_renderer_run(Renderer* renderer) {

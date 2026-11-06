@@ -15,3 +15,10 @@ TODOs:
     - custom preproccesing possibly
 5. deal with swapping in and out portions of a pipeline to meet hardware extension avalibility
     - mix/match shaders accordingly
+
+
+## Current issues
+- swapchain.c
+  - creating a swapchain with VK_SHARING_MODE_CONCURRENT requires 
+    knowing which queues will access the swapchain, this is currently 
+    not tracked and requires manual programmer intervention

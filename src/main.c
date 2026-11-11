@@ -4,7 +4,9 @@
 #include <vulkan/vk_enum_string_helper.h>
 #include <vulkan/vulkan.h>
 
-#include "utilities/logger/logger.h"
+#include <string.h>
+
+#include "logger.h"
 
 #include "vulkan_renderer/render.h"
 #include "vulkan_renderer/log_utilities.h"
@@ -39,13 +41,22 @@ uint32_t score_presentation_mode(VkPresentModeKHR present_mode) {
 }
 
 VkExtent2D get_window_extent(VkSurfaceCapabilities2KHR surface_capabilities) {
-    return surface_capabilities.surfaceCapabilities.currentExtent;
+    const VkExtent2D min = surface_capabilities.surfaceCapabilities.minImageExtent;
+    const VkExtent2D max = surface_capabilities.surfaceCapabilities.maxImageExtent;
+
+    log_message(LOG_LEVEL_DEBUG, "min extent w %ld h %ld, max extent w %ld h %ld", min.width, min.height, max.width, max.height);
+    return max;
 }
 
 uint32_t get_min_image_count(VkSurfaceCapabilities2KHR surface_capabilities) {
     const uint32_t target_count = 2;
-    const uint32_t max = surface_capabilities.surfaceCapabilities.maxImageCount;
+    uint32_t max = surface_capabilities.surfaceCapabilities.maxImageCount;
     const uint32_t min = surface_capabilities.surfaceCapabilities.minImageCount;
+    if(max == 0) {
+        max = UINT32_MAX;
+    }
+
+    log_message(LOG_LEVEL_DEBUG, "min %ld max %ld target %ld, out %ld", min, max, target_count, target_count > max ? max : (target_count < min ? min : target_count));
     
     return target_count > max ? max : (target_count < min ? min : target_count);
 }
@@ -53,6 +64,9 @@ uint32_t get_min_image_count(VkSurfaceCapabilities2KHR surface_capabilities) {
 int main(int argc, char** argv)
 {
     set_log_level(LOG_LEVEL_VERBOSE);
+    if(glfwInit() == GLFW_FALSE) { // have to init glfw before getting instance extensions
+        return VK_NOT_READY;
+    }
 
     VkResult result;
 
@@ -88,26 +102,44 @@ int main(int argc, char** argv)
             "VK_KHR_swapchain"
         };
 
-        // rewrite extensions(.c/.h) to allow for user inputted extensions
-        // aka make the process more malliable and changable
-        // 
-        const uint32_t required_instance_extensions_count = 1;
-        const char *const * required_instance_extensions = {
-            "VK_KHR_get_surface_capabilities2"
+        ExtensionList required_instance_extensions = {
+            .num_extensions = 1,
+            .extension_names = malloc(1 * sizeof(char*))
         };
+        required_instance_extensions.extension_names[0] = "VK_KHR_get_surface_capabilities2";
                 
         VkQueueFlagBits flagbits = VK_QUEUE_GRAPHICS_BIT;
+        
+        ExtensionList glfw_extensions = {0};
+        glfw_extensions.extension_names = glfwGetRequiredInstanceExtensions(&glfw_extensions.num_extensions);
+
+        ExtensionList debug_extensions = {
+            .extension_names = NULL,
+            .num_extensions = 0
+        };
+        
+        #ifndef NDEBUG
+            debug_extensions.num_extensions = 1;
+            debug_extensions.extension_names = malloc(sizeof(char*) * debug_extensions.num_extensions);
+            debug_extensions.extension_names[0] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+        #endif
+
+    ExtensionList instance_extensions = glfw_extensions;
+    instance_extensions.p_next = &debug_extensions;
+    debug_extensions.p_next = &required_instance_extensions;
+    required_instance_extensions.p_next = NULL;
 
     Renderer renderer = {0};
     result = vulkan_renderer_init(
-        &renderer, 
+        instance_extensions,
         &score_physical_device, &device_features_2, 
         required_device_extensions_count, required_device_extensions,
         1, &flagbits,
         &score_surface_format,
         &score_presentation_mode,
         &get_window_extent,
-        &get_min_image_count
+        &get_min_image_count,
+        &renderer
     );
     log_message(LOG_LEVEL_INFO, "init result: %s", string_VkResult(result));
     if(result) { return EXIT_FAILURE; }

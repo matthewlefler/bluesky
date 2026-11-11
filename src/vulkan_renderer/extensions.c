@@ -7,34 +7,30 @@
 
 #include <GLFW/glfw3.h>
 
+#include "logger.h"
+
 #include "extensions.h"
 
-VkResult get_required_instance_extensions(uint32_t* out_extension_count, const char** (*out_extensions)) {
-    uint32_t glfw_extensions_count = 0;
-    const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extensions_count);
-
-    uint32_t debug_extensions_count = 0;
-    char** debug_extensions = NULL;
-#ifndef NDEBUG
-    debug_extensions_count = 1;
-    debug_extensions = malloc(sizeof(char*) * debug_extensions_count);
-
-    debug_extensions[0] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
-#endif
-
-    *out_extension_count = glfw_extensions_count + debug_extensions_count;
-    *out_extensions = malloc(sizeof(char*) * (*out_extension_count));
-
-    uint32_t j = 0;
-    for(uint32_t i = 0; i < glfw_extensions_count; ++i, ++j) {
-        (*out_extensions)[j] = glfw_extensions[i];
+const char* const* squash_extension_list(const ExtensionList *extension_list, uint32_t *out_total_extension_count) {
+    uint32_t num_extensions = 0;
+    const ExtensionList *current = extension_list;
+    while(current != NULL) {
+        num_extensions += current->num_extensions;
+        current = current->p_next;
     }
 
-    for(uint32_t i = 0; i < debug_extensions_count; ++i, ++j) {
-        (*out_extensions)[j] = debug_extensions[i];
-    }
+    // array of char ptrs
+    const char* *new_extension_list = calloc(num_extensions, sizeof(char*));
 
-    return VK_SUCCESS;
+    current = extension_list;
+    for (uint32_t i = 0; current != NULL; current = current->p_next) {
+        for (uint32_t j = 0; j < current->num_extensions; j++, i++) {
+            new_extension_list[i] = current->extension_names[j];
+        }
+    }    
+
+    *out_total_extension_count = num_extensions;
+    return (const char* const*) new_extension_list;
 }
 
 VkResult get_instance_extensions(VkExtensionProperties** extensions, uint32_t* extension_count) {
@@ -49,7 +45,7 @@ VkResult get_instance_extensions(VkExtensionProperties** extensions, uint32_t* e
     return vkEnumerateInstanceExtensionProperties(NULL, extension_count, *extensions);
 }
 
-VkResult check_instance_extensions(uint32_t required_instance_extensions_count, const char* const * required_instance_extensions) {
+VkResult check_instance_extensions(const uint32_t required_instance_extensions_count, const char* const * required_instance_extensions) {
     uint32_t instance_extensions_count;
     VkExtensionProperties* instance_extensions;
 
@@ -65,8 +61,7 @@ VkResult check_instance_extensions(uint32_t required_instance_extensions_count, 
 
         for(uint32_t j = 0; j < instance_extensions_count; ++j) {
             VkExtensionProperties instance_extension = instance_extensions[j];
-
-            if(strcmp(required_instance_extension_name, instance_extension.extensionName) == 0) {
+            if(strncmp(required_instance_extension_name, instance_extension.extensionName, VK_MAX_EXTENSION_NAME_SIZE) == 0) {
                 found = true;
             }
         }
@@ -83,10 +78,7 @@ VkResult check_instance_extensions(uint32_t required_instance_extensions_count, 
     return result;
 }
 
-void free_extensions(const char * const* extensions, uint32_t len) {
-    // for(uint32_t i = 0; i < len; ++i) {
-    //     free((void*) extensions[i]);
-    // }
+void free_extensions(const char * const* extensions) {
     free((void*) extensions);
 }
 

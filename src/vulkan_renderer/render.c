@@ -21,12 +21,12 @@
 
 #include "render.h"
 
-VkResult vulkan_create_instance(Renderer* renderer) {
+VkResult vulkan_create_instance(Renderer* renderer, ExtensionList instance_extension_list) {
     VkApplicationInfo app_info = {
         .pApplicationName   = renderer->window.name,
-        .applicationVersion = VK_MAKE_VERSION( 1, 0, 0 ),
+        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
         .pEngineName        = "BlueSky",
-        .engineVersion      = VK_MAKE_VERSION( 1, 0, 0 ),
+        .engineVersion      = VK_MAKE_VERSION(1, 0, 0),
         .apiVersion         = VK_API_VERSION_1_4,
         .sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO,
         .pNext              = NULL
@@ -35,9 +35,7 @@ VkResult vulkan_create_instance(Renderer* renderer) {
     uint32_t instance_extensions_count;
     const char **instance_extensions;
     VkResult result;
-    if((result = get_required_instance_extensions(&instance_extensions_count, &instance_extensions)) != VK_SUCCESS) {
-        return result;
-    }
+    instance_extensions = squash_extension_list(&instance_extension_list, &instance_extensions_count);
     
     if((result = check_instance_extensions(instance_extensions_count, instance_extensions)) != VK_SUCCESS) {
         return result;
@@ -73,7 +71,7 @@ VkResult vulkan_create_instance(Renderer* renderer) {
 
     result = vkCreateInstance(&create_info, NULL, &renderer->vk_instance);
 
-    free_extensions(create_info.ppEnabledExtensionNames, create_info.enabledExtensionCount);
+    free_extensions(create_info.ppEnabledExtensionNames);
     free_layers(create_info.ppEnabledLayerNames, create_info.enabledLayerCount);
     
     return result;
@@ -128,7 +126,7 @@ VkResult create_debug_messenger(Renderer* renderer) {
 }
 
 VkResult vulkan_renderer_init(
-    Renderer* renderer, 
+    const ExtensionList instance_extensions,
     uint32_t (*physical_device_score_function)(VkPhysicalDeviceProperties2), 
     const VkPhysicalDeviceFeatures2 *device_feature_requirements, 
     const uint32_t device_extension_count, const char* const *device_extension_requirements, 
@@ -137,34 +135,32 @@ VkResult vulkan_renderer_init(
     uint32_t (*score_surface_format)(VkSurfaceFormat2KHR),
     uint32_t (*score_presentation_mode)(VkPresentModeKHR),
     VkExtent2D (*get_window_extent)(VkSurfaceCapabilities2KHR),
-    uint32_t (*get_min_image_count)(VkSurfaceCapabilities2KHR)
+    uint32_t (*get_min_image_count)(VkSurfaceCapabilities2KHR),
+
+    Renderer* out_renderer
 ) {
-    if(glfwInit() == GLFW_FALSE) { // have to init glfw before getting instance extensions
-        return VK_NOT_READY;
-    }
+    vulkan_create_instance(out_renderer, instance_extensions);
 
-    vulkan_create_instance(renderer);
-
-    VkResult result = window_create(renderer->vk_instance, 800, 800, "TreeWalk", &renderer->window);
+    VkResult result = window_create(out_renderer->vk_instance, 800, 800, "TreeWalk", &out_renderer->window);
     if(result) {
         log_message(LOG_LEVEL_FATAL, "vulkan_renderer_init -> failed to create window %s", to_string_VkResult(result));
         return VK_ERROR_INITIALIZATION_FAILED;
     }
 
-    renderer->debug_messenger = NULL;
+    out_renderer->debug_messenger = NULL;
 #ifndef NDEBUG
-    create_debug_messenger(renderer);
+    create_debug_messenger(out_renderer);
 #endif
 
-    renderer->devices = malloc(sizeof(Device) * 1);
-    renderer->num_devices = 1;
+    out_renderer->devices = malloc(sizeof(Device) * 1);
+    out_renderer->num_devices = 1;
     result = device_get(
-        renderer->vk_instance, 
+        out_renderer->vk_instance, 
         physical_device_score_function, 
         device_feature_requirements, 
         device_extension_count, device_extension_requirements, 
         queue_flags_count, queue_flags, 
-        renderer->devices // out device
+        out_renderer->devices // out device
     );
 
     if(result) {
@@ -174,23 +170,23 @@ VkResult vulkan_renderer_init(
 
     VkSwapchainKHR swapchain;
     result = create_swap_chain(
-        renderer->devices[0].logical_device,  // const VkDevice device,
-        renderer->devices[0].physical_device, // const VkPhysicalDevice physical_device,
-        renderer->window.surface,             // const VkSurfaceKHR surface,
-        score_surface_format,                 // uint32_t (*score_surface_format)(VkSurfaceFormat2KHR),
-        score_presentation_mode,              // uint32_t (*score_presentation_mode)(VkPresentModeKHR),
-        get_window_extent,                    // VkExtent2D (*get_window_extent)(VkSurfaceCapabilities2KHR),
-        get_min_image_count,                  // uint32_t (*get_min_image_count)(VkSurfaceCapabilities2KHR),
-        0,                                    // uint32_t queue_family_index_count,
-        NULL,                                 // const uint32_t *p_queue_family_indices,
-        0,                                    // VkSwapchainCreateFlagsKHR create_info_flags,
-        1,                                    // uint32_t image_array_layers, // For non-stereoscopic-3D applications, this value is 1
-        0,                                    // VkImageUsageFlags image_usage,
-        VK_SHARING_MODE_EXCLUSIVE,            // VkSharingMode image_sharing_mode,
-        VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,    // VkCompositeAlphaFlagBitsKHR composite_alpha,
-        VK_TRUE,                              // VkBool32 clipped,
-        VK_NULL_HANDLE,                       // VkSwapchainKHR old_swapchain, // set to VK_NULL_HANDLE to not use, or to the old swapchain being recreated
-        &swapchain                            // VkSwapchainKHR *out_swapchain
+        out_renderer->devices[0].logical_device,  // const VkDevice device,
+        out_renderer->devices[0].physical_device, // const VkPhysicalDevice physical_device,
+        out_renderer->window.surface,             // const VkSurfaceKHR surface,
+        score_surface_format,                     // uint32_t (*score_surface_format)(VkSurfaceFormat2KHR),
+        score_presentation_mode,                  // uint32_t (*score_presentation_mode)(VkPresentModeKHR),
+        get_window_extent,                        // VkExtent2D (*get_window_extent)(VkSurfaceCapabilities2KHR),
+        get_min_image_count,                      // uint32_t (*get_min_image_count)(VkSurfaceCapabilities2KHR),
+        0,                                        // uint32_t queue_family_index_count,
+        NULL,                                     // const uint32_t *p_queue_family_indices,
+        0,                                        // VkSwapchainCreateFlagsKHR create_info_flags,
+        1,                                        // uint32_t image_array_layers, // For non-stereoscopic-3D applications, this value is 1
+        VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,      // VkImageUsageFlags image_usage,
+        VK_SHARING_MODE_EXCLUSIVE,                // VkSharingMode image_sharing_mode,
+        VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,        // VkCompositeAlphaFlagBitsKHR composite_alpha,
+        VK_TRUE,                                  // VkBool32 clipped,
+        VK_NULL_HANDLE,                           // VkSwapchainKHR old_swapchain, // set to VK_NULL_HANDLE to not use, or to the old swapchain being recreated
+        &swapchain                                // VkSwapchainKHR *out_swapchain
     );
 
     if(result) {

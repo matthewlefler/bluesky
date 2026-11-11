@@ -22,3 +22,8 @@ TODOs:
   - creating a swapchain with VK_SHARING_MODE_CONCURRENT requires 
     knowing which queues will access the swapchain, this is currently 
     not tracked and requires manual programmer intervention
+- ~~extensions.c~~
+  - ~~rewrite extensions(.c/.h) to allow for user inputted extensions,
+    aka make the process more malliable and changable~~
+- device.c
+  - make device extensions use `ExtensionList` as used for instance extensions

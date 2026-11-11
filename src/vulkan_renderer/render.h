@@ -6,6 +6,7 @@
 
 #include "window/window.h"
 #include "devices/devices.h"
+#include "extensions.h"
 
 typedef struct Renderer {
     Window window;
@@ -21,7 +22,7 @@ typedef struct Renderer {
 // add/free/re-create pipelines
 
 VkResult vulkan_renderer_init(
-    Renderer* renderer, 
+    const ExtensionList instance_extensions,
     uint32_t (*physical_device_score_function)(VkPhysicalDeviceProperties2), 
     const VkPhysicalDeviceFeatures2 *device_feature_requirements, 
     const uint32_t device_extension_count, const char* const *device_extension_requirements, 
@@ -30,7 +31,9 @@ VkResult vulkan_renderer_init(
     uint32_t (*score_surface_format)(VkSurfaceFormat2KHR),
     uint32_t (*score_presentation_mode)(VkPresentModeKHR),
     VkExtent2D (*get_window_extent)(VkSurfaceCapabilities2KHR),
-    uint32_t (*get_min_image_count)(VkSurfaceCapabilities2KHR)
+    uint32_t (*get_min_image_count)(VkSurfaceCapabilities2KHR),
+
+    Renderer* out_renderer
 );
 
 VkResult vulkan_renderer_run(Renderer* renderer);

@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Compile flags for warnings and debugging
-add_compile_options(-g -Wall -Wextra)
+add_compile_options(--debug -ggdb -Wall -Wextra)
 
 find_package(Vulkan REQUIRED)
 message(STATUS "Vulkan Version:")

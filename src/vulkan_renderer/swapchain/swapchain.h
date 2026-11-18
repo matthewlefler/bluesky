@@ -3,6 +3,17 @@
 
 #include <vulkan/vulkan.h>
 
+typedef struct Swapchain {
+    VkDevice logical_device;
+    VkSwapchainKHR swapchain;
+    VkFormat image_format;
+    VkExtent2D image_extent;
+    uint32_t image_count;
+
+    VkImage *images;
+    VkImageView *image_views;
+} Swapchain;
+
 VkResult query_physical_device_surface_formats(
     const VkPhysicalDevice physical_device, const VkSurfaceKHR surface, 
     uint32_t *out_surface_format_count, VkSurfaceFormat2KHR **out_surface_formats
@@ -31,7 +42,7 @@ VkResult create_swap_chain(
     VkExtent2D (*get_window_extent)(VkSurfaceCapabilities2KHR),
     uint32_t (*get_min_image_count)(VkSurfaceCapabilities2KHR),
 
-    uint32_t queue_family_index_count,
+    uint32_t queue_family_index_count, // ignored if image_sharing_mode is not VK_SHARING_MODE_CONCURRENT
     const uint32_t *p_queue_family_indices,
 
     VkSwapchainCreateFlagsKHR create_info_flags,
@@ -42,7 +53,7 @@ VkResult create_swap_chain(
     VkBool32 clipped,
     VkSwapchainKHR old_swapchain, // set to VK_NULL_HANDLE to not use, or to the old swapchain being recreated
 
-    VkSwapchainKHR *out_swapchain
+    Swapchain *swapchain
 );
 
 #endif

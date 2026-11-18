@@ -7,6 +7,7 @@
 #include "window/window.h"
 #include "devices/devices.h"
 #include "extensions.h"
+#include "swapchain/swapchain.h"
 
 typedef struct Renderer {
     Window window;
@@ -15,6 +16,8 @@ typedef struct Renderer {
 
     size_t num_devices;
     Device* devices;
+    size_t num_swapchains;
+    Swapchain* swapchains;
 } Renderer;
 
 // add/free device

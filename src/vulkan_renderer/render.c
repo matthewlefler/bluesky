@@ -17,7 +17,8 @@
 #include "extensions.h"
 #include "layers.h"
 #include "devices/devices.h"
-#include "swapchain.h"
+#include "swapchain/swapchain.h"
+#include "swapchain/images.h"
 
 #include "render.h"
 
@@ -168,7 +169,7 @@ VkResult vulkan_renderer_init(
         return VK_ERROR_INITIALIZATION_FAILED;
     }
 
-    VkSwapchainKHR swapchain;
+    Swapchain swapchain;
     result = create_swap_chain(
         out_renderer->devices[0].logical_device,  // const VkDevice device,
         out_renderer->devices[0].physical_device, // const VkPhysicalDevice physical_device,
@@ -178,7 +179,7 @@ VkResult vulkan_renderer_init(
         get_window_extent,                        // VkExtent2D (*get_window_extent)(VkSurfaceCapabilities2KHR),
         get_min_image_count,                      // uint32_t (*get_min_image_count)(VkSurfaceCapabilities2KHR),
         0,                                        // uint32_t queue_family_index_count,
-        NULL,                                     // const uint32_t *p_queue_family_indices,
+        NULL,                                     // -const uint32_t *p_queue_family_indices,
         0,                                        // VkSwapchainCreateFlagsKHR create_info_flags,
         1,                                        // uint32_t image_array_layers, // For non-stereoscopic-3D applications, this value is 1
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,      // VkImageUsageFlags image_usage,
@@ -186,19 +187,53 @@ VkResult vulkan_renderer_init(
         VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,        // VkCompositeAlphaFlagBitsKHR composite_alpha,
         VK_TRUE,                                  // VkBool32 clipped,
         VK_NULL_HANDLE,                           // VkSwapchainKHR old_swapchain, // set to VK_NULL_HANDLE to not use, or to the old swapchain being recreated
-        &swapchain                                // VkSwapchainKHR *out_swapchain
+        &swapchain                                // Swapchain *out_swapchain
     );
 
     if(result) {
         log_message(LOG_LEVEL_FATAL, "vulkan_renderer_init -> failed to create swapchain %s", to_string_VkResult(result));
         return VK_ERROR_INITIALIZATION_FAILED;
-    }    
+    }
+
+    out_renderer->num_swapchains = 1;
+    out_renderer->swapchains = malloc(sizeof(Swapchain));
+    out_renderer->swapchains[0] = swapchain;
+
+    result = images_create(&out_renderer->swapchains[0]);
+    if(result) {
+        log_message(LOG_LEVEL_FATAL, "vulkan_renderer_init -> failed to get images %s", to_string_VkResult(result));
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
+    
+    result = images_create_views(
+        0,
+        VK_IMAGE_VIEW_TYPE_2D,
+        (VkComponentMapping) {
+            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .a = VK_COMPONENT_SWIZZLE_IDENTITY
+        },
+        (VkImageSubresourceRange) {
+            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .baseMipLevel = 0,
+            .levelCount = 1,
+            .baseArrayLayer = 0,
+            .layerCount = 1
+        },
+        &out_renderer->swapchains[0]
+    );
+
+    if(result) {
+        log_message(LOG_LEVEL_FATAL, "vulkan_renderer_init -> failed to create image views %s", to_string_VkResult(result));
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
 
     return result;
 }
 
 VkResult vulkan_renderer_run(Renderer* renderer) {
-    while (!glfwWindowShouldClose(renderer->window.window_ptr)) {
+    while (false && !glfwWindowShouldClose(renderer->window.window_ptr)) {
         glfwPollEvents();
     }
 
@@ -206,6 +241,19 @@ VkResult vulkan_renderer_run(Renderer* renderer) {
 }
 
 VkResult vulkan_renderer_cleanup(Renderer* renderer) {
+    if(renderer->swapchains != NULL) {
+        for (size_t i = 0; i < renderer->num_swapchains; i++) {
+            for (size_t j = 0; j < renderer->swapchains[i].image_count; j++) {
+                vkDestroyImageView(renderer->swapchains[i].logical_device, renderer->swapchains[i].image_views[j], NULL);
+            }
+            free(renderer->swapchains[i].image_views);
+            
+            vkDestroySwapchainKHR(renderer->swapchains[i].logical_device, renderer->swapchains[i].swapchain, NULL);
+        }
+
+        free(renderer->swapchains);
+    }
+
     if(renderer->devices != NULL) {
         for(size_t i = 0; i < renderer->num_devices; ++i) {
             if(renderer->devices[i].logical_device != NULL) {

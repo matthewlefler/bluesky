@@ -30,7 +30,7 @@ VkResult create_swap_chain(
     VkBool32 clipped,
     VkSwapchainKHR old_swapchain, // set to VK_NULL_HANDLE to not use, or to the old swapchain being recreated
 
-    VkSwapchainKHR *out_swapchain
+    Swapchain *swapchain
 ) {
     VkResult result;
 
@@ -92,15 +92,20 @@ VkResult create_swap_chain(
         queue_indices = p_queue_family_indices;
     }
 
+    swapchain->image_extent = get_window_extent(vk_surface_capabilities);
+    swapchain->image_count = get_min_image_count(vk_surface_capabilities);
+    swapchain->image_format = best_image_format;
+    swapchain->logical_device = device;
+
     // see: https://docs.vulkan.org/refpages/latest/refpages/source/VkSwapchainCreateInfoKHR.html
     VkSwapchainCreateInfoKHR create_info = {
         .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
         .flags = create_info_flags,
         .surface = surface,
-        .minImageCount = get_min_image_count(vk_surface_capabilities),
+        .minImageCount = swapchain->image_count,
         .imageFormat = best_image_format,
         .imageColorSpace = best_color_space,
-        .imageExtent = get_window_extent(vk_surface_capabilities),
+        .imageExtent = swapchain->image_extent,
         .imageArrayLayers = image_array_layers,
         .imageUsage = image_usage,
         .imageSharingMode = image_sharing_mode,
@@ -117,7 +122,7 @@ VkResult create_swap_chain(
         device,
         &create_info,
         NULL,
-        out_swapchain
+        &swapchain->swapchain
     );
 }
 

@@ -44,7 +44,7 @@ VkExtent2D get_window_extent(VkSurfaceCapabilities2KHR surface_capabilities) {
     const VkExtent2D min = surface_capabilities.surfaceCapabilities.minImageExtent;
     const VkExtent2D max = surface_capabilities.surfaceCapabilities.maxImageExtent;
 
-    log_message(LOG_LEVEL_DEBUG, "min extent w %ld h %ld, max extent w %ld h %ld", min.width, min.height, max.width, max.height);
+    log_message(LOG_LEVEL_DEBUG, "get_window_extent -> min extent w %ld h %ld, max extent w %ld h %ld", min.width, min.height, max.width, max.height);
     return max;
 }
 
@@ -56,7 +56,7 @@ uint32_t get_min_image_count(VkSurfaceCapabilities2KHR surface_capabilities) {
         max = UINT32_MAX;
     }
 
-    log_message(LOG_LEVEL_DEBUG, "min %ld max %ld target %ld, out %ld", min, max, target_count, target_count > max ? max : (target_count < min ? min : target_count));
+    log_message(LOG_LEVEL_DEBUG, "get_min_image_count -> min %ld max %ld target %ld, out %ld", min, max, target_count, target_count > max ? max : (target_count < min ? min : target_count));
     
     return target_count > max ? max : (target_count < min ? min : target_count);
 }
@@ -141,6 +141,7 @@ int main(int argc, char** argv)
         &get_min_image_count,
         &renderer
     );
+    
     log_message(LOG_LEVEL_INFO, "init result: %s", string_VkResult(result));
     if(result) { return EXIT_FAILURE; }
 
